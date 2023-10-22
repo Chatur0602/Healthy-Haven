@@ -1,4 +1,8 @@
-﻿@model UserEntity
+﻿@{
+    ViewData["Title"] = "Delete User";
+}
+
+@model UserEntity
 
 <form method="post" asp-action="DeleteUserPost">
     <input asp-for="UserId" hidden />
