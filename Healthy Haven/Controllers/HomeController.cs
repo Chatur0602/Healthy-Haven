@@ -16,22 +16,10 @@ namespace Healthy_Haven.Controllers
             _logger = logger;
         }
 
+        
+
         public IActionResult Index()
         {
-            List<UserEntity> users= new List<UserEntity>();
-            users = _db.Users.ToList();
-
-            return View(users);
-        }
-
-        public IActionResult AddUser(UserEntity userDetails)
-        {
-            if (ModelState.IsValid)
-            {
-                _db.Users.Add(userDetails); 
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
             return View();
         }
 
