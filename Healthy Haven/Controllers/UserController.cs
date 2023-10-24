@@ -80,9 +80,9 @@ namespace Healthy_Haven.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteUserPost(int? userId)
+        public IActionResult DeleteUserPost(int? Id)
         {
-            var userDetails = _db.Users.Find(userId);
+            var userDetails = _db.Users.Find(Id);
             
             if (userDetails == null)
             {

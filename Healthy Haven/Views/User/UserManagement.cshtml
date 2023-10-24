@@ -7,7 +7,7 @@
 <div>
     <div class="row pt-4">
         <div class="col-9">
-            <h2 class="text-success">List Of Users</h2>
+            <h2 class="text-success">Admin User Management Dashboard</h2>
         </div>
         <div class="col-12 text-lg-end">
             <a asp-controller="User" asp-action="AddUser" class="btn btn-success">Add User</a>
@@ -22,9 +22,10 @@
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Email</th>
+                    <th>Password</th>
                     <th>Gender</th>
                     <th>Age</th>
-                    <th>Address</th>
+                    <th>Role</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,15 +34,16 @@
                     <tr>
                         <td width="15%">@item.FirstName</td>
                         <td width="15%">@item.LastName</td>
-                        <td width="15%">@item.Email</td>
+                        <td width="20%">@item.Email</td>
+                        <td width="15%">@item.Password</td>
                         <td width="5%">@item.Gender</td>
                         <td width="5%">@item.Age</td>
-                        <td width="30%">@item.Address</td>
-                        <td width="15%">
+                        <td width="5%">@item.Role</td>
+                        <td width="20">
                             <div class="w-100 btn-group" role="group">
-                                <a asp-controller="User" asp-action="EditUser" asp-route-Id="@item.UserId"
+                                <a asp-controller="User" asp-action="EditUser" asp-route-Id="@item.Id"
                                    class="btn btn-primary mx-1">Edit</a>
-                                <a asp-controller="User" asp-action="DeleteUser" asp-route-Id="@item.UserId"
+                                <a asp-controller="User" asp-action="DeleteUser" asp-route-Id="@item.Id"
                                    class="btn btn-danger">Delete</a>
                             </div>
                         </td>
