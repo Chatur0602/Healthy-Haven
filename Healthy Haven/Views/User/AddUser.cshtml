@@ -37,6 +37,14 @@
         <br />
         <div class="row">
             <div class="col-4">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
                 <label asp-for="Gender"></label>
                 <select asp-for="Gender" class="form-control">
                     <option value="M">Male</option>
@@ -56,9 +64,12 @@
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="Address"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger" />
+                <label asp-for="Role"></label>
+                <select asp-for="Role" class="form-control">
+                    <option value="U">User</option>
+                    <option value="M">Moderator</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger" />
             </div>
         </div>
         <br />

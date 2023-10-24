@@ -9,18 +9,21 @@ CREATE TABLE Users (
   password VARCHAR(255) NOT NULL,
   Gender char NOT NULL,
   Age int NOT NULL,
-  role VARCHAR(255) NOT NULL,
+  role char NOT NULL,
   PRIMARY KEY (id)
 );
 
+ALTER TABLE Users
+Add role char;
+
 drop table Users;
 
-Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Nikhil', 'Chaturvedi','Nikhil.Chaturvedi@outlook.my', 'M', 21, 'Robson Condominium');
-Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Hamidreza', 'Malek','reza@gmail.com', 'M', 23, 'La Casa Grande');
+Insert Into Users(FirstName, LastName, Email, Password, Gender, Age, Role) values('Nikhil', 'Chaturvedi','Nikhil.Chaturvedi@outlook.my', 'hello1234', 'M', 21, 'M');
+Insert Into Users(FirstName, LastName, Email, Password, Gender, Age, Role) values('Hamidreza', 'Malek','reza@gmail.com', 'reza1234', 'M', 23, 'U');
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Wee', 'Shi Min','shimin@hotmail.com', 'F', 22, 'Somewhere in WP');
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Assran', 'Mydeeen','assran@yahoo.com', 'M', 22, 'Sri Impian');
 
-DELETE FROM Users WHERE UserId=7;
+DELETE FROM Users WHERE id=2;
 
 SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
 
