@@ -1,10 +1,12 @@
 ﻿using Healthy_Haven.Data;
 using Healthy_Haven.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace Healthy_Haven.Controllers
 {
+    [Authorize]
     public class UserController : Controller
     {
         private readonly ILogger<UserController> _logger;

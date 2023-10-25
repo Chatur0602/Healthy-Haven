@@ -9,3 +9,5 @@ CREATE TABLE Forum (
   FOREIGN KEY (user_id) REFERENCES Users(id),
   PRIMARY KEY (id)
 );
+
+drop table Forum
