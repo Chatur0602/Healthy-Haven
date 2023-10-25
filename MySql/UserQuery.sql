@@ -23,11 +23,11 @@ Insert Into Users(FirstName, LastName, Email, Password, Gender, Age, Role) value
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Wee', 'Shi Min','shimin@hotmail.com', 'F', 22, 'Somewhere in WP');
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Assran', 'Mydeeen','assran@yahoo.com', 'M', 22, 'Sri Impian');
 
-DELETE FROM Users WHERE id=2;
+DELETE FROM Users WHERE id=7;
 
 SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
 
-select * from Users;
+select * from AspNetUsers;
 
 SELECT table_name
 FROM information_schema.tables

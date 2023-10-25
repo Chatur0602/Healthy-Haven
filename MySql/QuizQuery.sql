@@ -8,3 +8,5 @@ CREATE TABLE Quizzes (
   FOREIGN KEY (course_id) REFERENCES Courses(id),
   PRIMARY KEY (id)
 );
+
+drop table Quizzes;

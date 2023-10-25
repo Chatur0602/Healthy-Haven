@@ -8,3 +8,5 @@ CREATE TABLE Courses (
   FOREIGN KEY (instructor_id) REFERENCES Users(id),
   PRIMARY KEY (id)
 );
+
+drop table Courses;
