@@ -1,4 +1,4 @@
-create database HHDB;
+Create database HHDB;
 use HHDB;
 
 CREATE TABLE Users (
@@ -13,8 +13,15 @@ CREATE TABLE Users (
   PRIMARY KEY (id)
 );
 
-ALTER TABLE Users
-Add role char;
+ALTER TABLE AspNetUsers
+DROP Column firstname,
+DROP Column lastname,
+DROP Column Gender,
+DROP Column Age;
+
+
+ALTER TABLE AspNetUsers
+DROP COLUMN firstname;
 
 drop table Users;
 
@@ -28,6 +35,8 @@ DELETE FROM Users WHERE id=7;
 SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
 
 select * from AspNetUsers;
+
+DROP Table AspNetUsers;
 
 SELECT table_name
 FROM information_schema.tables

@@ -1,8 +1,9 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<ApplicationUser>
+
+@{
     ViewData["Title"] = "User Management";
 }
-
-@model IEnumerable<UserEntity>
 
 <div>
     <div class="row pt-4">
@@ -22,10 +23,9 @@
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Email</th>
-                    <th>Password</th>
+                    <th>Phone Number</th>
                     <th>Gender</th>
                     <th>Age</th>
-                    <th>Role</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,10 +35,9 @@
                         <td width="15%">@item.FirstName</td>
                         <td width="15%">@item.LastName</td>
                         <td width="20%">@item.Email</td>
-                        <td width="15%">@item.Password</td>
+                        <td width="20%">@item.PhoneNumber</td>
                         <td width="5%">@item.Gender</td>
                         <td width="5%">@item.Age</td>
-                        <td width="5%">@item.Role</td>
                         <td width="20">
                             <div class="w-100 btn-group" role="group">
                                 <a asp-controller="User" asp-action="EditUser" asp-route-Id="@item.Id"
