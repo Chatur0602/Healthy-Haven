@@ -31,21 +31,24 @@
             <div class="row">
                 <div class=col-6>
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.Age" class="form-control" aria-required="true" placeholder="Age" />
+                        <input asp-for="Input.Age" type="number" class="form-control" aria-required="true" placeholder="Age" min="18" max="100" />
                         <label asp-for="Input.Age">Age</label>
                         <span asp-validation-for="Input.Age" class="text-danger"></span>
                     </div>
                 </div>
-                <div class=col-6>
+                <div class="col-6">
                     <div class="form-floating mb-3">
-                        <input asp-for="Input.Gender" class="form-control" aria-required="true" placeholder="Gender" />
+                        <select asp-for="Input.Gender" class="form-select" aria-required="true">
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
                         <label asp-for="Input.Gender">Gender</label>
                         <span asp-validation-for="Input.Gender" class="text-danger"></span>
                     </div>
                 </div>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <input asp-for="Input.PhoneNumber" pattern="[0-9]+" class="form-control"  aria-required="true" placeholder="name@example.com" />
                 <label asp-for="Input.PhoneNumber">Phone Number</label>
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
@@ -63,6 +66,13 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Input.Role" asp-items="@Model.Input.RoleList.Where(role => role.Text != "Admin")" class="form-select" autocomplete="new-password" aria-required="true">
+                    <option disabled seleted>Select Role</option>
+                </select>
+                <label asp-for="Input.Role">Roles</label>
+                <span asp-validation-for="Input.Role" class="text-danger"></span>
             </div>
 
  
