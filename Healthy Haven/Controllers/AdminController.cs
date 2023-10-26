@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace Healthy_Haven.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Moderator")]
     public class AdminController : Controller
     {
        
@@ -22,9 +22,9 @@ namespace Healthy_Haven.Controllers
         public IActionResult UserManagement()
         {
             var users = userManager.Users.ToList();
+         
             return View(users); 
         }
-
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

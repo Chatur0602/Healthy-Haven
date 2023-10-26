@@ -19,7 +19,6 @@ DROP Column lastname,
 DROP Column Gender,
 DROP Column Age;
 
-
 ALTER TABLE AspNetUsers
 DROP COLUMN firstname;
 
@@ -30,11 +29,15 @@ Insert Into Users(FirstName, LastName, Email, Password, Gender, Age, Role) value
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Wee', 'Shi Min','shimin@hotmail.com', 'F', 22, 'Somewhere in WP');
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Assran', 'Mydeeen','assran@yahoo.com', 'M', 22, 'Sri Impian');
 
-DELETE FROM AspNetUsers WHERE id='db1f23f8-1f7e-4bd9-b632-98eb6c0db412';
+DELETE FROM AspNetUsers WHERE id='00115c35-4afd-4fb0-b456-6b7956328c1a';
+DELETE FROM AspNetUsers WHERE id='5866cb8e-893e-4cdc-baa7-ad24cbd20b0a';
+DELETE FROM AspNetUsers WHERE id='e6d1ca72-22dc-46ed-96b8-21b798da2fda';
 
 SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
 
 describe AspNetUsers;
+
+select * from AspNetUserClaims;
 
 select * from AspNetUsers;
 
