@@ -10,9 +10,6 @@
         <div class="col-9">
             <h2 class="text-success">Admin User Management Dashboard</h2>
         </div>
-        <div class="col-12 text-lg-end">
-            <a asp-controller="User" asp-action="AddUser" class="btn btn-success">Add User</a>
-        </div>
     </div>
     <br />
     @if (Model != null && Model.Count() > 0)
@@ -40,9 +37,7 @@
                         <td width="5%">@item.Age</td>
                         <td width="20">
                             <div class="w-100 btn-group" role="group">
-                                <a asp-controller="User" asp-action="EditUser" asp-route-Id="@item.Id"
-                                   class="btn btn-primary mx-1">Edit</a>
-                                <a asp-controller="User" asp-action="DeleteUser" asp-route-Id="@item.Id"
+                                <a asp-controller="Admin" asp-action="DeleteUser" asp-route-Id="@item.Id"
                                    class="btn btn-danger">Delete</a>
                             </div>
                         </td>
