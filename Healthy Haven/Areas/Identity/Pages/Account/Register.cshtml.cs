@@ -93,6 +93,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
+            [RegularExpression("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).{8,}$", ErrorMessage = "Your password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.")]
             public string Password { get; set; }
 
             /// <summary>
@@ -106,16 +107,18 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
 
             [Required]
             [Display(Name = "First Name")]
+            [StringLength(16, MinimumLength = 3, ErrorMessage = "The first name must be at least 3 characters long.")]
             public string FirstName { get; set; }
-
 
             [Required]
             [Display(Name = "Last Name")]
+            [StringLength(16, MinimumLength = 3, ErrorMessage = "The last name must be at least 3 characters long.")]
             public string LastName { get; set; }
 
 
             [Required]
             [Display(Name = "Phone Number")]
+            [RegularExpression(@"^\d{10}$", ErrorMessage = "Please enter a valid 10-digit phone number")]
             public string PhoneNumber { get; set; }
 
             [Required]
