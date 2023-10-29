@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Healthy_Haven.Controllers
 {
-    [Authorize(Roles = "Admin,Moderator")]
     public class ForumController : Controller
     {
         private readonly ILogger<ForumController> _logger;
@@ -17,6 +16,16 @@ namespace Healthy_Haven.Controllers
             _db = db;
         }
 
+        public IActionResult ForumDashboard()
+        {
+            List<ForumModel> forums = new List<ForumModel>();
+            forums = _db.Forums.ToList();
+
+            return View(forums);
+
+        }
+
+        [Authorize(Roles = "Admin,Moderator")]
         public IActionResult ForumManagement()
         {
             List<ForumModel> forums = new List<ForumModel>();
@@ -25,6 +34,7 @@ namespace Healthy_Haven.Controllers
             return View(forums);
         }
 
+        [Authorize(Roles = "Admin,Moderator")]
         public IActionResult DeleteForum(int? Id) {
 
             var forumDetails = _db.Forums.Find(Id);
