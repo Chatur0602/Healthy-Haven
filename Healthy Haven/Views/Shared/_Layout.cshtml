@@ -25,9 +25,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="AppRoles" asp-action="RoleManagement">Role Mangement</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="UserManagement">User Management</a>
+                        </li>
                     </ul>
                 </div>
             </div>
+            <partial name="_LoginPartial" />
         </nav>
     </header>
     <div class="container">
