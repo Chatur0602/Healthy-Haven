@@ -14,4 +14,4 @@ Select * From Forums;
 
 drop table Forums;
 
-Insert Into Forums(id, title, description, user_id, created_at)values('1', 'TestForum','checkin this out', '26200b4a-c0e9-46ad-ae50-6f0e3c53c4fc', '2023-10-10');
+Insert Into Forums(id, title, description, user_id, created_at)values('1', 'TestForum','checkin this out', '394d9c36-f677-495d-af2f-083dd88cc34c', '2023-10-10');

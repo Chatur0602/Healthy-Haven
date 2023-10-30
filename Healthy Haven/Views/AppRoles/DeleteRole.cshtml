@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Delete Role";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@model IdentityRole
+
+
+<form method="post">
+    <input asp-for="Id" hidden />
+    <div class="border p-5">
+        <div class="form-group row">
+            <h2 class="text-black">Delete Forum</h2>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Id"></label>
+                <input asp-for="Id" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="w-12 btn-group" role="group">
+            <input type="submit" class="btn btn-danger" value="Delete Role" />
+            <a asp-controller="AppRoles" asp-action="RoleManagement" class="btn btn-primary mx-1">Back To List</a>
+        </div>
+    </div>
+</form>

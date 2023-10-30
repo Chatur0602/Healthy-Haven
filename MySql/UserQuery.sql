@@ -37,7 +37,7 @@ SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
 
 describe AspNetUsers;
 
-select * from AspNetUserClaims;
+select * from AspNetRoles;
 
 select * from AspNetUsers;
 
