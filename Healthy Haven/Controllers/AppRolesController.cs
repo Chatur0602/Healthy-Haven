@@ -22,17 +22,37 @@ namespace Healthy_Haven.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult CreateRole()
         {
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(IdentityRole model)
+        public async Task<IActionResult> CreateRole(IdentityRole model)
         {
             if (!_roleManager.RoleExistsAsync(model.Name).GetAwaiter().GetResult())
             {
                 _roleManager.CreateAsync(new IdentityRole(model.Name)).GetAwaiter().GetResult();
+            }
+
+            return RedirectToAction("RoleManagement");
+        }
+
+        [HttpGet]
+        public IActionResult DeleteRole(String? Id)
+        {
+            var role = _roleManager.FindByNameAsync(Id);
+
+            return View();
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(IdentityRole model)
+        {
+            if (_roleManager.RoleExistsAsync(model.Id).GetAwaiter().GetResult())
+            {
+                _roleManager.DeleteAsync(model);
             }
 
             return RedirectToAction("RoleManagement");
