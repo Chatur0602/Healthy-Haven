@@ -50,10 +50,8 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteRole(IdentityRole model)
         {
-            if (_roleManager.RoleExistsAsync(model.Id).GetAwaiter().GetResult())
-            {
-                _roleManager.DeleteAsync(model);
-            }
+                _roleManager.DeleteAsync(model).GetAwaiter().GetResult();
+            
 
             return RedirectToAction("RoleManagement");
         }
