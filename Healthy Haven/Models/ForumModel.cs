@@ -1,7 +1,11 @@
-﻿namespace Healthy_Haven.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Healthy_Haven.Models
 {
     public class ForumModel
     {
+        [Key]
         public int Id { get; set; }
         public string Title { get; set; }
 

@@ -12,6 +12,9 @@
         </div>
     </div>
     <br />
+    <div class="col-12 text-lg-end">
+        <a asp-controller="Forum" asp-action="CreateForum" class="btn btn-success">Let's Talk!</a>
+    </div>
     @if (Model != null && Model.Count() > 0)
     {
         <table class="table table-bordered table table-striped" width="100%">
