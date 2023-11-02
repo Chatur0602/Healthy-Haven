@@ -5,6 +5,52 @@
 @inject ApplicationDbContext _db;
 @model IEnumerable<ForumModel>
 
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+</head>
+
+
+<style>
+  
+    .image-carousel {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        position: relative; 
+    }
+
+    .image-carousel img {
+        height: 200px;
+        width: 100%;
+        object-fit: contain;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .slick-prev,
+    .slick-next {
+        position: absolute; 
+        top: 50%; 
+        transform: translateY(-50%); 
+        z-index: 1;
+    }
+
+    .slick-prev {
+        left: 10px;
+        opacity: 0.5;
+    }
+
+    .slick-next {
+        right: 10px;
+        opacity: 0.5;
+    }
+</style>
+
 <div>
     <div class="row pt-4">
         <div class="col-9">
@@ -18,24 +64,75 @@
         }
     </div>
     <br />
-    @if (Model != null && Model.Count() > 0)
-    {
-        <table class="table table-bordered table table-striped" width="100%">
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    var user = _db.Users.Find(item.User_Id);
-                    var firstName = user.FirstName;
-                    var lastName = user.LastName;
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            var user = _db.Users.Find(item.User_Id);
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
 
-                    <tr>
-                        <td width="15%">@item.Title</td>
-                        <td width="50%">@item.Description</td>
-                        <td width="15%">@firstName @lastName</td>
-                        <td width="20%">@item.Created_At</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
+            var forumImages = _db.ForumImages.Where(x => x.Forum_Id == item.Id).ToList();
+            var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
+
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Title</h5>
+                        <div class="image-carousel">
+                            @foreach (var path in imagePaths)
+                            {
+                                @using Amazon.S3;
+                                @using Amazon.S3.Model;
+                                @using Amazon.S3.Util;
+
+                                // Create an S3 client
+                                var s3Client = new AmazonS3Client("ASIA55H4D3RUZSSV66ZS", "qzxymLpgNwnccNJLhDOneYyRCUuq6Zo8V1k5op3S", "FwoGZXIvYXdzEAsaDDEBszH7ORfNqUbwyyK8AREVsXEGgjYz0Q4TlJkiGXknjn73Rq1/NZcPBN2nGcASnj8Wm64CmAAdluVupDAT5nLwSLEDFV3xJ7uIzh2iX7xKabnval2kiASbTEfUmmagMfNofDe5uFqXcnLCu0S1SyfZAgswvKLsxRAD8ubeI6/ibwWYnFEB/tFQy7ConIIB4+ti8AnJ7ymQtMKXA3YESiFUpDYG1ARFwIaVt+/D3JQ7yD+6K7BsN9E0Fh1jHMuw/Hj6rM+/nZSapJA4KPm0j6oGMi2hb/J6g8w1tJU9bz6p+iBE3/v0G4jr8K72NgDFcarojU25/z/rREsTqq86dHU=", Amazon.RegionEndpoint.USEast1);
+
+                                // Define your bucket name and image key (path)
+                                string bucketName = "healthyhavens3";
+                                string imagePath = path;
+
+                                // Generate a pre-signed URL with a short expiration time
+                                GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                                {
+                                    BucketName = bucketName,
+                                    Key = imagePath,
+                                    Expires = DateTime.Now.AddMinutes(30) // Adjust the expiration time as needed
+                                };
+
+                                string preSignedURL = s3Client.GetPreSignedURL(request);
+                                <div>
+                                    <img src="@preSignedURL" alt="Image">
+                                </div>
+
+
+                            }
+                        </div>
+                        <p class="card-text">@item.Description</p>
+                        <p class="card-text">Created by: @firstName @lastName</p>
+                        <p class="card-text">Created At: @item.Created_At</p>
+                        <a href="#" class="btn btn-primary">View Forum</a>
+                        <ul>
+                            @foreach (var path in imagePaths)
+                            {
+                                <li>@path</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+<script>
+    // Initialize the Slick Carousel
+    $('.image-carousel').slick({
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        prevArrow: '<button class="slick-prev"><</button>',
+        nextArrow: '<button class="slick-next">></button>'
+    });
+</script>

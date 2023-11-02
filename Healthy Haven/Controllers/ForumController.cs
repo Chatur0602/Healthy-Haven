@@ -70,7 +70,7 @@ namespace Healthy_Haven.Controllers
 
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUWDP56KRF", "NAbbc2lknRMc1YUqsMElHVepAEqn5WQJJXsUpeeW", "FwoGZXIvYXdzEAUaDLcrmJh34amM8EITAiK8AVJzalrJYc6tfw8S22FdBIB8Ewtb3PoJ8xpflBfVxs3u2iycRZiuh/4HcJifDN1YUsHuNgJpgEl9B/Wj0EHf4ujW6FTHNcEn1fFIhnOFo59MtzcJb3237QSe2Qylfh2Y3mRPsgBenrun/n/JQNhmUotN1uqLIKZaZrJNEimlPej+e6s72/GfrGDEXgs1su7w4fOkHVh/VN03REdqmV0vqTMWvwhYNzZEEeDcUAvme93SVIID8dWjUXuWrjrxKL+IjqoGMi2ADaV6LnGj4hIqo3+ix4z1NYbhDEZd4beTfSNWtu//dB4wkyGe2jasFol5Jck=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUZSSV66ZS", "qzxymLpgNwnccNJLhDOneYyRCUuq6Zo8V1k5op3S", "FwoGZXIvYXdzEAsaDDEBszH7ORfNqUbwyyK8AREVsXEGgjYz0Q4TlJkiGXknjn73Rq1/NZcPBN2nGcASnj8Wm64CmAAdluVupDAT5nLwSLEDFV3xJ7uIzh2iX7xKabnval2kiASbTEfUmmagMfNofDe5uFqXcnLCu0S1SyfZAgswvKLsxRAD8ubeI6/ibwWYnFEB/tFQy7ConIIB4+ti8AnJ7ymQtMKXA3YESiFUpDYG1ARFwIaVt+/D3JQ7yD+6K7BsN9E0Fh1jHMuw/Hj6rM+/nZSapJA4KPm0j6oGMi2hb/J6g8w1tJU9bz6p+iBE3/v0G4jr8K72NgDFcarojU25/z/rREsTqq86dHU=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -200,13 +200,12 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUWDP56KRF", "NAbbc2lknRMc1YUqsMElHVepAEqn5WQJJXsUpeeW", "FwoGZXIvYXdzEAUaDLcrmJh34amM8EITAiK8AVJzalrJYc6tfw8S22FdBIB8Ewtb3PoJ8xpflBfVxs3u2iycRZiuh/4HcJifDN1YUsHuNgJpgEl9B/Wj0EHf4ujW6FTHNcEn1fFIhnOFo59MtzcJb3237QSe2Qylfh2Y3mRPsgBenrun/n/JQNhmUotN1uqLIKZaZrJNEimlPej+e6s72/GfrGDEXgs1su7w4fOkHVh/VN03REdqmV0vqTMWvwhYNzZEEeDcUAvme93SVIID8dWjUXuWrjrxKL+IjqoGMi2ADaV6LnGj4hIqo3+ix4z1NYbhDEZd4beTfSNWtu//dB4wkyGe2jasFol5Jck=", RegionEndpoint.USEast1))
+                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUZSSV66ZS", "qzxymLpgNwnccNJLhDOneYyRCUuq6Zo8V1k5op3S", "FwoGZXIvYXdzEAsaDDEBszH7ORfNqUbwyyK8AREVsXEGgjYz0Q4TlJkiGXknjn73Rq1/NZcPBN2nGcASnj8Wm64CmAAdluVupDAT5nLwSLEDFV3xJ7uIzh2iX7xKabnval2kiASbTEfUmmagMfNofDe5uFqXcnLCu0S1SyfZAgswvKLsxRAD8ubeI6/ibwWYnFEB/tFQy7ConIIB4+ti8AnJ7ymQtMKXA3YESiFUpDYG1ARFwIaVt+/D3JQ7yD+6K7BsN9E0Fh1jHMuw/Hj6rM+/nZSapJA4KPm0j6oGMi2hb/J6g8w1tJU9bz6p+iBE3/v0G4jr8K72NgDFcarojU25/z/rREsTqq86dHU=", RegionEndpoint.USEast1))
                 {
                     foreach (var fileName in selectedFileNames)
                     {
                         System.Diagnostics.Debug.WriteLine("filename" + fileName );
 
-                       
                         await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
                         {
                             BucketName = "healthyhavens3",
@@ -221,7 +220,6 @@ namespace Healthy_Haven.Controllers
                     
                 }
 
-           
             _db.Forums.Remove(forumDetails);
             _db.SaveChanges();
 
