@@ -11,5 +11,6 @@ namespace Healthy_Haven.Models
         public string Image_Path { get; set; }
      
         public int Forum_Id {  get; set; }
+
     }
 }

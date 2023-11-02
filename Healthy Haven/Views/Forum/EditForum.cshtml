@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Edit Forum";
+}
+
+@model ForumModel
+
+<form method="post" asp-action="EditForumPost">
+    <input asp-for="Id" hidden />
+    <div class="border p-5">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <h2 class="text-black">Edit User Info</h2>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Description"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger" />
+            </div>
+        </div>
+        <div class="row" hidden>
+            <div class="col-4">
+                <label asp-for="User_Id"></label>
+                <input asp-for="User_Id" class="form-control" />
+                <span asp-validation-for="User_Id" class="text-danger" />
+            </div>
+        </div>
+        <div class="row"hidden>
+            <div class="col-4">
+                <label asp-for="Created_At"></label>
+                <input asp-for="Created_At" class="form-control" />
+                <span asp-validation-for="Created_At" class="text-danger" />
+            </div>
+        </div>
+        <br />
+        <div class="w-12 btn-group" role="group">
+            <input type="submit" class="btn btn-success" value="Update Details" />
+            <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-primary mx-1">Back To List</a>
+        </div>
+    </div>
+</form>

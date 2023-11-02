@@ -15,5 +15,6 @@ namespace Healthy_Haven.Data
         public DbSet<ForumModel> Forums { get; set; }
 
         public DbSet<ForumImages> ForumImages { get; set; }
+
     }
 }
