@@ -130,7 +130,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
             public int Age { get; set; }
 
             [Required]
-            public String? Role { get; set; }
+            public string? Role { get; set; }
 
             [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
@@ -148,9 +148,10 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 {
                     Text = i,
                     Value = i
-                })
+                }).Where(r => r.Text != "Admin")
             };
         }
+
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
@@ -205,7 +206,15 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            if (!ModelState.IsValid)
+            {
+                Input.RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
+                {
+                    Text = i,
+                    Value = i
+                }).Where(r => r.Text != "Admin");
+            }
+
             return Page();
         }
 
