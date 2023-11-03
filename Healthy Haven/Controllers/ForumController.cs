@@ -70,7 +70,7 @@ namespace Healthy_Haven.Controllers
 
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUZSSV66ZS", "qzxymLpgNwnccNJLhDOneYyRCUuq6Zo8V1k5op3S", "FwoGZXIvYXdzEAsaDDEBszH7ORfNqUbwyyK8AREVsXEGgjYz0Q4TlJkiGXknjn73Rq1/NZcPBN2nGcASnj8Wm64CmAAdluVupDAT5nLwSLEDFV3xJ7uIzh2iX7xKabnval2kiASbTEfUmmagMfNofDe5uFqXcnLCu0S1SyfZAgswvKLsxRAD8ubeI6/ibwWYnFEB/tFQy7ConIIB4+ti8AnJ7ymQtMKXA3YESiFUpDYG1ARFwIaVt+/D3JQ7yD+6K7BsN9E0Fh1jHMuw/Hj6rM+/nZSapJA4KPm0j6oGMi2hb/J6g8w1tJU9bz6p+iBE3/v0G4jr8K72NgDFcarojU25/z/rREsTqq86dHU=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUV56LIBHG", "BvhVP43iCmgjSAexlRUGzrQkYCSHPjGoTFxOhcD2", "FwoGZXIvYXdzEBQaDMzFh3QbClfzktgBmCK8AWOLo4GgJJH2K7xFIUkOVsLdXVs9nDlEvXBS4uQB+CZmF9CkXwWDud7/JFrtWag3fRSm1xm0nmSuHZ3cNY1xtEJhIUnH3xu83ubi3ZAEERbvqHEt5IaixQ0XDTqd9WjZDIh6oGJHjStWDBvhNS7ozcLgqor8htOATqXOr7lWPtbM8ocn+7UKbYwmT5OLbBr3WFNwgDnXr8DRUStTYnHo0ZCK9mrltZWvRVuHyGOOa25dGX4psXZ24QK6H2nDKJiwkaoGMi16zo6RlLZzvwhazqW0QDnIHQ/VjfLmaTTnS0b35cIj50a1HhdhOgd0ckOp4fU=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -79,21 +79,25 @@ namespace Healthy_Haven.Controllers
                                 if (file.Length > 5 * 1024 * 1024) // 5MB
                                 {
                                     ViewBag.Error = "File size exceeds the limit (5MB).";
+                                    DelFunction(forumId);
                                     break;
                                 }
                                 else if (totalSize > totalSizeLimit)
                                 {
                                     ViewBag.Error = "Total file size exceeds the limit (5MB).";
+                                    DelFunction(forumId);
                                     break;
                                 }
                                 else if (fileCount > maxFileCount)
                                 {
                                     ViewBag.Error = "Exceeded the maximum allowed files (5).";
+                                    DelFunction(forumId);
                                     break;
                                 }
                                 else if (!allowedImageTypes.Contains(file.ContentType))
                                 {
                                     ViewBag.Error = "Invalid file type. Only image files (JPEG, PNG, GIF) are allowed.";
+                                    DelFunction(forumId);
                                     break;
                                 }
                                 else
@@ -190,6 +194,14 @@ namespace Healthy_Haven.Controllers
             return View(forumDetails);
         }
 
+        public IActionResult DelFunction(int? Id)
+        {
+            var forumDel = _db.Forums.Find(Id);
+            _db.Forums.Remove(forumDel);
+            _db.SaveChanges();
+
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> DeleteForumPost(int? Id, List<string> selectedFileNames)
@@ -200,7 +212,7 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUZSSV66ZS", "qzxymLpgNwnccNJLhDOneYyRCUuq6Zo8V1k5op3S", "FwoGZXIvYXdzEAsaDDEBszH7ORfNqUbwyyK8AREVsXEGgjYz0Q4TlJkiGXknjn73Rq1/NZcPBN2nGcASnj8Wm64CmAAdluVupDAT5nLwSLEDFV3xJ7uIzh2iX7xKabnval2kiASbTEfUmmagMfNofDe5uFqXcnLCu0S1SyfZAgswvKLsxRAD8ubeI6/ibwWYnFEB/tFQy7ConIIB4+ti8AnJ7ymQtMKXA3YESiFUpDYG1ARFwIaVt+/D3JQ7yD+6K7BsN9E0Fh1jHMuw/Hj6rM+/nZSapJA4KPm0j6oGMi2hb/J6g8w1tJU9bz6p+iBE3/v0G4jr8K72NgDFcarojU25/z/rREsTqq86dHU=", RegionEndpoint.USEast1))
+                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUV56LIBHG", "BvhVP43iCmgjSAexlRUGzrQkYCSHPjGoTFxOhcD2", "FwoGZXIvYXdzEBQaDMzFh3QbClfzktgBmCK8AWOLo4GgJJH2K7xFIUkOVsLdXVs9nDlEvXBS4uQB+CZmF9CkXwWDud7/JFrtWag3fRSm1xm0nmSuHZ3cNY1xtEJhIUnH3xu83ubi3ZAEERbvqHEt5IaixQ0XDTqd9WjZDIh6oGJHjStWDBvhNS7ozcLgqor8htOATqXOr7lWPtbM8ocn+7UKbYwmT5OLbBr3WFNwgDnXr8DRUStTYnHo0ZCK9mrltZWvRVuHyGOOa25dGX4psXZ24QK6H2nDKJiwkaoGMi16zo6RlLZzvwhazqW0QDnIHQ/VjfLmaTTnS0b35cIj50a1HhdhOgd0ckOp4fU=", RegionEndpoint.USEast1))
                 {
                     foreach (var fileName in selectedFileNames)
                     {
