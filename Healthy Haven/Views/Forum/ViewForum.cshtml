@@ -1,0 +1,138 @@
+﻿@using Healthy_Haven.Data;
+@{
+    ViewData["Title"] = "View Forum";
+}
+
+@inject ApplicationDbContext _db;
+@model ForumModel
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+</head>
+
+<style>
+    .image-carousel {
+        width: 100%;
+        height: auto; 
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .image-carousel img {
+            height: 400px;
+            width: auto; 
+            object-fit: contain;
+            display: block; 
+            margin: 0 auto; 
+        }
+
+
+    .slick-prev,
+    .slick-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1 ;
+        opacity: 0.8;
+         /* Background color for the buttons */
+        color: black; /* Text color for the buttons */
+        width: 40px; /* Width of the buttons */
+        height: 40px; /* Height of the buttons */
+        border-radius: 50%; /* Make the buttons circular */
+        text-align: center;
+        font-size: 24px; /* Adjust the font size */
+        cursor: pointer;
+        line-height: 1px; /* Center the text vertically within the buttons */
+        padding-bottom: 5px; /* Remove padding to keep text centered */
+    }
+
+    .slick-prev {
+        left: 10px;
+        background-color: darkred;
+        padding-left: 3px;
+    }
+
+    .slick-next {
+        right: 10px;
+        background-color: darkgreen;
+        padding-right: 2px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+          
+            <div class="image-carousel">
+                @{
+                    @using Amazon.S3;
+                    @using Amazon.S3.Model;
+                    @using Amazon.S3.Util;
+
+                    var user = _db.Users.Find(Model.User_Id);
+                    var firstName = user.FirstName;
+                    var lastName = user.LastName;
+
+                    var forumImages = _db.ForumImages.Where(x => x.Forum_Id == Model.Id).ToList();
+                    var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
+
+                    foreach (var path in imagePaths)
+                    {
+
+                        var s3Client = new AmazonS3Client("ASIA55H4D3RU4A4FHPPY", "iNLGeewV9yUxA6IuNkyMOemy8AsNbjlZLZ7viMnu", "FwoGZXIvYXdzECoaDP3L8HjwKXk8UPlC1yK8ATGPPPKzE5cHLUIh9LG3lQugAslLW7vOcDBfg5jvE66KR57LtJ0c/lpL/Zh0EzKfjXTtsswSiubbR59uH7jKLIpzMk7kn+htzWuZm3uKw/vxfByMovndFw+d/lK3ybV8RV3eoW0nhL71vcDrhtLp4k9joIwSin+6n3m4T5pBWajXPdHGVpg7n+DfRNDTrDTTlbZJlOV5xIoQGzITpOSa0bHJ1OXaDdkQlrKufn7EcO1pmz6LjOdbFb0/dpwFKJCmlqoGMi3chmlUe5k0/qK3R/BpyOJvURk+gNPxMcMEH6p5vXyB9LN/polJQZBVKB+2svk=", Amazon.RegionEndpoint.USEast1);
+
+                        
+                        string bucketName = "healthyhavens3";
+                        string imagePath = path;
+
+                        
+                        GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                        {
+                            BucketName = bucketName,
+                            Key = imagePath,
+                            Expires = DateTime.Now.AddMinutes(30) 
+                        };
+
+                        string preSignedURL = s3Client.GetPreSignedURL(request);
+
+                        <div>
+                            <img src="@preSignedURL" alt="Image">
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <h2>@Model.Title</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <p>@Model.Description</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <p><strong>Created By:</strong> @firstName @lastName</p>
+        </div>
+        <div class="col-6">
+            <p><strong>Posted On</strong> @Model.Created_At</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize the Slick Carousel
+    $('.image-carousel').slick({
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        prevArrow: '<button class="slick-prev"><-</button>',
+        nextArrow: '<button class="slick-next">-></button>'
+    });
+</script>

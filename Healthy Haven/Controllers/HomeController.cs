@@ -16,8 +16,6 @@ namespace Healthy_Haven.Controllers
             _logger = logger;
         }
 
-        
-
         public IActionResult Index()
         {
             return View();

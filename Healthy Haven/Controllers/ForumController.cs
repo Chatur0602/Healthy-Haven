@@ -70,7 +70,7 @@ namespace Healthy_Haven.Controllers
 
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUV56LIBHG", "BvhVP43iCmgjSAexlRUGzrQkYCSHPjGoTFxOhcD2", "FwoGZXIvYXdzEBQaDMzFh3QbClfzktgBmCK8AWOLo4GgJJH2K7xFIUkOVsLdXVs9nDlEvXBS4uQB+CZmF9CkXwWDud7/JFrtWag3fRSm1xm0nmSuHZ3cNY1xtEJhIUnH3xu83ubi3ZAEERbvqHEt5IaixQ0XDTqd9WjZDIh6oGJHjStWDBvhNS7ozcLgqor8htOATqXOr7lWPtbM8ocn+7UKbYwmT5OLbBr3WFNwgDnXr8DRUStTYnHo0ZCK9mrltZWvRVuHyGOOa25dGX4psXZ24QK6H2nDKJiwkaoGMi16zo6RlLZzvwhazqW0QDnIHQ/VjfLmaTTnS0b35cIj50a1HhdhOgd0ckOp4fU=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU4A4FHPPY", "iNLGeewV9yUxA6IuNkyMOemy8AsNbjlZLZ7viMnu", "FwoGZXIvYXdzECoaDP3L8HjwKXk8UPlC1yK8ATGPPPKzE5cHLUIh9LG3lQugAslLW7vOcDBfg5jvE66KR57LtJ0c/lpL/Zh0EzKfjXTtsswSiubbR59uH7jKLIpzMk7kn+htzWuZm3uKw/vxfByMovndFw+d/lK3ybV8RV3eoW0nhL71vcDrhtLp4k9joIwSin+6n3m4T5pBWajXPdHGVpg7n+DfRNDTrDTTlbZJlOV5xIoQGzITpOSa0bHJ1OXaDdkQlrKufn7EcO1pmz6LjOdbFb0/dpwFKJCmlqoGMi3chmlUe5k0/qK3R/BpyOJvURk+gNPxMcMEH6p5vXyB9LN/polJQZBVKB+2svk=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -161,7 +161,6 @@ namespace Healthy_Haven.Controllers
             }
 
             return View(forumDetails);
-
         }
 
         [HttpPost]
@@ -212,7 +211,7 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUV56LIBHG", "BvhVP43iCmgjSAexlRUGzrQkYCSHPjGoTFxOhcD2", "FwoGZXIvYXdzEBQaDMzFh3QbClfzktgBmCK8AWOLo4GgJJH2K7xFIUkOVsLdXVs9nDlEvXBS4uQB+CZmF9CkXwWDud7/JFrtWag3fRSm1xm0nmSuHZ3cNY1xtEJhIUnH3xu83ubi3ZAEERbvqHEt5IaixQ0XDTqd9WjZDIh6oGJHjStWDBvhNS7ozcLgqor8htOATqXOr7lWPtbM8ocn+7UKbYwmT5OLbBr3WFNwgDnXr8DRUStTYnHo0ZCK9mrltZWvRVuHyGOOa25dGX4psXZ24QK6H2nDKJiwkaoGMi16zo6RlLZzvwhazqW0QDnIHQ/VjfLmaTTnS0b35cIj50a1HhdhOgd0ckOp4fU=", RegionEndpoint.USEast1))
+                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU4A4FHPPY", "iNLGeewV9yUxA6IuNkyMOemy8AsNbjlZLZ7viMnu", "FwoGZXIvYXdzECoaDP3L8HjwKXk8UPlC1yK8ATGPPPKzE5cHLUIh9LG3lQugAslLW7vOcDBfg5jvE66KR57LtJ0c/lpL/Zh0EzKfjXTtsswSiubbR59uH7jKLIpzMk7kn+htzWuZm3uKw/vxfByMovndFw+d/lK3ybV8RV3eoW0nhL71vcDrhtLp4k9joIwSin+6n3m4T5pBWajXPdHGVpg7n+DfRNDTrDTTlbZJlOV5xIoQGzITpOSa0bHJ1OXaDdkQlrKufn7EcO1pmz6LjOdbFb0/dpwFKJCmlqoGMi3chmlUe5k0/qK3R/BpyOJvURk+gNPxMcMEH6p5vXyB9LN/polJQZBVKB+2svk=", RegionEndpoint.USEast1))
                 {
                     foreach (var fileName in selectedFileNames)
                     {
@@ -236,6 +235,19 @@ namespace Healthy_Haven.Controllers
             _db.SaveChanges();
 
             return RedirectToAction("ForumManagement");
+        }
+
+        
+        public IActionResult ViewForum(int? Id)
+        {
+            var forumDetails = _db.Forums.Find(Id);
+
+            if (forumDetails == null)
+            {
+                return NotFound();
+            }
+
+            return View(forumDetails);
         }
 
     }
