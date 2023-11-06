@@ -18,5 +18,31 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #122;
+    color: darkgoldenrod;
+}
+
+.nav-link {
+    color: goldenrod !important;
+}
+
+p {
+    color:black;
+}
+
+h2 {
+    color: darkgoldenrod;
+}
+
+h5{ 
+    color: goldenrod;
+}
+
+th{
+    color: darkgoldenrod;
+}
+
+td{
+    color: goldenrod;
 }
