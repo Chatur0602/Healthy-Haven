@@ -54,7 +54,7 @@
 <div>
     <div class="row pt-4">
         <div class="col-9">
-            <h2 class="text-success">Forum Dashboard</h2>
+            <h2>Forum Dashboard</h2>
         </div>
     </div>
     <br />
@@ -108,16 +108,48 @@
                             }
                         </div>
                         <p class="card-text">@item.Description</p>
-                        <p class="card-text">Created by: @firstName @lastName</p>
-                        <p class="card-text">Created At: @item.Created_At</p>
                         <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id"
                            class="btn btn-primary mx-1">View Forum</a>
-                        <ul>
-                            @foreach (var path in imagePaths)
+
+                        @{
+                            var currentTime = DateTime.Now;
+                            var creationTime = item.Created_At;
+                            var timeDifference = currentTime - creationTime;
+
+                            string timeAgo;
+
+                            if (timeDifference.TotalMinutes < 1)
                             {
-                                <li>@path</li>
+                                timeAgo = "just now";
                             }
-                        </ul>
+                            else if (timeDifference.TotalHours < 1)
+                            {
+                                var minutes = (int)timeDifference.TotalMinutes;
+                                timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 1)
+                            {
+                                var hours = (int)timeDifference.TotalHours;
+                                timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 30)
+                            {
+                                var days = (int)timeDifference.TotalDays;
+                                timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 365)
+                            {
+                                var months = (int)(timeDifference.TotalDays / 30);
+                                timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+                            }
+                            else
+                            {
+                                var years = (int)(timeDifference.TotalDays / 365);
+                                timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+                            }
+                        }
+
+                        <p style="text-align: center; font-size: 14px; padding-top:10px;" class="card-text">Posted by @firstName @lastName, @timeAgo</p>
                     </div>
                 </div>
             </div>
