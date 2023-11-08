@@ -1,4 +1,4 @@
-﻿@page
+﻿@model IEnumerable<CoursesModel>
 
 
 @{
@@ -43,9 +43,11 @@ body {
 </head>
 <body>
 
-<h2>Courses</h2>
-<p>Please select your desired course.</p>
-
+<h2>Healthy Courses</h2>
+<div class="col-12">
+    <p>Please select your desired course.</p>
+    <a asp-controller="Home" asp-action="Create" class="btn btn-primary">Add Courses</a>
+</div>
 <div class="row">
   <div class="column">
     <div class="card">

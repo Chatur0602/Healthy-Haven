@@ -19,7 +19,10 @@ namespace Healthy_Haven.Controllers
 
 		public IActionResult Course()
 		{
-			return View();
+			List<CoursesModel> Courses = new List<CoursesModel>();
+			Courses = _db.Courses.ToList();
+
+			return View(Courses);
 		}
 	}
 }
