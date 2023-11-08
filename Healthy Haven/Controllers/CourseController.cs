@@ -15,7 +15,9 @@ namespace Healthy_Haven.Controllers
 			_db = db;
 			_logger = logger;
 		}
-		public IActionResult Index()
+
+
+		public IActionResult Course()
 		{
 			return View();
 		}
