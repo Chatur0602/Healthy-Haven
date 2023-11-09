@@ -132,10 +132,27 @@
     </div>
     <div class="row">
         <div class="col-6">
-            <form asp-controller="Like" asp-action="LikeForum" method="post">
-                <input type="hidden" name="forumId" value="@Model.Id" />
-                <button type="submit" class="btn btn-primary">Like Forum</button>
-            </form>
+            @{
+                @using System.Security.Claims;
+
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var hasLikedForum = _db.ForumLikes.Any(x => x.ForumId == Model.Id && x.UserId == userId);
+
+                if (hasLikedForum)
+                {
+                    <form asp-controller="Like" asp-action="UnlikeForum" method="post">
+                        <input type="hidden" name="forumId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary">Unlike Forum</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Like" asp-action="LikeForum" method="post">
+                        <input type="hidden" name="forumId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary">Like Forum</button>
+                    </form>
+                }
+            }
         </div>
     </div>
     <div class="row">
@@ -156,34 +173,56 @@
                         <p style="font-size:18px;">@comment.CommentText</p>
                     </div>
                         <div class="card-footer d-flex align-items-center">
-                            <!-- Add a Like button for each comment -->
-                            <form asp-controller="Like" asp-action="LikeComment" method="post" class="mr-2">
-                                <input type="hidden" name="commentId" value="@comment.Id" />
-                                <input type="hidden" name="forumId" value="@Model.Id" />
-                                <button type="submit" class="btn btn-primary">Like Comment</button>
-                            </form>
-                            <br /><p class="mb-0"><strong>Posted By</strong> @firstName2 @lastName2 | <strong>Posted On</strong> @comment.CreatedAt</p>
+                            @{
+
+                                var userId2 = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                                var hasLikedComment = _db.CommentLikes.Any(x => x.CommentId == comment.Id && x.UserId == userId2);
+
+                                if (hasLikedComment)
+                                {
+                                    <form asp-controller="Like" asp-action="UnlikeComment" method="post" class="mr-2">
+                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                        <input type="hidden" name="forumId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-primary">Unlike Comment</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Like" asp-action="LikeComment" method="post" class="mr-2">
+                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                        <input type="hidden" name="forumId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-primary">Like Comment</button>
+                                    </form>
+                                }
+                            }
+                            &nbsp;&nbsp;&nbsp;<p class="mb-0"><strong>Posted By</strong> @firstName2 @lastName2 | <strong>Posted On</strong> @comment.CreatedAt</p>
                         </div>
-                </div>
+                    </div>
                 }
             }
         </div>
     </div>
-    <div class="row">
-        <div class="col-12">
-            <h3>Add Comment</h3>
-            <!-- Add a form to create a new comment -->
-            <form asp-controller="Comment" asp-action="AddComment" method="post">
-                <input type="hidden" name="forumId" value="@Model.Id" />
-                <div class="form-group">
-                    <label for="commentText">Comment</label>
-                    <textarea class="form-control" id="commentText" name="commentText" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Comment</button>
-            </form>
+    @if (User.IsInRole("Instructor") || User.IsInRole("Member") || User.IsInRole("Moderator"))
+    {
+        <div class="row">
+            <div class="col-12">
+                <h3>Add Comment</h3>
+                <!-- Add a form to create a new comment -->
+                <form asp-controller="Comment" asp-action="AddComment" method="post">
+                    <input type="hidden" name="forumId" value="@Model.Id" />
+                    <div class="form-group">
+                        <label for="commentText">Comment</label>
+                        <textarea class="form-control" id="commentText" name="commentText" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                </form>
+            </div>
         </div>
-    </div>
-
+    }
+    else
+    {
+        <h4>Please <a id="register" asp-area="Identity" asp-page="/Account/Register">Sign Up</a> To Post A Comment!</h4>
+    }
 </div>
 
 <script>

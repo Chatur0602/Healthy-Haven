@@ -83,5 +83,56 @@ namespace Healthy_Haven.Controllers
             return RedirectToAction("ViewForum", "Forum", new { Id = forumId });
         }
 
+        [HttpPost]
+        public IActionResult UnlikeForum(int forumId)
+        {
+            // Get the current user ID
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Check if the user has already liked this forum
+            var existingLike = _db.ForumLikes.FirstOrDefault(x => x.ForumId == forumId && x.UserId == userId);
+
+            if (existingLike != null)
+            {
+                // User has liked this forum, so unlike it
+                _db.ForumLikes.Remove(existingLike);
+                _db.SaveChanges();
+            }
+            else
+            {
+                // User hasn't liked this forum yet, you may want to handle this case accordingly
+                // For now, let's just redirect back to the forum page
+                return RedirectToAction("ViewForum", "Forum", new { Id = forumId });
+            }
+
+            // Redirect back to the forum page after unliking the forum
+            return RedirectToAction("ViewForum", "Forum", new { Id = forumId });
+        }
+
+        [HttpPost]
+        public IActionResult UnlikeComment(int commentId, int forumId)
+        {
+            // Get the current user ID
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Check if the user has already liked this comment
+            var existingLike = _db.CommentLikes.FirstOrDefault(x => x.CommentId == commentId && x.UserId == userId);
+
+            if (existingLike != null)
+            {
+                // User has liked this comment, so unlike it
+                _db.CommentLikes.Remove(existingLike);
+                _db.SaveChanges();
+            }
+            else
+            {
+                // User hasn't liked this comment yet, you may want to handle this case accordingly
+                // For now, let's just redirect back to the forum page
+                return RedirectToAction("ViewForum", "Forum", new { Id = forumId });
+            }
+
+            // Redirect back to the forum page after unliking the comment
+            return RedirectToAction("ViewForum", "Forum", new { Id = forumId });
+        }
     }
 }
