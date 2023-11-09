@@ -6,12 +6,13 @@ namespace Healthy_Haven.Models
     public class CoursesModel
     {
         [Key]
-        public int CourseId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string CourseName { get; set; }
-        public string CourseDescription { get; set; }
+        public int id { get; set; }
+        public string name { get; set; }
+        public string description { get; set; }
+        public string course_duration { get; set; }
+        public string credit_hours { get; set; }
 
-        public int InstructorId { get; set; }
+
+        public int instructor_id { get; set; }
     }
 }

@@ -39,53 +39,71 @@ body {
   text-align: center;
   background-color: #f1f1f1;
 }
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+    /* Apply the font size specifically for the column with numbers */
+    td.numeric-column {
+        font-size: 12px;
+    }
 </style>
 </head>
 <body>
 
-<h2>Healthy Courses</h2>
-<div class="col-12">
-    <p>Please select your desired course.</p>
-    <a asp-controller="Home" asp-action="Create" class="btn btn-primary">Add Courses</a>
-</div>
-<div class="row">
-  <div class="column">
-    <div class="card">
-      <h3>How to eat healthy</h3>
-      <p>Some text</p>
-      <button onclick="myFunction()">Course Details</button>
-    </div>
-  </div>
 
-  <div class="column">
-    <div class="card">
-      <h3>How to gain muscles</h3>
-      <p>Some text</p>
-      <button class="text-successed" onclick="myFunction()">Course Details</button>
-    </div>
-  </div>
-  
-  <div class="column">
-    <div class="card">
-      <h3>Card 3</h3>
-      <p>Some text</p>
-      <button onclick="myFunction()">Course Details</button>
-    </div>
-  </div>
-  
-  <div class="column">
-    <div class="card">
-      <h3>Card 4</h3>
-      <p>Some text</p>
-      <button onclick="myFunction()">Course Details</button>
-    </div>
-  </div>
-</div>
 
-    <script>
-        function myFunction() {
-            location.replace("https://www.w3schools.com")
+<div>
+    <div class="row pt=4">
+        <div class="col-9">
+                <h2 class="text-success">View All Healthy Courses</h2>
+        </div>
+        <div class="col-12">
+            <a asp-controller="Course" asp-action="Create" class="btn btn-primary">Add New Course</a>
+        </div>
+    </div>
+    <br />
+        @if (Model !=null && Model.Count() > 0)
+        {
+            <table class="table table-bordered table-hover table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>Course Description</th>
+                        <th>Course Duration</th>
+                        <th>Credit Hours</th>
+                        <th>Instructor ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var item in Model)
+                    {
+                        <tr>
+                            <td width="20%">@item.name</td>
+                            <td width="20%">@item.description</td>
+                            <td width="20%">@item.course_duration</td>
+                            <td width="20%">@item.credit_hours</td>
+                            <td width="20%">@item.instructor_id</td>
+                            <td width="30%">
+                                <div class="w-100 btn-group" role="group">
+                                    <a asp-controller="Course" asp-action="Edit" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>
+                                    <a asp-controller="Course" asp-action="Delete" asp-route-id="@item.id" class="btn btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
-    </script>
+    </div>
 
 </body>
