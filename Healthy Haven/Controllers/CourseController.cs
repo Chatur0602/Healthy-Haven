@@ -1,5 +1,6 @@
 ﻿using Healthy_Haven.Data;
 using Healthy_Haven.Models;
+using Healthy_Haven.Views.Course;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -23,6 +24,23 @@ namespace Healthy_Haven.Controllers
 			Courses = _db.Courses.ToList();
 
 			return View(Courses);
+		}
+
+		public IActionResult Create()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public IActionResult Create(CourseModel coursedetails)
+		{
+			if (ModelState.IsValid)
+			{
+				_db.Courses.Add(coursedetails);
+				_db.SaveChanges();
+				return RedirectToAction("Course");
+			}
+			return View();
 		}
 	}
 }
