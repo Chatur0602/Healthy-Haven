@@ -68,7 +68,7 @@ namespace Healthy_Haven.Controllers
                     int fileCount = 1;
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3MHBU7NT", "s2O9QjPY+WI35FRv/JxWBOAb+s2lnHKaeU1B2Fbh", "FwoGZXIvYXdzEK3//////////wEaDKil6Ude4R5fGHK3LyK8AWCFYdr84q4vkQxn5eszRMi1xN/QDH8Pim7AKT/XJDsS/Prg2VXqBDhWJ5CYz4EXfaHCMPoKq4JUZkoQivWPASqGPuwrSddfgvuDCsCabacclxzxxse2N2Ponj4JKkqB67J7K4zCAniVqcYrajk7JtJuA/2//PMwgmwHIS4RyATfJAIaAdjRiXhnT2qY1jJj+QzhinlK4qQ3XVLPH51vm26aNR14vXxPweJoKEt/ghWmgfQ+HEVjE6rDQOZ7KOaCs6oGMi1B85y5YGDDEDXb6KaVpgZPJwwSISlgJON19Vv/H4mS4B7QjaFYEIf5Q2KQJMs=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -209,7 +209,7 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3MHBU7NT", "s2O9QjPY+WI35FRv/JxWBOAb+s2lnHKaeU1B2Fbh", "FwoGZXIvYXdzEK3//////////wEaDKil6Ude4R5fGHK3LyK8AWCFYdr84q4vkQxn5eszRMi1xN/QDH8Pim7AKT/XJDsS/Prg2VXqBDhWJ5CYz4EXfaHCMPoKq4JUZkoQivWPASqGPuwrSddfgvuDCsCabacclxzxxse2N2Ponj4JKkqB67J7K4zCAniVqcYrajk7JtJuA/2//PMwgmwHIS4RyATfJAIaAdjRiXhnT2qY1jJj+QzhinlK4qQ3XVLPH51vm26aNR14vXxPweJoKEt/ghWmgfQ+HEVjE6rDQOZ7KOaCs6oGMi1B85y5YGDDEDXb6KaVpgZPJwwSISlgJON19Vv/H4mS4B7QjaFYEIf5Q2KQJMs=", RegionEndpoint.USEast1))
+                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
                 {
                     foreach (var fileName in selectedFileNames)
                     {
