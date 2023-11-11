@@ -8,7 +8,7 @@
     <input asp-for="Id" hidden />
     <div class="border p-5">
         <div class="form-group row">
-            <h2 class="text-black">Delete Forum</h2>
+            <h2>Delete Forum</h2>
         </div>
         <br />
         <div class="row">
@@ -36,6 +36,21 @@
             <div class="col-4">
                 <label asp-for="Created_At"></label>
                 <input asp-for="Created_At" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <ul>
+                    @if (ViewBag.ForumImages != null)
+                    {
+                        foreach (var image in ViewBag.ForumImages)
+                        {
+                            <li>@image.Image_Path</li>
+                            <input type="hidden" name="selectedFileNames" value="@image.Image_Path" />
+                        }
+                    }
+                </ul>
             </div>
         </div>
         <br />
