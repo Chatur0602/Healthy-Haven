@@ -111,16 +111,16 @@ namespace Healthy_Haven.Controllers
                                             ContentType = file.ContentType,
                                         };
 
-                                        var transferUtility = new TransferUtility(amazonS3client);
-                                        await transferUtility.UploadAsync(request);
+                                            var transferUtility = new TransferUtility(amazonS3client);
+                                            await transferUtility.UploadAsync(request);
 
-                                        ForumImages forumImages = new ForumImages();
-                                        forumImages.Image_Path = file.FileName;
-                                        forumImages.Forum_Id = forumId;
+                                            ForumImages forumImages = new ForumImages();
+                                            forumImages.Image_Path = file.FileName;
+                                            forumImages.Forum_Id = forumId;
 
-                                        _db.ForumImages.Add(forumImages);
-                                        _db.SaveChanges();
-                                    }
+                                            _db.ForumImages.Add(forumImages);
+                                            _db.SaveChanges();
+                                        }
                                     }
                                 }
                             fileCount++;
