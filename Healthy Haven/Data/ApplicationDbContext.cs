@@ -12,5 +12,7 @@ namespace Healthy_Haven.Data
 
         }
 
+        public DbSet<ConsultationsEntity> Consultations { get; set; }
+
     }
 }
