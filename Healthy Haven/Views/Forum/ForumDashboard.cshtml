@@ -1,0 +1,35 @@
+﻿@using Healthy_Haven.Data;
+@{
+    ViewData["Title"] = "Forum Dashboard";
+}
+@inject ApplicationDbContext _db;
+@model IEnumerable<ForumModel>
+
+<div>
+    <div class="row pt-4">
+        <div class="col-9">
+            <h2 class="text-success">Forum Dashboard</h2>
+        </div>
+    </div>
+    <br />
+    @if (Model != null && Model.Count() > 0)
+    {
+        <table class="table table-bordered table table-striped" width="100%">
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var user = _db.Users.Find(item.User_Id);
+                    var firstName = user.FirstName;
+                    var lastName = user.LastName;
+
+                    <tr>
+                        <td width="15%">@item.Title</td>
+                        <td width="50%">@item.Description</td>
+                        <td width="15%">@firstName @lastName</td>
+                        <td width="20%">@item.Created_At</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

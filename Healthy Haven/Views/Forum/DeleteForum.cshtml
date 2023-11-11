@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Delete Forum";
+}
+
+@model ForumModel
+
+<form method="post" asp-action="DeleteForumPost">
+    <input asp-for="Id" hidden />
+    <div class="border p-5">
+        <div class="form-group row">
+            <h2 class="text-black">Delete Forum</h2>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Description"></label>
+                <input asp-for="Description" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="User_Id"></label>
+                <input asp-for="User_Id" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Created_At"></label>
+                <input asp-for="Created_At" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="w-12 btn-group" role="group">
+            <input type="submit" class="btn btn-danger" value="Delete Forum" />
+            <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-primary mx-1">Back To List</a>
+        </div>
+    </div>
+</form>

@@ -12,7 +12,6 @@ namespace Healthy_Haven.Data
 
         }
 
-        public DbSet<ConsultationsEntity> Consultations { get; set; }
-
+        public DbSet<ForumModel> Forums { get; set; }
     }
 }
