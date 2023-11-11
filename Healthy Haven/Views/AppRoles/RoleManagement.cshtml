@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<IdentityRole>
+
+@{
+    ViewData["Title"] = "Role Management Dashboard";
+}
+
+<div>
+    <div class="row pt-4">
+        <div class="col-9">
+            <h2>Role Management Dashboard</h2>
+        </div>
+        <div class="col-12 text-lg-end">
+            <a asp-action="CreateRole" class="btn btn-success">Create Role</></a>
+        </div>
+    </div>
+    <br />
+    @if (Model != null && Model.Count() > 0)
+    {
+        <table class="table table-bordered table table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model=>model.Id)</th>
+
+                    <th>@Html.DisplayNameFor(model=>model.Name)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem=>item.Id)</td>
+                        <td>@Html.DisplayFor(modelItem=>item.Name)</td>
+                        <td width="20%">
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="AppRoles" asp-action="DeleteRole" asp-route-Id="@item.Id"
+                                   class="btn btn-danger">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

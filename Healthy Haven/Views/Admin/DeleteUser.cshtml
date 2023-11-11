@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Delete User";
+}
+
+@model ApplicationUser
+
+<form method="post" asp-action="DeleteUserPost">
+    <input asp-for="Id" hidden />
+    <div class="border p-5">
+        <div class="form-group row">
+            <h2>Delete User Info</h2>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Gender"></label>
+                <select asp-for="Gender" class="form-control" readonly>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                </select>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Age"></label>
+                <input asp-for="Age" class="form-control" readonly />
+            </div>
+        </div>
+        <br />
+        <div class="w-12 btn-group" role="group">
+            <input type="submit" class="btn btn-danger" value="Delete User" />
+            <a asp-controller="Admin" asp-action="UserManagement" class="btn btn-primary mx-1">Back To List</a>
+        </div> 
+    </div>
+</form>

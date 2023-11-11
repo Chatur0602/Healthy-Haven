@@ -1,0 +1,177 @@
+﻿@using Healthy_Haven.Data;
+@{
+    ViewData["Title"] = "Forum Dashboard";
+}
+@inject ApplicationDbContext _db;
+@model IEnumerable<ForumModel>
+
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+</head>
+
+
+<style>
+  
+    .image-carousel {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        position: relative; 
+    }
+
+        .image-carousel img {
+            height: 200px;
+            width: 100%;
+            object-fit: contain;
+        }
+
+    .card {
+        width: 100%;
+        border: 2px solid goldenrod;
+        background-color: lightgrey;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .card-title{
+        color: darkgoldenrod;
+    }
+
+    .slick-prev,
+    .slick-next {
+        position: absolute; 
+        top: 50%; 
+        transform: translateY(-50%); 
+        z-index: 1;
+    }
+
+    .slick-prev {
+        left: 10px;
+        opacity: 0.5;
+    }
+
+    .slick-next {
+        right: 10px;
+        opacity: 0.5;
+    }
+</style>
+
+<div>
+    <div class="row pt-4">
+        <div class="col-9">
+            <h2>Forum Dashboard</h2>
+        </div>
+    </div>
+    <br />
+    <div class="col-12 text-lg-end">
+        @if (User.IsInRole("Instructor") || User.IsInRole("Member") || User.IsInRole("Moderator")){
+        <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage your Forums</a>
+        }
+    </div>
+    <br />
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            var user = _db.Users.Find(item.User_Id);
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
+
+            var forumImages = _db.ForumImages.Where(x => x.Forum_Id == item.Id).ToList();
+            var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
+
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Title</h5>
+                        <div class="image-carousel">
+                            @foreach (var path in imagePaths)
+                            {
+                                @using Amazon.S3;
+                                @using Amazon.S3.Model;
+                                @using Amazon.S3.Util;
+
+                                // Create an S3 client
+                                var s3Client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", Amazon.RegionEndpoint.USEast1);
+
+                                // Define your bucket name and image key (path)
+                                string bucketName = "healthyhavens3";
+                                string imagePath = path;
+
+                                // Generate a pre-signed URL with a short expiration time
+                                GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                                {
+                                    BucketName = bucketName,
+                                    Key = imagePath,
+                                    Expires = DateTime.Now.AddMinutes(60) // Adjust the expiration time as needed
+                                };
+
+                                string preSignedURL = s3Client.GetPreSignedURL(request);
+                                <div>
+                                    <img src="@preSignedURL" alt="Image">
+                                </div>
+                            }
+                        </div>
+                        <p style="padding-top: 10px;" class="card-text">@item.Description</p>
+                        <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id"
+                           class="btn btn-primary mx-1">View Forum</a>
+
+                        @{
+                            var currentTime = DateTime.Now;
+                            var creationTime = item.Created_At;
+                            var timeDifference = currentTime - creationTime;
+
+                            string timeAgo;
+
+                            if (timeDifference.TotalMinutes < 1)
+                            {
+                                timeAgo = "just now";
+                            }
+                            else if (timeDifference.TotalHours < 1)
+                            {
+                                var minutes = (int)timeDifference.TotalMinutes;
+                                timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 1)
+                            {
+                                var hours = (int)timeDifference.TotalHours;
+                                timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 30)
+                            {
+                                var days = (int)timeDifference.TotalDays;
+                                timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 365)
+                            {
+                                var months = (int)(timeDifference.TotalDays / 30);
+                                timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+                            }
+                            else
+                            {
+                                var years = (int)(timeDifference.TotalDays / 365);
+                                timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+                            }
+                        }
+
+                        <p style="text-align: center; font-size: 14px; padding-top:10px;" class="card-text">Posted by @firstName @lastName, @timeAgo</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    // Initialize the Slick Carousel
+    $('.image-carousel').slick({
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        prevArrow: '<button class="slick-prev"><</button>',
+        nextArrow: '<button class="slick-next">></button>'
+    });
+</script>

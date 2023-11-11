@@ -1,0 +1,278 @@
+﻿@using Healthy_Haven.Data;
+@{
+    ViewData["Title"] = "View Forum";
+}
+
+@inject ApplicationDbContext _db;
+@model ForumModel
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+</head>
+
+<style>
+    .image-carousel {
+        width: 100%;
+        height: auto; 
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .image-carousel img {
+            height: 400px;
+            width: auto; 
+            object-fit: contain;
+            display: block; 
+            margin: 0 auto; 
+        }
+
+
+    .slick-prev,
+    .slick-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1 ;
+        opacity: 0.8;
+        color: black; 
+        height: 40px; 
+        border-radius: 50%;
+        text-align: center;
+        font-size: 24px;
+        cursor: pointer;
+        line-height: 1px; 
+        padding-bottom: 5px; 
+    }
+
+    .slick-prev {
+        left: 10px;
+        background-color: darkred;
+        padding-left: 3px;
+    }
+
+    .slick-next {
+        right: 10px;
+        background-color: darkgreen;
+        padding-right: 2px;
+    }
+
+    #description {
+        font-size: 20px;
+        color: silver;
+    }
+
+    #posted-item{
+        color: silver;
+    }
+
+    .btn-like {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-like i {
+            font-size: 1.5rem; /* Adjust the size as needed */
+        }
+
+        .btn-like .liked {
+            color: red; /* Color for the liked state */
+        }
+
+    .heart-outline {
+        color: goldenrod; /* Set the color to gold or your desired color */
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+          
+            <div class="image-carousel">
+                @{
+                    @using Amazon.S3;
+                    @using Amazon.S3.Model;
+                    @using Amazon.S3.Util;
+
+                    var user = _db.Users.Find(Model.User_Id);
+                    var firstName = user.FirstName;
+                    var lastName = user.LastName;
+
+                    var forumImages = _db.ForumImages.Where(x => x.Forum_Id == Model.Id).ToList();
+                    var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
+
+                    foreach (var path in imagePaths)
+                    {
+                        var s3Client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", Amazon.RegionEndpoint.USEast1);
+
+                        string bucketName = "healthyhavens3";
+                        string imagePath = path;
+
+                        GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                        {
+                            BucketName = bucketName,
+                            Key = imagePath,
+                            Expires = DateTime.Now.AddMinutes(60) 
+                        };
+
+                        string preSignedURL = s3Client.GetPreSignedURL(request);
+
+                        <div>
+                            <img src="@preSignedURL" alt="Image">
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <h2>@Model.Title</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <p id="description">@Model.Description</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <p id="posted-item"><strong>Posted By</strong> @firstName @lastName | <strong>Posted On</strong> @Model.Created_At</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 d-flex align-items-center">
+            @{
+                @using System.Security.Claims;
+
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var hasLikedForum = _db.ForumLikes.Any(x => x.ForumId == Model.Id && x.UserId == userId);
+                var forumLikeCount = _db.ForumLikes.Count(x => x.ForumId == Model.Id);
+
+                if (hasLikedForum)
+                {
+                    <form asp-controller="Like" asp-action="UnlikeForum" method="post" class="mr-2">
+                        <input type="hidden" name="forumId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-like">
+                            <i class="fas fa-heart text-danger"></i>
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Like" asp-action="LikeForum" method="post" class="mr-2">
+                        <input type="hidden" name="forumId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-like">
+                            <i class="far fa-heart text-warning heart-outline"></i>
+                        </button>
+                    </form>
+                }
+            }
+            <h5 class="mb-0 ml-2"><span id="forumLikeCount_@Model.Id"><strong>@forumLikeCount</strong></span></h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <h3>Comments</h3>
+            @{
+            var forumComments = _db.Comments.Where(x => x.ForumId == Model.Id).ToList();
+            
+            foreach (var comment in forumComments){
+
+                var user2 = _db.Users.Find(comment.UserId);
+                var firstName2 = user2.FirstName;
+                var lastName2 = user2.LastName;
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p style="font-size:18px;">@comment.CommentText</p>
+                    </div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <p class="mb-0 mr-3"><strong>Posted By</strong> @firstName2 @lastName2 | <strong>Posted On</strong> @comment.CreatedAt</p>
+                            <div class="d-flex align-items-center">
+                            @{
+                                var userId2 = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                                var hasLikedComment = _db.CommentLikes.Any(x => x.CommentId == comment.Id && x.UserId == userId2);
+                                var likeCount = _db.CommentLikes.Count(x => x.CommentId == comment.Id);
+
+                                
+
+                                if (hasLikedComment)
+                                {
+                                    <form asp-controller="Like" asp-action="UnlikeComment" method="post" class="mr-2">
+                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                        <input type="hidden" name="forumId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-like">
+                                            <i class="fas fa-heart text-danger"></i>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Like" asp-action="LikeComment" method="post" class="mr-2">
+                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                        <input type="hidden" name="forumId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-like">
+                                            <i class="far fa-heart text-warning heart-outline"></i>
+                                        </button>
+                                    </form>
+                                }
+                            }
+                                <span><strong id="likeCount_@comment.Id">@likeCount</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    @if (User.IsInRole("Instructor") || User.IsInRole("Member") || User.IsInRole("Moderator"))
+    {
+        <div class="row">
+            <div class="col-12">
+                <h3>Add Comment</h3>
+                <form id="commentForm" asp-controller="Comment" asp-action="AddComment" method="post">
+                    <input type="hidden" name="forumId" value="@Model.Id" />
+                    <div class="form-group">
+                        <label for="commentText">Comment</label>
+                        <textarea class="form-control" id="commentText" name="commentText" rows="3"></textarea>
+                    </div>
+                    <div id="commentError" class="text-danger" style="display: none;">Comment field cannot be empty.</div>
+                    <br />
+                    <button type="button" onclick="validateComment()" class="btn btn-primary">Add Comment</button>
+                </form>
+            </div>
+        </div>
+    }
+
+    else
+    {
+        <h4>Please <a id="login" asp-area="Identity" asp-page="/Account/Login">Sign In</a> To Post A Comment!</h4>
+    }
+</div>
+
+<script>
+    // Initialize the Slick Carousel
+    $('.image-carousel').slick({
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        prevArrow: '<button class="slick-prev"><-</button>',
+        nextArrow: '<button class="slick-next">-></button>'
+    });
+
+    function validateComment() {
+        var commentText = document.getElementById("commentText").value;
+        var commentError = document.getElementById("commentError");
+
+        if (commentText.trim() === "") {
+            commentError.style.display = "block";
+        } else {
+            document.getElementById("commentForm").submit();
+        }
+    }
+</script>

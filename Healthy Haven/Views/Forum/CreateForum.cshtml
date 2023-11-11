@@ -1,0 +1,44 @@
+﻿@model ForumModel
+
+@{
+    ViewData["Title"] = "Create Forum";
+}
+
+<form method="post" asp-action="CreateForum" enctype="multipart/form-data">
+    <div class="border p-5">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <h2>Start A New Forum Topic</h2>
+        </div>
+        
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Description"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label for="files">Select Images</label>
+                <input type="file" name="files" id="files" multiple />
+                <span class="text-danger">@ViewBag.Error</span>
+            </div>
+        </div>
+        <br />
+        <div class="w-12 btn-group" role="group">
+            <input type="submit" class="btn btn-success" value="Add New Topic" />
+            <a asp-controller="Forum" asp-action="ForumDashboard" class="btn btn-primary mx-1">Back To Dashboard</a>
+        </div>
+    </div>
+</form>
