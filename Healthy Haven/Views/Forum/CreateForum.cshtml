@@ -4,27 +4,27 @@
     ViewData["Title"] = "Create Forum";
 }
 
-<form method="post" asp-action="CreateForum" enctype="multipart/form-data">
+<form method="post" asp-action="CreateForum" enctype="multipart/form-data" id="createForumForm">
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
             <h2>Start A New Forum Topic</h2>
         </div>
-        
+
         <br />
         <div class="row">
             <div class="col-4">
                 <label asp-for="Title"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger" />
+                <input asp-for="Title" class="form-control" id="Title" />
+                <span id="titleError" class="text-danger">@ViewBag.TitleError</span>
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-4">
                 <label asp-for="Description"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger" />
+                <input asp-for="Description" class="form-control" id="Description" />
+                <span id="descriptionError" class="text-danger">@ViewBag.DescriptionError</span>
             </div>
         </div>
         <br />
@@ -32,13 +32,43 @@
             <div class="col-4">
                 <label for="files">Select Images</label>
                 <input type="file" name="files" id="files" multiple />
-                <span class="text-danger">@ViewBag.Error</span>
+                <span id="fileError" class="text-danger">@ViewBag.FileError</span>
             </div>
         </div>
         <br />
         <div class="w-12 btn-group" role="group">
-            <input type="submit" class="btn btn-success" value="Add New Topic" />
+            <input type="button" class="btn btn-success" value="Add New Topic" onclick="validateForumForm()" />
             <a asp-controller="Forum" asp-action="ForumDashboard" class="btn btn-primary mx-1">Back To Dashboard</a>
         </div>
     </div>
 </form>
+
+<script>
+    function validateForumForm() {
+        var title = document.getElementById("Title").value;
+        var description = document.getElementById("Description").value;
+        fileError.innerHTML = "";
+
+        var isValid = true;
+
+        if (title.trim() === "") {
+            document.getElementById("titleError").innerHTML = "Title cannot be empty.";
+            isValid = false;
+        } else {
+            document.getElementById("titleError").innerHTML = "";
+        }
+
+        if (description.trim() === "") {
+            document.getElementById("descriptionError").innerHTML = "Description cannot be empty.";
+            isValid = false;
+        } else {
+            document.getElementById("descriptionError").innerHTML = "";
+        }
+
+        if (isValid) {
+            document.getElementById("createForumForm").submit();
+        } else {
+            // You can redirect or perform other actions here using JavaScript
+        }
+    }
+</script>
