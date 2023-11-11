@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Net.Mail;
+using System.Net;
 
 namespace Healthy_Haven.Areas.Identity.Pages.Account
 {
@@ -187,7 +189,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    await SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
@@ -203,6 +205,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
+                    _logger.LogError($"Error: {error.Description}");
                 }
             }
 
@@ -216,6 +219,44 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
             }
 
             return Page();
+        }
+
+
+        private async Task<bool> SendEmailAsync(string email, string subject, string confirmLink)
+        {
+            try
+            {
+                MailMessage message = new MailMessage();
+                SmtpClient smtpClient = new SmtpClient(); //Corrected case of SmtpClient
+
+                message.From = new MailAddress("Healthy-Haven@gmail.com");
+                message.To.Add(email);
+                message.Subject = subject;
+                message.IsBodyHtml = true;
+                message.Body = confirmLink;
+
+                smtpClient.Port = 587;
+                smtpClient.Host = "smtp.gmail.com";
+
+                smtpClient.EnableSsl = true;
+                smtpClient.UseDefaultCredentials = false;
+
+                //Corrected the NetworkCredential constructor parameters
+                smtpClient.Credentials = new NetworkCredential("healthyhaventest@gmail.com", "Test@1234");
+
+                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+                //Using async method and await
+                await smtpClient.SendMailAsync(message);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //Handle exceptions appropriately, log them, etc.
+                Console.WriteLine($"Error sending email: {ex.Message}");
+                return false;
+            }
         }
 
         private ApplicationUser CreateUser()

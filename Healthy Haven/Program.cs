@@ -25,7 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 builder.Services.Configure<IdentityOptions>(opts =>
-{
+{ 
     opts.SignIn.RequireConfirmedEmail = true;
 });
 
