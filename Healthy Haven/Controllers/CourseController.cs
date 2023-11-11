@@ -36,7 +36,7 @@ namespace Healthy_Haven.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				_db.Courses.Add(coursedetails);
+				//_db.Courses.Add(coursedetails);
 				_db.SaveChanges();
 				return RedirectToAction("Course");
 			}
