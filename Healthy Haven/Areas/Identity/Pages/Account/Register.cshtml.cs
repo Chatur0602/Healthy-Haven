@@ -192,7 +192,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                     await SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    if (_userManager.Options.SignIn.RequireConfirmedEmail)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }
@@ -229,16 +229,16 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 MailMessage message = new MailMessage();
                 SmtpClient smtpClient = new SmtpClient(); //Corrected case of SmtpClient
 
-                message.From = new MailAddress("Healthy-Haven@gmail.com");
+                message.From = new MailAddress("healthyhaventest@gmail.com");
                 message.To.Add(email);
                 message.Subject = subject;
                 message.IsBodyHtml = true;
                 message.Body = confirmLink;
 
-                smtpClient.Port = 587;
+                smtpClient.Port = 25;
                 smtpClient.Host = "smtp.gmail.com";
 
-                smtpClient.EnableSsl = true;
+                //smtpClient.EnableSsl = true;
                 smtpClient.UseDefaultCredentials = false;
 
                 //Corrected the NetworkCredential constructor parameters
@@ -246,7 +246,6 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
 
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
 
-                //Using async method and await
                 await smtpClient.SendMailAsync(message);
 
                 return true;
@@ -256,6 +255,20 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 //Handle exceptions appropriately, log them, etc.
                 Console.WriteLine($"Error sending email: {ex.Message}");
                 return false;
+            }
+        }
+
+
+        private void LogToFile(string logMessage)
+        {
+            // Specify the path for the log file
+            string filePath = "C:\\Users\\user\\source\\repos\\Chatur0602\\Healthy-Haven\\Healthy Haven\\emailLog.txt";
+
+            // Create a StreamWriter to append to the log file
+            using (StreamWriter streamWriter = new StreamWriter(filePath, true))
+            {
+                // Write the log message to the file
+                streamWriter.WriteLine($"{DateTime.Now} - {logMessage}");
             }
         }
 
