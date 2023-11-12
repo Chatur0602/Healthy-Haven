@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-//using ApplicationDbContext.Data;
-//using ApplicationUser.Models;
+using Healthy_Haven.Data;
+using Healthy_Haven.Models;
 
 
 namespace Healthy_Haven.Controllers
 {
     public class ConsultationsController : Controller
     {
+        private readonly ApplicationDbContext _db;
         public IActionResult ConsultationsManagement()
         {
             List<ConsultationsEntity> consultations = new List<ConsultationsEntity>();
