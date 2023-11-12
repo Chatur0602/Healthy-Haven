@@ -11,7 +11,7 @@
             <h2 class="text-success">View All Consultations</h2>
         </div>
         <div class="col-12 text-lg-end">
-            <a asp-controller="Home" asp-action="Create" class="btn btn-primary">Add Consultation</a>
+            <a asp-controller="Consultations" asp-action="Create" class="btn btn-primary">Add Consultation</a>
         </div>
     </div>
     <br />
@@ -24,7 +24,6 @@
                     <th>Student</th>
                     <th>Instructor</th>
                     <th>Date</th>
-                    <th>Time</th>
                     <th></th>
                 </tr>
             </thead>
@@ -36,12 +35,11 @@
                         <td width="20%">@item.student_id</td>
                         <td width="20%">@item.instructor_id</td>
                         <td width="20%">@item.date</td>
-                        <td width="20%">@item.time</td>
                         <td width="30%">
                             <div class="w-100 btn-group" role="group">
-                                <a asp-controller="Home" asp-action="Edit" asp-route-Id="@item.id"
+                                <a asp-controller="Consultations" asp-action="Edit" asp-route-Id="@item.id"
                                 class="btn btn-primary mx-1">Edit</a>
-                                <a asp-controller="Home" asp-action="Delete" asp-route-Id="@item.id"
+                                <a asp-controller="Consultations" asp-action="Delete" asp-route-Id="@item.id"
                                    class="btn btn-danger mx-1">Delete</a>
                             </div>
                         </td>

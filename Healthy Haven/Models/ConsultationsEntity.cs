@@ -12,7 +12,6 @@ namespace Healthy_Haven.Models
         public int student_id { get; set; }
         public int instructor_id { get; set; }
         public DateTime date { get; set; }
-        public DateTime time { get; set; }
 
     }
 }

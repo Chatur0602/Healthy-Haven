@@ -9,6 +9,12 @@ namespace Healthy_Haven.Controllers
     public class ConsultationsController : Controller
     {
         private readonly ApplicationDbContext _db;
+
+        // Constructor
+        public ConsultationsController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
         public IActionResult ConsultationsManagement()
         {
             List<ConsultationsEntity> consultations = new List<ConsultationsEntity>();
