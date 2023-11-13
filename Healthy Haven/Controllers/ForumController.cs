@@ -62,7 +62,7 @@ namespace Healthy_Haven.Controllers
                 {
                     int totalSizeLimit = 5 * 1024 * 1024; // 5MB
                     int maxFileCount = 5;
-                    string[] allowedImageTypes = { "image/jpeg", "image/png", "image/gif" };
+                    string[] allowedImageTypes = { "image/jpeg", "image/jpg", "image/png", "image/gif" };
 
                     int totalSize = 1;
                     int fileCount = 1;
@@ -94,7 +94,7 @@ namespace Healthy_Haven.Controllers
                                 }
                                 else if (!allowedImageTypes.Contains(file.ContentType))
                                 {
-                                    ViewBag.Error = "Invalid file type. Only image files (JPEG, PNG, GIF) are allowed.";
+                                    ViewBag.Error = "Invalid file type. Only image files (JPEG, JPG, PNG, GIF) are allowed.";
                                     DelFunction(forumId);
                                     break;
                                 }
@@ -194,6 +194,9 @@ namespace Healthy_Haven.Controllers
         public IActionResult DelFunction(int? Id)
         {
             var forumDel = _db.Forums.Find(Id);
+            var forumImage = _db.ForumImages.Where(x => x.Forum_Id == Id).ToList();
+
+            _db.ForumImages.RemoveRange(forumImage);
             _db.Forums.Remove(forumDel);
             _db.SaveChanges();
 

@@ -47,6 +47,8 @@ CREATE TABLE ForumLikes (
     FOREIGN KEY (ForumId) REFERENCES Forums(Id)
 );
 
+delete from Comments where id = 30;
+
 Select * From Forums;
 Select * From ForumImages;
 Select * From Comments;

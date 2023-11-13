@@ -31,7 +31,8 @@ Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Assr
 
 DELETE FROM AspNetUsers WHERE id='00115c35-4afd-4fb0-b456-6b7956328c1a';
 DELETE FROM AspNetUsers WHERE id='5866cb8e-893e-4cdc-baa7-ad24cbd20b0a';
-DELETE FROM AspNetUsers WHERE id='3ff0f228-6ab9-4c61-84f9-2b1d9b52b1fa';
+DELETE FROM AspNetUsers WHERE id='a97abb61-72e7-496b-9bdd-1e5413bc5494';
+
 
 SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
 
@@ -40,8 +41,6 @@ describe AspNetUsers;
 select * from AspNetRoles;
 
 select * from AspNetUsers;
-
-select * from __EFMigrationsHistory;
 
 DROP Table AspNetUsers;
 
