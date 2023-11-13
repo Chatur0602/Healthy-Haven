@@ -19,7 +19,7 @@
         <div class="row">
             <div class="col-4">
                 <label asp-for="student_id"></label>
-                <input asp-for="student_id" class="form-control" />
+                @Html.DropDownListFor(model => model.student_id, new SelectList(ViewBag.Members, "Value", "Text"), "Select Student", new { @class = "form-control" })
                 <span asp-validation-for="student_id" class="text-danger"></span>
             </div>
         </div>
@@ -27,7 +27,7 @@
         <div class="row">
             <div class="col-4">
                 <label asp-for="instructor_id"></label>
-                <input asp-for="instructor_id" class="form-control" />
+                @Html.DropDownListFor(model => model.instructor_id, new SelectList(ViewBag.Instructors, "Value", "Text"), "Select Instructor", new { @class = "form-control" })
                 <span asp-validation-for="instructor_id" class="text-danger"></span>
             </div>
         </div>

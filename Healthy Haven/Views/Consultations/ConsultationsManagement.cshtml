@@ -21,7 +21,7 @@
             <thead>
                 <tr>
                     <th>Description</th>
-                    <th>Student</th>
+                    <th>Member</th>
                     <th>Instructor</th>
                     <th>Date</th>
                     <th></th>
@@ -32,8 +32,8 @@
                 {
                     <tr>
                         <td width="20%">@item.description</td>
-                        <td width="20%">@item.Member.FirstName @item.Member.LastName</td>
-                        <td width="20%">@item.Instructor.FirstName @item.Instructor.LastName</td>
+                        <td width="20%">@item.student_id</td>
+                        <td width="20%">@item.instructor_id</td>
                         <td width="20%">@item.date</td>
                         <td width="30%">
                             <div class="w-100 btn-group" role="group">

@@ -35,7 +35,7 @@ namespace Healthy_Haven.Controllers
             // Get users with the "Instructor" role
             var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
 
-            // Populate the ViewBag.Students and ViewBag.Instructors with lists of SelectListItem
+            // Populate the ViewBag.Members and ViewBag.Instructors with lists of SelectListItem
             ViewBag.Members = members
                 .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
                 .ToList();
