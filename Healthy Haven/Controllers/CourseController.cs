@@ -26,6 +26,7 @@ namespace Healthy_Haven.Controllers
 			return View(Courses);
 		}
 
+        
         public IActionResult CreateCourse()
         {
             return View();
@@ -34,13 +35,11 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
 		public IActionResult Create(CoursesModel coursedetails)
 		{
-			if (ModelState.IsValid)
-			{
-				_db.Courses.Add(coursedetails);
-				_db.SaveChanges();
-				return RedirectToAction("Course");
-			}
-			return View("CreateCourse",coursedetails);
+            Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
+            _db.Courses.Add(coursedetails);
+			_db.SaveChanges();
+
+            return RedirectToAction("Course");
 		}
 
 		public IActionResult Edit(int? id)
