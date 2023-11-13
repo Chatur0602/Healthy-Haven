@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net.Mail;
 using System.Net;
+using System.Diagnostics;
 
 namespace Healthy_Haven.Areas.Identity.Pages.Account
 {
@@ -229,22 +230,24 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 MailMessage message = new MailMessage();
                 SmtpClient smtpClient = new SmtpClient(); //Corrected case of SmtpClient
 
-                message.From = new MailAddress("healthyhaventest@gmail.com");
+                message.From = new MailAddress("testhamid123456@gmail.com");
                 message.To.Add(email);
                 message.Subject = subject;
                 message.IsBodyHtml = true;
                 message.Body = confirmLink;
 
-                smtpClient.Port = 25;
+                smtpClient.Port = 587;
                 smtpClient.Host = "smtp.gmail.com";
 
-                //smtpClient.EnableSsl = true;
+                smtpClient.EnableSsl = true;
                 smtpClient.UseDefaultCredentials = false;
 
                 //Corrected the NetworkCredential constructor parameters
-                smtpClient.Credentials = new NetworkCredential("healthyhaventest@gmail.com", "Test@1234");
+                smtpClient.Credentials = new NetworkCredential("testhamid123456@gmail.com", "nxfodkypxbdybraf");
 
                 smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+                Debug.WriteLine("*************DEBUG LINE*************"+ SmtpDeliveryMethod.Network.ToString());
 
                 await smtpClient.SendMailAsync(message);
 
