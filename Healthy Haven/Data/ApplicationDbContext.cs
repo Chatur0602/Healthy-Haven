@@ -16,5 +16,13 @@ namespace Healthy_Haven.Data
 
         public DbSet<ForumImages> ForumImages { get; set; }
 
+        public DbSet<CommentLikeModel> CommentLikes { get; set; }
+
+        public DbSet<ForumLikeModel> ForumLikes { get; set; }
+
+        public DbSet<CommentModel> Comments { get; set; }
+        
+        public DbSet<CoursesModel> Courses {  get; set; } 
+ 
     }
 }

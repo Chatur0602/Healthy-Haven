@@ -4,47 +4,80 @@
 
 @model ForumModel
 
-<form method="post" asp-action="EditForumPost">
+<form method="post" asp-action="EditForumPost" id="editForumForm" class="mt-5">
     <input asp-for="Id" hidden />
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
-            <h2 class="text-black">Edit User Info</h2>
+            <h2 class="col-12 text-center mb-4">Edit Forum</h2>
         </div>
         <br />
         <div class="row">
-            <div class="col-4">
+            <div class="col-md-6 offset-md-3">
                 <label asp-for="Title"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger" />
+                <input asp-for="Title" class="form-control" id="Title" />
+                <span id="titleError" class="text-danger"></span>
             </div>
         </div>
         <br />
-        <div class="row">
-            <div class="col-4">
+        <div class="row mt-3">
+            <div class="col-md-6 offset-md-3">
                 <label asp-for="Description"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger" />
+                <textarea asp-for="Description" class="form-control" style="height: 150px;"></textarea>
+                <span id="descriptionError" class="text-danger"></span>
             </div>
         </div>
-        <div class="row" hidden>
+        <div class="row" style="display: none;">
             <div class="col-4">
                 <label asp-for="User_Id"></label>
                 <input asp-for="User_Id" class="form-control" />
-                <span asp-validation-for="User_Id" class="text-danger" />
+                <span asp-validation-for="User_Id" class="text-danger"></span>
             </div>
         </div>
-        <div class="row"hidden>
+        <div class="row" style="display: none;">
             <div class="col-4">
                 <label asp-for="Created_At"></label>
                 <input asp-for="Created_At" class="form-control" />
-                <span asp-validation-for="Created_At" class="text-danger" />
+                <span asp-validation-for="Created_At" class="text-danger"></span>
             </div>
         </div>
         <br />
-        <div class="w-12 btn-group" role="group">
-            <input type="submit" class="btn btn-success" value="Update Details" />
-            <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-primary mx-1">Back To List</a>
+        <div class="row mt-3">
+            <div class="col-md-6 offset-md-3">
+                <div class="w-12 btn-group" role="group">
+                    <input type="button" class="btn btn-success" value="Update Details" onclick="validateForumForm()" />
+                    <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-primary mx-1">Back To List</a>
+                </div>
+            </div>
         </div>
     </div>
 </form>
+
+<script>
+    function validateForumForm() {
+        var title = document.getElementById("Title").value;
+        var description = document.getElementById("Description").value;
+
+        var titleError = document.getElementById("titleError");
+        var descriptionError = document.getElementById("descriptionError");
+
+        titleError.innerHTML = "";
+        descriptionError.innerHTML = "";
+
+        var isValid = true;
+
+        if (title.trim() === "") {
+            titleError.innerHTML = "Title cannot be empty.";
+            isValid = false;
+        }
+
+        if (description.trim() === "") {
+            descriptionError.innerHTML = "Description cannot be empty.";
+            isValid = false;
+        }
+
+        if (isValid) {
+            document.getElementById("editForumForm").submit();
+        }
+    }
+</script>

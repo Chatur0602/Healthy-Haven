@@ -8,6 +8,7 @@
 
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 </head>
@@ -30,6 +31,14 @@
 
     .card {
         width: 100%;
+        border: 2px solid goldenrod;
+        background-color: lightgrey;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .card-title{
+        color: darkgoldenrod;
     }
 
     .slick-prev,
@@ -54,12 +63,12 @@
 <div>
     <div class="row pt-4">
         <div class="col-9">
-            <h2 class="text-success">Forum Dashboard</h2>
+            <h2>Forum Dashboard</h2>
         </div>
     </div>
     <br />
     <div class="col-12 text-lg-end">
-        @if (User.IsInRole("Instructor") || User.IsInRole("Member")){
+        @if (User.IsInRole("Instructor") || User.IsInRole("Member") || User.IsInRole("Moderator")){
         <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage your Forums</a>
         }
     </div>
@@ -73,7 +82,7 @@
 
             var forumImages = _db.ForumImages.Where(x => x.Forum_Id == item.Id).ToList();
             var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
-
+            var forumLikeCount = _db.ForumLikes.Count(x => x.ForumId == item.Id);
 
             <div class="col-md-4 mb-4">
                 <div class="card">
@@ -87,7 +96,7 @@
                                 @using Amazon.S3.Util;
 
                                 // Create an S3 client
-                                var s3Client = new AmazonS3Client("ASIA55H4D3RU4A4FHPPY", "iNLGeewV9yUxA6IuNkyMOemy8AsNbjlZLZ7viMnu", "FwoGZXIvYXdzECoaDP3L8HjwKXk8UPlC1yK8ATGPPPKzE5cHLUIh9LG3lQugAslLW7vOcDBfg5jvE66KR57LtJ0c/lpL/Zh0EzKfjXTtsswSiubbR59uH7jKLIpzMk7kn+htzWuZm3uKw/vxfByMovndFw+d/lK3ybV8RV3eoW0nhL71vcDrhtLp4k9joIwSin+6n3m4T5pBWajXPdHGVpg7n+DfRNDTrDTTlbZJlOV5xIoQGzITpOSa0bHJ1OXaDdkQlrKufn7EcO1pmz6LjOdbFb0/dpwFKJCmlqoGMi3chmlUe5k0/qK3R/BpyOJvURk+gNPxMcMEH6p5vXyB9LN/polJQZBVKB+2svk=", Amazon.RegionEndpoint.USEast1);
+                                var s3Client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", Amazon.RegionEndpoint.USEast1);
 
                                 // Define your bucket name and image key (path)
                                 string bucketName = "healthyhavens3";
@@ -98,7 +107,7 @@
                                 {
                                     BucketName = bucketName,
                                     Key = imagePath,
-                                    Expires = DateTime.Now.AddMinutes(30) // Adjust the expiration time as needed
+                                    Expires = DateTime.Now.AddMinutes(60) // Adjust the expiration time as needed
                                 };
 
                                 string preSignedURL = s3Client.GetPreSignedURL(request);
@@ -107,17 +116,63 @@
                                 </div>
                             }
                         </div>
-                        <p class="card-text">@item.Description</p>
-                        <p class="card-text">Created by: @firstName @lastName</p>
-                        <p class="card-text">Created At: @item.Created_At</p>
-                        <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id"
-                           class="btn btn-primary mx-1">View Forum</a>
-                        <ul>
-                            @foreach (var path in imagePaths)
+                        <p style="padding-top: 10px;" class="card-text">@item.Description</p>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id" class="btn btn-primary mx-1">
+                                View Forum
+                            </a>
+
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-info mx-1" onclick="shareForum('@item.Id')">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                &nbsp;&nbsp;
+                                <i class="fas fa-heart text-danger mr-1"></i>
+                                &nbsp;
+                                <h5 class="mb-0 ml-2"><span id="forumLikeCount_@item.Id"><strong>@forumLikeCount</strong></span></h5>
+                            </div>
+                        </div>
+                        
+                        @{
+                            var currentTime = DateTime.Now;
+                            var creationTime = item.Created_At;
+                            var timeDifference = currentTime - creationTime;
+
+                            string timeAgo;
+
+                            if (timeDifference.TotalMinutes < 1)
                             {
-                                <li>@path</li>
+                                timeAgo = "just now";
                             }
-                        </ul>
+                            else if (timeDifference.TotalHours < 1)
+                            {
+                                var minutes = (int)timeDifference.TotalMinutes;
+                                timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 1)
+                            {
+                                var hours = (int)timeDifference.TotalHours;
+                                timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 30)
+                            {
+                                var days = (int)timeDifference.TotalDays;
+                                timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+                            }
+                            else if (timeDifference.TotalDays < 365)
+                            {
+                                var months = (int)(timeDifference.TotalDays / 30);
+                                timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+                            }
+                            else
+                            {
+                                var years = (int)(timeDifference.TotalDays / 365);
+                                timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+                            }
+                        }
+
+                        <p style="text-align: center; font-size: 14px; padding-top:10px;" class="card-text">Posted by @firstName @lastName, @timeAgo</p>
                     </div>
                 </div>
             </div>
@@ -134,4 +189,24 @@
         prevArrow: '<button class="slick-prev"><</button>',
         nextArrow: '<button class="slick-next">></button>'
     });
+
+    function shareForum(forumId) {
+        var baseUrl = 'http://healthyhaven.us-east-1.elasticbeanstalk.com';
+
+        var forumUrl = baseUrl + '/Forum/ViewForum/' + forumId;
+
+        var dummyInput = document.createElement('input');
+        document.body.appendChild(dummyInput);
+        dummyInput.value = forumUrl;
+        dummyInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyInput);
+
+        showMessage('Forum Link Copied To Clipboard!');
+    }
+
+    function showMessage(message) {
+        
+        alert(message);
+    }
 </script>

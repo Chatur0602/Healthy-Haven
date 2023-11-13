@@ -41,6 +41,8 @@ select * from AspNetRoles;
 
 select * from AspNetUsers;
 
+select * from __EFMigrationsHistory;
+
 DROP Table AspNetUsers;
 
 SELECT table_name
