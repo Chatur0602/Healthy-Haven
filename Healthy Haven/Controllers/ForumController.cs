@@ -62,13 +62,13 @@ namespace Healthy_Haven.Controllers
                 {
                     int totalSizeLimit = 5 * 1024 * 1024; // 5MB
                     int maxFileCount = 5;
-                    string[] allowedImageTypes = { "image/jpeg", "image/png", "image/gif" };
+                    string[] allowedImageTypes = { "image/jpeg", "image/jpg", "image/png", "image/gif" };
 
                     int totalSize = 1;
                     int fileCount = 1;
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3325MILR", "kAozOzONMwfcfQEyJzbY5eLvSgRTfsO0TH6wGN1+", "FwoGZXIvYXdzEAsaDJkjiy9TuY5ad8V7YCK8AW2YwrdvwbiDxeXO05F1lhl0hDocNaMoFYyQAvNHv2jrIeIlcLNntiQ4q/irQMN+CGkZbtMtk8INM5QSrPAvY8spT7NludUAcd9r7Q/nPU8YFRm2DnxOQZppvBDQOVvPZhjB1D0EcE35eW4WKMe7Fl8uHWxE+0hL9TJj7q6NUvlks7koRbWA2WtSC972y+/fGgbX8FlUEoFEWQXXTqN2jNftn9bysckYQmVqYIa54OA6GNFg72zq63IuMNRvKLjox6oGMi1wO2IlqLt2AG03R5ZTj2+K9WDMSwWuLv/va+gw5d8kilPi7Ypw95Al6wU0/dw=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -94,7 +94,7 @@ namespace Healthy_Haven.Controllers
                                 }
                                 else if (!allowedImageTypes.Contains(file.ContentType))
                                 {
-                                    ViewBag.Error = "Invalid file type. Only image files (JPEG, PNG, GIF) are allowed.";
+                                    ViewBag.Error = "Invalid file type. Only image files (JPEG, JPG, PNG, GIF) are allowed.";
                                     DelFunction(forumId);
                                     break;
                                 }
@@ -194,6 +194,9 @@ namespace Healthy_Haven.Controllers
         public IActionResult DelFunction(int? Id)
         {
             var forumDel = _db.Forums.Find(Id);
+            var forumImage = _db.ForumImages.Where(x => x.Forum_Id == Id).ToList();
+
+            _db.ForumImages.RemoveRange(forumImage);
             _db.Forums.Remove(forumDel);
             _db.SaveChanges();
 
@@ -213,7 +216,7 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
+            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3325MILR", "kAozOzONMwfcfQEyJzbY5eLvSgRTfsO0TH6wGN1+", "FwoGZXIvYXdzEAsaDJkjiy9TuY5ad8V7YCK8AW2YwrdvwbiDxeXO05F1lhl0hDocNaMoFYyQAvNHv2jrIeIlcLNntiQ4q/irQMN+CGkZbtMtk8INM5QSrPAvY8spT7NludUAcd9r7Q/nPU8YFRm2DnxOQZppvBDQOVvPZhjB1D0EcE35eW4WKMe7Fl8uHWxE+0hL9TJj7q6NUvlks7koRbWA2WtSC972y+/fGgbX8FlUEoFEWQXXTqN2jNftn9bysckYQmVqYIa54OA6GNFg72zq63IuMNRvKLjox6oGMi1wO2IlqLt2AG03R5ZTj2+K9WDMSwWuLv/va+gw5d8kilPi7Ypw95Al6wU0/dw=", RegionEndpoint.USEast1))
             {
                 foreach (var fileName in selectedFileNames)
                 {
