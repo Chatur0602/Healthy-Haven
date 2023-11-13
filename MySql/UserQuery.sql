@@ -31,7 +31,7 @@ Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Assr
 
 DELETE FROM AspNetUsers WHERE id='00115c35-4afd-4fb0-b456-6b7956328c1a';
 DELETE FROM AspNetUsers WHERE id='5866cb8e-893e-4cdc-baa7-ad24cbd20b0a';
-DELETE FROM AspNetUsers WHERE id='e6d1ca72-22dc-46ed-96b8-21b798da2fda';
+DELETE FROM AspNetUsers WHERE id='3ff0f228-6ab9-4c61-84f9-2b1d9b52b1fa';
 
 SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
 
