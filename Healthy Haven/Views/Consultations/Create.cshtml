@@ -18,15 +18,16 @@
         <div class="row">
             <div class="col-4">
                 <label asp-for="student_id"></label>
-                <input asp-for="student_id" class="form-control" />
+                @Html.DropDownListFor(model => model.student_id, new SelectList(ViewBag.Members, "Value", "Text"), "Select Member", new { @class = "form-control" })
                 <span asp-validation-for="student_id" class="text-danger"></span>
             </div>
         </div>
+
         <br />
         <div class="row">
             <div class="col-4">
                 <label asp-for="instructor_id"></label>
-                <input asp-for="instructor_id" class="form-control" />
+                @Html.DropDownListFor(model => model.instructor_id, new SelectList(ViewBag.Instructors, "Value", "Text"), "Select Instructor", new { @class = "form-control" })
                 <span asp-validation-for="instructor_id" class="text-danger"></span>
             </div>
         </div>
@@ -41,7 +42,7 @@
         <br />
         <div class="w-12 btn-group" role="group">
             <input type="submit" class="btn btn-primary" value="Save details"/>
-            <a asp-action="CnosultationsManagement" class="btn btn-primary mx-1">Back To List</a>
+            <a asp-action="ConsultationsManagement" class="btn btn-primary mx-1">Back To List</a>
         </div>
     </div>
 </form>
