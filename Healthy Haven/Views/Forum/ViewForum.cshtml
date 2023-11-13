@@ -146,6 +146,10 @@
     </div>
     <div class="row">
         <div class="col-6 d-flex align-items-center">
+            <button class="btn btn-info mx-1" onclick="shareForum('@Model.Id')">
+                Share <i class="fas fa-share-alt"></i>
+            </button>
+
             @{
                 @using System.Security.Claims;
 
@@ -199,7 +203,16 @@
                                 var hasLikedComment = _db.CommentLikes.Any(x => x.CommentId == comment.Id && x.UserId == userId2);
                                 var likeCount = _db.CommentLikes.Count(x => x.CommentId == comment.Id);
 
-                                
+                                    if (comment.UserId == userId2 || User.IsInRole("Moderator") || User.IsInRole("Admin"))
+                                    {
+                                        <form asp-controller="Comment" asp-action="DeleteComment" method="post">
+                                            <input type="hidden" name="commentId" value="@comment.Id" />
+                                            <input type="hidden" name="forumId" value="@Model.Id" />
+                                            <button type="submit" class="btn btn-like">
+                                                <i class="fas fa-trash-alt text-danger"></i>
+                                            </button>
+                                        </form>
+                                    }
 
                                 if (hasLikedComment)
                                 {
@@ -274,5 +287,25 @@
         } else {
             document.getElementById("commentForm").submit();
         }
+    }
+
+    function shareForum(forumId) {
+        var baseUrl = 'http://healthyhaven.us-east-1.elasticbeanstalk.com';
+
+        var forumUrl = baseUrl + '/Forum/ViewForum/' + forumId;
+
+        var dummyInput = document.createElement('input');
+        document.body.appendChild(dummyInput);
+        dummyInput.value = forumUrl;
+        dummyInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyInput);
+
+        showMessage('Forum Link Copied To Clipboard!');
+    }
+
+    function showMessage(message) {
+
+        alert(message);
     }
 </script>

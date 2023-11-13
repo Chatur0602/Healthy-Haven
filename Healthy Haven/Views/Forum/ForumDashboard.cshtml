@@ -8,6 +8,7 @@
 
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 </head>
@@ -81,7 +82,7 @@
 
             var forumImages = _db.ForumImages.Where(x => x.Forum_Id == item.Id).ToList();
             var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
-
+            var forumLikeCount = _db.ForumLikes.Count(x => x.ForumId == item.Id);
 
             <div class="col-md-4 mb-4">
                 <div class="card">
@@ -116,9 +117,23 @@
                             }
                         </div>
                         <p style="padding-top: 10px;" class="card-text">@item.Description</p>
-                        <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id"
-                           class="btn btn-primary mx-1">View Forum</a>
 
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id" class="btn btn-primary mx-1">
+                                View Forum
+                            </a>
+
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-info mx-1" onclick="shareForum('@item.Id')">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                &nbsp;&nbsp;
+                                <i class="fas fa-heart text-danger mr-1"></i>
+                                &nbsp;
+                                <h5 class="mb-0 ml-2"><span id="forumLikeCount_@item.Id"><strong>@forumLikeCount</strong></span></h5>
+                            </div>
+                        </div>
+                        
                         @{
                             var currentTime = DateTime.Now;
                             var creationTime = item.Created_At;
@@ -174,4 +189,24 @@
         prevArrow: '<button class="slick-prev"><</button>',
         nextArrow: '<button class="slick-next">></button>'
     });
+
+    function shareForum(forumId) {
+        var baseUrl = 'http://healthyhaven.us-east-1.elasticbeanstalk.com';
+
+        var forumUrl = baseUrl + '/Forum/ViewForum/' + forumId;
+
+        var dummyInput = document.createElement('input');
+        document.body.appendChild(dummyInput);
+        dummyInput.value = forumUrl;
+        dummyInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyInput);
+
+        showMessage('Forum Link Copied To Clipboard!');
+    }
+
+    function showMessage(message) {
+        
+        alert(message);
+    }
 </script>

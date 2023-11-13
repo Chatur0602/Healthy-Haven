@@ -204,30 +204,42 @@ namespace Healthy_Haven.Controllers
         public async Task<IActionResult> DeleteForumPost(int? Id, List<string> selectedFileNames)
         {
             var forumDetails = _db.Forums.Find(Id);
+            var forumComments = _db.Comments.Where(x => x.ForumId == Id).ToList();
+            var forumLikes = _db.ForumLikes.Where(x => x.ForumId == Id).ToList();
+            
+
             if (forumDetails == null)
             {
                 return NotFound();
             }
 
-                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
+            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
+            {
+                foreach (var fileName in selectedFileNames)
                 {
-                    foreach (var fileName in selectedFileNames)
+                    System.Diagnostics.Debug.WriteLine("filename" + fileName);
+
+                    await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
                     {
-                        System.Diagnostics.Debug.WriteLine("filename" + fileName );
+                        BucketName = "healthyhavens3",
+                        Key = fileName
+                    });
 
-                        await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
-                        {
-                            BucketName = "healthyhavens3",
-                            Key = fileName
-                        });
+                    var forumImage = _db.ForumImages.FirstOrDefault(x => x.Forum_Id == Id);
 
-                            var forumImage = _db.ForumImages.FirstOrDefault(x => x.Forum_Id == Id);
-                     
-                            _db.ForumImages.Remove(forumImage);
-                            _db.SaveChanges();
-                    }
-                    
+                    _db.ForumImages.Remove(forumImage);
+                    _db.SaveChanges();
                 }
+            }
+
+            _db.Comments.RemoveRange(forumComments);
+            _db.ForumLikes.RemoveRange(forumLikes);
+            foreach(var comment in forumComments)
+            {
+                var commentLikes = _db.CommentLikes.Where(x => x.CommentId == comment.Id).ToList();
+                _db.CommentLikes.RemoveRange(commentLikes);
+            }
+            
 
             _db.Forums.Remove(forumDetails);
             _db.SaveChanges();
@@ -235,7 +247,7 @@ namespace Healthy_Haven.Controllers
             return RedirectToAction("ForumManagement");
         }
 
-        
+
         public IActionResult ViewForum(int? Id)
         {
             var forumDetails = _db.Forums.Find(Id);
