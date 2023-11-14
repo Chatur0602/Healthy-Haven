@@ -1,11 +1,11 @@
 ﻿@model CoursesModel
 
-<form method="post" asp-action="Delete">
+<form method="post" asp-action="DeleteCourse">
     <input asp-for="id" hiden />
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
-            <h2 class="text-black">Edit Course Details</h2>
+            <h2 class="text-black">Delete Course Details</h2>
         </div>
         <br />
         <div class="row">
@@ -44,7 +44,7 @@
         </div>
         <br />
         <div class="w-12 btn-group" role="group">
-            <input type="submit" class="btn btn-primary" value="Delete" />
+            <input type="submit" class="btn btn-danger" value="Delete" />
             <a asp-action="Course" class="btn btn-primary mx-1">Back to Course</a>
         </div>
     </div>

@@ -17,7 +17,16 @@ namespace Healthy_Haven.Controllers
 			_logger = logger;
 		}
 
-
+        public IActionResult UserCourse()
+        {
+            List<CoursesModel> Courses = new List<CoursesModel>();
+            Courses = _db.Courses.ToList();
+            return View(Courses);
+        }
+        public IActionResult CourseDetails()
+		{
+			return View();
+		}
 		public IActionResult Course()
 		{
 			List<CoursesModel> Courses = new List<CoursesModel>();
@@ -35,8 +44,8 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
 		public IActionResult Create(CoursesModel coursedetails)
 		{
-            //Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
-            _db.Courses.Add(coursedetails);
+			Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
+			_db.Courses.Add(coursedetails);
 			_db.SaveChanges();
 
             return RedirectToAction("Course");
@@ -49,40 +58,54 @@ namespace Healthy_Haven.Controllers
 			{
 				return NotFound();
 			}
-			return View("CreateCourse", coursedetails);
+			return View("EditCourse", coursedetails);
 		}
 
 		[HttpPost]
         public IActionResult Edit(CoursesModel coursedetails)
         {
-			if (ModelState.IsValid)
-			{
-				_db.Courses.Update(coursedetails);
-			}
-            return View("CreateCourse", coursedetails);
+			
+			_db.Courses.Update(coursedetails);
+			_db.SaveChanges();
+            return RedirectToAction("Course");
         }
 
         public IActionResult Delete(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var coursedetails = _db.Courses.Find(id);
+
             if (coursedetails == null)
             {
                 return NotFound();
             }
-            return View("CreateCourse", coursedetails);
+
+            return View("DeleteCourse", coursedetails);
         }
 
-   //     [HttpPost]
-   //     public IActionResult Delete(int? id)
-   //     {
-   //         var coursedetails = _db.Courses.Find(id);
-   //         if (coursedetails == null)
-   //         {
-   //             return NotFound();
-   //         }
-			//_db.Courses.Remove(coursedetails);
-			//_db.SaveChanges();
-   //         return RedirectToAction("Course");
-   //     }
-    }
+		[HttpPost]
+		public IActionResult DeleteCourse(int? id)
+		{
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var coursedetails = _db.Courses.Find(id);
+
+            if (coursedetails == null)
+            {
+                return NotFound();
+            }
+
+            _db.Courses.Remove(coursedetails);
+            _db.SaveChanges();
+
+            return RedirectToAction("Course");
+        }
+	}
 }
