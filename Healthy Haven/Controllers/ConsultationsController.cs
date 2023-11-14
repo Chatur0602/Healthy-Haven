@@ -50,7 +50,7 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
         public IActionResult Create(ConsultationsEntity consultationsDetails)
         {
-            if (ModelState.IsValid)
+            
             {
                 _db.Consultations.Add(consultationsDetails);
                 _db.SaveChanges();

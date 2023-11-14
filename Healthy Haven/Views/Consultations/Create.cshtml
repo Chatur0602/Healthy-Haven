@@ -1,6 +1,6 @@
 ﻿@model ConsultationsEntity
 
-<form method="post" asp-action="Create">
+<form method="post" asp-controller="Consultations" asp-action="Create">
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
@@ -17,17 +17,21 @@
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="student_id"></label>
+                @* <label asp-for="student_id"></label>
                 @Html.DropDownListFor(model => model.student_id, new SelectList(ViewBag.Members, "Value", "Text"), "Select Member", new { @class = "form-control" })
-                <span asp-validation-for="student_id" class="text-danger"></span>
+                <span asp-validation-for="student_id" class="text-danger"></span> *@
+
+                <select asp-for="student_id" class="form-control" asp-items="@ViewBag.Members"></select>
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="instructor_id"></label>
+                @* <label asp-for="instructor_id"></label>
                 @Html.DropDownListFor(model => model.instructor_id, new SelectList(ViewBag.Instructors, "Value", "Text"), "Select Instructor", new { @class = "form-control" })
-                <span asp-validation-for="instructor_id" class="text-danger"></span>
+                <span asp-validation-for="instructor_id" class="text-danger"></span> *@
+
+                <select asp-for="instructor_id" class="form-control" asp-items="@ViewBag.Instructors"></select>
             </div>
         </div>
         <br />
