@@ -25,13 +25,41 @@ namespace Healthy_Haven.Controllers
             _userManager = userManager; 
         }
 
-        public IActionResult ForumDashboard()
+        public IActionResult ForumDashboard(string searchTerm, string sortBy)
         {
-            List<ForumModel> forums = new List<ForumModel>();
-            forums = _db.Forums.ToList();
+            // Get all forums from the database
+            var forums = _db.Forums.ToList();
 
+            // Filter forums based on the search term
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                forums = forums.Where(f => f.Title.Contains(searchTerm) || f.Description.Contains(searchTerm)).ToList();
+            }
+
+            // Sort forums based on the selected option
+            switch (sortBy)
+            {
+                case "newToOld":
+                    forums = forums.OrderByDescending(f => f.Created_At).ToList();
+                    break;
+                case "oldToNew":
+                    forums = forums.OrderBy(f => f.Created_At).ToList();
+                    break;
+                case "likesLeastToMost":
+                    forums = forums.OrderBy(f => _db.ForumLikes.Count(x => x.ForumId == f.Id)).ToList();
+                    break;
+                case "likesMostToLeast":
+                    forums = forums.OrderByDescending(f => _db.ForumLikes.Count(x => x.ForumId == f.Id)).ToList();
+                    break;
+                // Add more cases if needed
+
+                default:
+                    forums = forums.OrderByDescending(f => f.Created_At).ToList();
+                    break;
+            }
+
+            // Pass the sorted and filtered forums to the view
             return View(forums);
-
         }
 
 
@@ -262,6 +290,8 @@ namespace Healthy_Haven.Controllers
 
             return View(forumDetails);
         }
+
+
 
     }
 }
