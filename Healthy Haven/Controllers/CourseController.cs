@@ -35,7 +35,7 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
 		public IActionResult Create(CoursesModel coursedetails)
 		{
-            Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
+            //Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
             _db.Courses.Add(coursedetails);
 			_db.SaveChanges();
 
