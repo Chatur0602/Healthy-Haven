@@ -1,0 +1,89 @@
+﻿@model IEnumerable<ConsultationsEntity>
+
+<div>
+    <div class="row pt=4">
+        <div class="col-9">
+            <h2 class="text-success">View Your Consultations</h2>
+        </div>
+        <div class="col-12 text-lg-end">
+            <a asp-controller="Consultations" asp-action="MemberCreate" class="btn btn-primary">Add Consultation</a>
+        </div>
+    </div>
+    <br />
+    @if (Model != null && Model.Count() > 0)
+    {
+        <table class="table table-bordered table-hover table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Instructor</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td width="20%">@item.description</td>
+                        <td width="20%">@item.instructor_id</td>
+                        <td width="20%">@item.date</td>
+                        <td width="30%">
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Consultations" asp-action="Edit" asp-route-Id="@item.id"
+                                   class="btn btn-primary mx-1">Edit</a>
+                                <a asp-controller="Consultations" asp-action="Delete" asp-route-Id="@item.id"
+                                   class="btn btn-danger mx-1">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No consultations available.</p>
+    }
+
+    @* <div class="row pt=4">
+        <div class="col-9">
+            <h2 class="text-success">Add New Consultation</h2>
+        </div>
+    </div>
+
+    <form method="post" asp-action="Create">
+        <div class="border p-5">
+            <!-- Your form fields for adding new consultation -->
+            <br />
+            <div class="row">
+                <div class="col-4">
+                    <label asp-for="description"></label>
+                    <input asp-for="description" class="form-control" />
+                    <span asp-validation-for="description" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-4">
+                    <label asp-for="instructor_id"></label>
+                    <!-- Add a dropdown for selecting an instructor -->
+                    <select asp-for="instructor_id" class="form-control" asp-items="@ViewBag.Instructors"></select>
+                    <span asp-validation-for="instructor_id" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-4">
+                    <label asp-for="date"></label>
+                    <input asp-for="date" class="form-control" />
+                    <span asp-validation-for="date" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="w-12 btn-group" role="group">
+                <input type="submit" class="btn btn-primary" value="Save details" />
+            </div>
+        </div>
+    </form> *@
+</div>

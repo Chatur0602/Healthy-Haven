@@ -22,6 +22,7 @@ namespace Healthy_Haven.Controllers
             _userManager = userManager;
         }
 
+        //CONSULTATIONS MANAGEMENT FOR MODERATOR
         public IActionResult ConsultationsManagement()
         {
             List<ConsultationsEntity> consultations = _db.Consultations.ToList();
@@ -56,7 +57,6 @@ namespace Healthy_Haven.Controllers
                 _db.SaveChanges();
                 return RedirectToAction("ConsultationsManagement");
             }
-            return View();
         }
 
         public IActionResult Edit(int? id)
@@ -120,6 +120,44 @@ namespace Healthy_Haven.Controllers
             _db.SaveChanges();
 
             return RedirectToAction("ConsultationsManagement");
+        }
+        //END FOR MODERATOR
+
+        //CONSULTATIONS FOR MEMBER
+        public IActionResult ConsultationsMember()
+        {
+            List<ConsultationsEntity> consultations = _db.Consultations.ToList();
+            return View(consultations);
+        }
+
+        public IActionResult MemberCreate()
+        {
+            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+
+            // Populate the ViewBag.Instructors with lists of SelectListItem
+            ViewBag.Instructors = instructors
+                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                .ToList();
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult MemberCreate(ConsultationsEntity consultationsDetails)
+        {
+            if (ModelState.IsValid)
+            {
+                // Assuming you need to set the member_id based on the currently logged-in member
+                var currentMemberId = _userManager.GetUserId(User);
+                consultationsDetails.student_id = currentMemberId;
+
+                _db.Consultations.Add(consultationsDetails);
+                _db.SaveChanges();
+                return RedirectToAction("ConsultationsMember");
+            }
+
+            // If ModelState is not valid, return to the same view with validation errors
+            return View(consultationsDetails);
         }
 
 
