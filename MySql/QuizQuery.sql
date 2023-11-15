@@ -25,7 +25,7 @@ CREATE TABLE Quizzes (
   FOREIGN KEY (authorID) REFERENCES AspNetUsers(id)
 );
 
-
+Select * FROM Quizzes;
 
 
 
