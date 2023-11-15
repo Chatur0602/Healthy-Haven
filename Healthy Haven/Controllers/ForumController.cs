@@ -96,7 +96,7 @@ namespace Healthy_Haven.Controllers
                     int fileCount = 1;
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU2S4RVAFU", "Fl7B9LWppMYtV6DhtnbTkMkt6r+jWCfnq0Lro+nF", "FwoGZXIvYXdzEDQaDJ1NuXuaLg+h531GiyK8Ab1lNhSn8gWNJJ7HSpEWJsIxqcx3W3B68SiWq+OV5q7lXwk4LuUpW0tY0WsS7cWkKlFLDXFbpPg2bK1xXEwfBl2kPoGKIm1pPsR9QdG2Ha6R2SUi3zfcimj9SY2VpetTxQRQfwuNfxegiffyTXaDRXx5ekbscDxkbkeYBiZW342XnEpKwUw5QjxQpHdoRjWWPtZ7Qp8yfN8dT1ht138xGgKocqYtTh3tcO8pS48koWRxXWuq+whdb+TS/TubKN/f0KoGMi0mjHJfI9PTBqxu4jXFPZ71JMKnSatL4pu+2b9fgh3NaPMYcbyB6bzNCgFPI4Y=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU724N5C7R", "RaF4OK0LqeCrG24HK2hjNkI0ZuAupcTLpnzJTerF", "FwoGZXIvYXdzEDcaDJesX7iztkrIziEroSK8AZW9c4kXSoj/uM80fgrhY4FxwSROiJ9IQi0W8IMVdf6M+eDjp34ipf/LaBW3AlKsRLfE1wj1Z9atg7L6a4I1yptzZFkAkreYIkBxN6HdW0pv0sazwDq1nust1UgT8GK0EZV+D+BCTTqW3oY0oA+wVmKJaK7zcpBO6H8KAAeGUj6eNOk+vtJgqkzfkSAVmUAazrKmxE4WZEdPEC350Av2thiz6pbyVupYGPYoDs4eClAQRoXDOuvWdMoPtO8vKJOy0aoGMi2qrmkzUL3TsAikaVIiDa7HTNeBFFoL0bihWxBg7IxAybH6f/AEmduqBe5TDBY=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -131,10 +131,14 @@ namespace Healthy_Haven.Controllers
                                     using (var memorystream = new MemoryStream())
                                     {
                                         file.CopyTo(memorystream);
+
+                                        var folderPath = "ForumImages/";
+                                        var key = folderPath + file.FileName;
+
                                         var request = new TransferUtilityUploadRequest
                                         {
                                             InputStream = memorystream,
-                                            Key = file.FileName,
+                                            Key = key,
                                             BucketName = "healthyhavens3",
                                             ContentType = file.ContentType,
                                         };
@@ -244,16 +248,20 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU2S4RVAFU", "Fl7B9LWppMYtV6DhtnbTkMkt6r+jWCfnq0Lro+nF", "FwoGZXIvYXdzEDQaDJ1NuXuaLg+h531GiyK8Ab1lNhSn8gWNJJ7HSpEWJsIxqcx3W3B68SiWq+OV5q7lXwk4LuUpW0tY0WsS7cWkKlFLDXFbpPg2bK1xXEwfBl2kPoGKIm1pPsR9QdG2Ha6R2SUi3zfcimj9SY2VpetTxQRQfwuNfxegiffyTXaDRXx5ekbscDxkbkeYBiZW342XnEpKwUw5QjxQpHdoRjWWPtZ7Qp8yfN8dT1ht138xGgKocqYtTh3tcO8pS48koWRxXWuq+whdb+TS/TubKN/f0KoGMi0mjHJfI9PTBqxu4jXFPZ71JMKnSatL4pu+2b9fgh3NaPMYcbyB6bzNCgFPI4Y=", RegionEndpoint.USEast1))
+            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU724N5C7R", "RaF4OK0LqeCrG24HK2hjNkI0ZuAupcTLpnzJTerF", "FwoGZXIvYXdzEDcaDJesX7iztkrIziEroSK8AZW9c4kXSoj/uM80fgrhY4FxwSROiJ9IQi0W8IMVdf6M+eDjp34ipf/LaBW3AlKsRLfE1wj1Z9atg7L6a4I1yptzZFkAkreYIkBxN6HdW0pv0sazwDq1nust1UgT8GK0EZV+D+BCTTqW3oY0oA+wVmKJaK7zcpBO6H8KAAeGUj6eNOk+vtJgqkzfkSAVmUAazrKmxE4WZEdPEC350Av2thiz6pbyVupYGPYoDs4eClAQRoXDOuvWdMoPtO8vKJOy0aoGMi2qrmkzUL3TsAikaVIiDa7HTNeBFFoL0bihWxBg7IxAybH6f/AEmduqBe5TDBY=", RegionEndpoint.USEast1))
             {
                 foreach (var fileName in selectedFileNames)
                 {
                     System.Diagnostics.Debug.WriteLine("filename" + fileName);
 
+                    // Construct the full key with folder path
+                    var folderPath = "ForumImages/";
+                    var key = folderPath + fileName;
+
                     await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
                     {
                         BucketName = "healthyhavens3",
-                        Key = fileName
+                        Key = key
                     });
 
                     var forumImage = _db.ForumImages.FirstOrDefault(x => x.Forum_Id == Id);
