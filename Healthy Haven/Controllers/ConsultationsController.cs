@@ -59,17 +59,29 @@ namespace Healthy_Haven.Controllers
             return View();
         }
 
-        public IActionResult Edit(int? Id)
+        public IActionResult Edit(int? id)
         {
-            var consultationsDetails = _db.Consultations.Find(Id);
+            var consultationsDetails = _db.Consultations.Find(id);
             if (consultationsDetails == null)
             {
-                return NotFound(consultationsDetails);
+                return NotFound();
             }
 
+            var members = _userManager.GetUsersInRoleAsync("Member").Result;
+            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+
+            ViewBag.Members = members
+                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                .ToList();
+
+            ViewBag.Instructors = instructors
+                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                .ToList();
 
             return View(consultationsDetails);
         }
+
+
 
         [HttpPost]
         public IActionResult Edit(ConsultationsEntity consultationsDetails)
@@ -89,9 +101,8 @@ namespace Healthy_Haven.Controllers
             var consultationsDetails = _db.Consultations.Find(Id);
             if (consultationsDetails == null)
             {
-                return NotFound(consultationsDetails);
+                return NotFound();
             }
-
 
             return View(consultationsDetails);
         }
@@ -102,7 +113,7 @@ namespace Healthy_Haven.Controllers
             var consultationsDetails = _db.Consultations.Find(Id);
             if (consultationsDetails == null)
             {
-                return NotFound(consultationsDetails);
+                return NotFound();
             }
 
             _db.Consultations.Remove(consultationsDetails);
@@ -110,6 +121,7 @@ namespace Healthy_Haven.Controllers
 
             return RedirectToAction("ConsultationsManagement");
         }
+
 
 
         public IActionResult Index()
