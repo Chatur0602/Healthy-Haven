@@ -22,7 +22,7 @@ namespace Healthy_Haven.Controllers
             _userManager = userManager;
         }
 
-        //CONSULTATIONS MANAGEMENT FOR MODERATOR
+        //CONSULTATIONS CONTROLLER MANAGEMENT FOR MODERATOR
         public IActionResult ConsultationsManagement()
         {
             List<ConsultationsEntity> consultations = _db.Consultations.ToList();
@@ -81,8 +81,6 @@ namespace Healthy_Haven.Controllers
             return View(consultationsDetails);
         }
 
-
-
         [HttpPost]
         public IActionResult Edit(ConsultationsEntity consultationsDetails)
         {
@@ -123,7 +121,9 @@ namespace Healthy_Haven.Controllers
         }
         //END FOR MODERATOR
 
-        //CONSULTATIONS FOR MEMBER
+
+
+        //CONSULTATIONS CONTROLLER FOR MEMBER
         public IActionResult ConsultationsMember()
         {
             List<ConsultationsEntity> consultations = _db.Consultations.ToList();
@@ -147,7 +147,6 @@ namespace Healthy_Haven.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Assuming you need to set the member_id based on the currently logged-in member
                 var currentMemberId = _userManager.GetUserId(User);
                 consultationsDetails.student_id = currentMemberId;
 
@@ -156,9 +155,141 @@ namespace Healthy_Haven.Controllers
                 return RedirectToAction("ConsultationsMember");
             }
 
-            // If ModelState is not valid, return to the same view with validation errors
+
+            return View();
+        }
+
+        public IActionResult MemberEdit(int id)
+        {
+            var consultationsDetails = _db.Consultations.Find(id);
+            if (consultationsDetails == null)
+            {
+                return NotFound();
+            }
+
+            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+
+            ViewBag.Instructors = instructors
+                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                .ToList();
+
             return View(consultationsDetails);
         }
+
+        [HttpPost]
+        public IActionResult MemberEdit(ConsultationsEntity consultationsDetails)
+        {
+            {
+                // Get the current member's ID
+                var currentMemberId = _userManager.GetUserId(User);
+
+                // Set the student_id property in the consultationsDetails object
+                consultationsDetails.student_id = currentMemberId;
+
+                _db.Consultations.Update(consultationsDetails);
+                _db.SaveChanges();
+                return RedirectToAction("ConsultationsMember");
+            }
+
+            return View();
+        }
+
+        public IActionResult MemberDelete(int? Id)
+        {
+            var consultationsDetails = _db.Consultations.Find(Id);
+            if (consultationsDetails == null)
+            {
+                return NotFound();
+            }
+
+            return View(consultationsDetails);
+        }
+        //END FOR MODERATOR
+
+
+
+        //CONSULTATIONS CONTROLLER FOR INSTRUCTOR
+        public IActionResult ConsultationsInstructor()
+        {
+            List<ConsultationsEntity> consultations = _db.Consultations.ToList();
+            return View(consultations);
+        }
+
+        public IActionResult InstructorCreate()
+        {
+            var members = _userManager.GetUsersInRoleAsync("Member").Result;
+
+            // Populate the ViewBag.Members with lists of SelectListItem
+            ViewBag.Members = members
+                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                .ToList();
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult InstructorCreate(ConsultationsEntity consultationsDetails)
+        {
+            if (ModelState.IsValid)
+            {
+                var currentInstructorId = _userManager.GetUserId(User);
+                consultationsDetails.instructor_id = currentInstructorId;
+
+                _db.Consultations.Add(consultationsDetails);
+                _db.SaveChanges();
+                return RedirectToAction("ConsultationsInstructor");
+            }
+
+            return View(consultationsDetails);
+        }
+
+        public IActionResult InstructorEdit(int id)
+        {
+            var consultationsDetails = _db.Consultations.Find(id);
+            if (consultationsDetails == null)
+            {
+                return NotFound();
+            }
+
+            var members = _userManager.GetUsersInRoleAsync("Member").Result;
+
+            ViewBag.Members = members
+                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                .ToList();
+
+            return View(consultationsDetails);
+        }
+
+        [HttpPost]
+        public IActionResult InstructorEdit(ConsultationsEntity consultationsDetails)
+        {
+            {
+                // Get the current instructor's ID
+                var currentInstructorId = _userManager.GetUserId(User);
+
+                // Set the instructor_id property in the consultationsDetails object
+                consultationsDetails.instructor_id = currentInstructorId;
+
+                _db.Consultations.Update(consultationsDetails);
+                _db.SaveChanges();
+                return RedirectToAction("ConsultationsInstructor");
+            }
+
+            return View();
+        }
+
+        public IActionResult InstructorDelete(int? Id)
+        {
+            var consultationsDetails = _db.Consultations.Find(Id);
+            if (consultationsDetails == null)
+            {
+                return NotFound();
+            }
+
+            return View(consultationsDetails);
+        }
+        //END FOR INSTRUCTOR
+
 
 
 

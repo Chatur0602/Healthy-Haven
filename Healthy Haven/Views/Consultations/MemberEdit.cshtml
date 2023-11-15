@@ -1,6 +1,6 @@
 ﻿@model ConsultationsEntity
 
-<form method="post" asp-action="Edit">
+<form method="post" asp-action="MemberEdit">
     <input asp-for="id" hidden />
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -11,23 +11,15 @@
         <div class="row">
             <div class="col-4">
                 <label asp-for="description"></label>
-                <input asp-for="description" class="form-control" readonly />
+                <input asp-for="description" class="form-control" value="@Model.description" />
                 <span asp-validation-for="description" class="text-danger"></span>
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="student_id"></label>
-                <input asp-for="student_id" class="form-control" readonly />
-                <select asp-for="student_id" class="form-control" asp-items="@ViewBag.Members"></select>
-            </div>
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-4">
                 <label asp-for="instructor_id"></label>
-                <input asp-for="instructor_id" class="form-control" readonly />
+                <input asp-for="instructor_id" class="form-control" value="@Model.instructor_id" />
                 <select asp-for="instructor_id" class="form-control" asp-items="@ViewBag.Instructors"></select>
             </div>
         </div>
@@ -41,8 +33,8 @@
         </div>
         <br />
         <div class="w-12 btn-group" role="group">
-            @* <input type="submit" class="btn btn-primary" value="Save details" /> *@
-            <a asp-action="ConsultationsManagement" class="btn btn-primary mx-1">Back To List</a>
+            <input type="submit" class="btn btn-primary" value="Save details" />
+            <a asp-action="ConsultationsMember" class="btn btn-primary mx-1">Back To List</a>
         </div>
     </div>
 </form>

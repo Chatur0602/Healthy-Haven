@@ -17,7 +17,7 @@
         <br />
         <div class="row">
             <div class="col-4">
-                <select asp-for="instructor_id" class="form-control" asp-items="@ViewBag.Instructors"></select>
+                <select asp-for="student_id" class="form-control" asp-items="@ViewBag.Members"></select>
             </div>
         </div>
         <br />
@@ -31,7 +31,7 @@
         <br />
         <div class="w-12 btn-group" role="group">
             <input type="submit" class="btn btn-primary" value="Save details" />
-            <a asp-action="ConsultationsMember" class="btn btn-primary mx-1">Back To List</a>
+            <a asp-action="ConsultationsInstructor" class="btn btn-primary mx-1">Back To List</a>
         </div>
     </div>
 </form>
