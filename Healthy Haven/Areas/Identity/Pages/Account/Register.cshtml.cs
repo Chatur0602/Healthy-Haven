@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Net.Mail;
 using System.Net;
 using System.Diagnostics;
+using System.Security.Policy;
 
 namespace Healthy_Haven.Areas.Identity.Pages.Account
 {
@@ -223,6 +224,8 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
         }
 
 
+
+
         private async Task<bool> SendEmailAsync(string email, string subject, string confirmLink)
         {
             try
@@ -260,6 +263,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 return false;
             }
         }
+
 
 
         private void LogToFile(string logMessage)
