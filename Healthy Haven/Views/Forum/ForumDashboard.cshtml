@@ -41,22 +41,25 @@
         color: darkgoldenrod;
     }
 
-    .slick-prev,
-    .slick-next {
-        position: absolute; 
-        top: 50%; 
-        transform: translateY(-50%); 
-        z-index: 1;
+    .slick-dots {
+        display: flex !important;
+        justify-content: center !important;
+        flex-direction: row !important;
+        align-items: center !important;
     }
 
-    .slick-prev {
-        left: 10px;
-        opacity: 0.5;
-    }
+        .slick-dots li {
+            margin: 0 5px !important;
+            cursor: pointer ;
+            color: darkgreen !important;
+        }
 
-    .slick-next {
-        right: 10px;
-        opacity: 0.5;
+        .slick-dots li:hover{
+            color: darkgoldenrod !important;
+        }
+
+    .slick-dots li button {
+        display: none !important;
     }
 </style>
 
@@ -67,10 +70,38 @@
         </div>
     </div>
     <br />
-    <div class="col-12 text-lg-end">
-        @if (User.IsInRole("Instructor") || User.IsInRole("Member") || User.IsInRole("Moderator")){
-        <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage your Forums</a>
-        }
+    <div class="row">
+        <div class="col-md-2">
+            <form asp-action="ForumDashboard" method="get">
+                <div class="input-group mb-3">
+                    <select class="form-select" name="sortBy" onchange="this.form.submit()">
+                        <option value="" selected disabled>Sort By</option>
+                        <option value="newToOld">New to Old</option>
+                        <option value="oldToNew">Old to New</option>
+                        <option value="likesLeastToMost">Likes: Least to Most</option>
+                        <option value="likesMostToLeast">Likes: Most to Least</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 offset-md-1">
+            <form asp-action="ForumDashboard" method="get">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search" name="searchTerm" value="@ViewBag.SearchTerm">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3 text-lg-end">
+            @if (User.IsInRole("Instructor") || User.IsInRole("Member"))
+            {
+                <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage Your Forums</a>
+            }
+            else if (User.IsInRole("Moderator"))
+            {
+                <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage Forums</a>
+            }
+        </div>
     </div>
     <br />
     <div class="row">
@@ -87,7 +118,7 @@
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">@item.Title</h5>
+                        <h5 style="padding-bottom: 5px;" class="card-title">@item.Title</h5>
                         <div class="image-carousel">
                             @foreach (var path in imagePaths)
                             {
@@ -96,7 +127,7 @@
                                 @using Amazon.S3.Util;
 
                                 // Create an S3 client
-                                var s3Client = new AmazonS3Client("ASIA55H4D3RUWDVRPKAU", "yaSA7dZEgLCD+Yl9bbbfFnmAbr7fBDfZpwHjNlaY", "FwoGZXIvYXdzEB0aDNVKLrJDrK/0xOz8rSK8AarOEXpYHK5V3fa0Gu+lLwR54v2ERskVDVQGdmCYwwzoTU7fNuHLdl+ISnj0yOwfq8F3JIRb+H3MUY9z58udIcbaSMc7D0XpMRHTTmLE9BJ21/CrFYKu1KQR2O7gI699OUd4FClUzJymXhBdDCMXW9jNQ5OAsTpnDJ6z6mOHMNdHvjRtO8xSWhgnwHYy0Wwuj+nuDcbEsDNllwcRhn/g40i/FNAYXxkmkXY1h7K+/IPYgv0DrlpXN8gK1nXGKKriy6oGMi3Xp/sg2rzV+FfND+0Vfxj6evcpwsTXrc73LnWtaZn0QWFvC0LJBJ8g4kJKq5g=", Amazon.RegionEndpoint.USEast1);
+                                var s3Client = new AmazonS3Client("ASIA55H4D3RU2S4RVAFU", "Fl7B9LWppMYtV6DhtnbTkMkt6r+jWCfnq0Lro+nF", "FwoGZXIvYXdzEDQaDJ1NuXuaLg+h531GiyK8Ab1lNhSn8gWNJJ7HSpEWJsIxqcx3W3B68SiWq+OV5q7lXwk4LuUpW0tY0WsS7cWkKlFLDXFbpPg2bK1xXEwfBl2kPoGKIm1pPsR9QdG2Ha6R2SUi3zfcimj9SY2VpetTxQRQfwuNfxegiffyTXaDRXx5ekbscDxkbkeYBiZW342XnEpKwUw5QjxQpHdoRjWWPtZ7Qp8yfN8dT1ht138xGgKocqYtTh3tcO8pS48koWRxXWuq+whdb+TS/TubKN/f0KoGMi0mjHJfI9PTBqxu4jXFPZ71JMKnSatL4pu+2b9fgh3NaPMYcbyB6bzNCgFPI4Y=", Amazon.RegionEndpoint.USEast1);
 
                                 // Define your bucket name and image key (path)
                                 string bucketName = "healthyhavens3";
@@ -116,7 +147,7 @@
                                 </div>
                             }
                         </div>
-                        <p style="padding-top: 10px;" class="card-text">@item.Description</p>
+                        <p style="padding-bottom: 5px;" class="card-text">@item.Description</p>
 
                         <div class="d-flex justify-content-between align-items-center">
                             <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id" class="btn btn-primary mx-1">
@@ -181,14 +212,22 @@
 </div>
 
 <script>
-    // Initialize the Slick Carousel
-    $('.image-carousel').slick({
-        infinite: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        prevArrow: '<button class="slick-prev"><</button>',
-        nextArrow: '<button class="slick-next">></button>'
-    });
+    var forums = document.querySelectorAll('.card');
+    for (var i = 0; i < forums.length; i++) {
+        var carouselImages = forums[i].querySelectorAll('.image-carousel img');
+        if (carouselImages.length > 1) {
+            $(forums[i]).find('.image-carousel').slick({
+                infinite: true,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                dots: true, // Add dots
+                autoplay: true, // Enable autoplay
+                autoplaySpeed: 5000, // Set autoplay speed to 3 seconds
+                prevArrow: false, // Hide the previous arrow
+                nextArrow: false // Hide the next arrow
+            });
+        }
+    }
 
     function shareForum(forumId) {
         var baseUrl = 'http://healthyhaven.us-east-1.elasticbeanstalk.com';

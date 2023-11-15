@@ -25,13 +25,41 @@ namespace Healthy_Haven.Controllers
             _userManager = userManager; 
         }
 
-        public IActionResult ForumDashboard()
+        public IActionResult ForumDashboard(string searchTerm, string sortBy)
         {
-            List<ForumModel> forums = new List<ForumModel>();
-            forums = _db.Forums.ToList();
+            // Get all forums from the database
+            var forums = _db.Forums.ToList();
 
+            // Filter forums based on the search term
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                forums = forums.Where(f => f.Title.Contains(searchTerm) || f.Description.Contains(searchTerm)).ToList();
+            }
+
+            // Sort forums based on the selected option
+            switch (sortBy)
+            {
+                case "newToOld":
+                    forums = forums.OrderByDescending(f => f.Created_At).ToList();
+                    break;
+                case "oldToNew":
+                    forums = forums.OrderBy(f => f.Created_At).ToList();
+                    break;
+                case "likesLeastToMost":
+                    forums = forums.OrderBy(f => _db.ForumLikes.Count(x => x.ForumId == f.Id)).ToList();
+                    break;
+                case "likesMostToLeast":
+                    forums = forums.OrderByDescending(f => _db.ForumLikes.Count(x => x.ForumId == f.Id)).ToList();
+                    break;
+                // Add more cases if needed
+
+                default:
+                    forums = forums.OrderByDescending(f => f.Created_At).ToList();
+                    break;
+            }
+
+            // Pass the sorted and filtered forums to the view
             return View(forums);
-
         }
 
 
@@ -68,7 +96,7 @@ namespace Healthy_Haven.Controllers
                     int fileCount = 1;
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUWDVRPKAU", "yaSA7dZEgLCD+Yl9bbbfFnmAbr7fBDfZpwHjNlaY", "FwoGZXIvYXdzEB0aDNVKLrJDrK/0xOz8rSK8AarOEXpYHK5V3fa0Gu+lLwR54v2ERskVDVQGdmCYwwzoTU7fNuHLdl+ISnj0yOwfq8F3JIRb+H3MUY9z58udIcbaSMc7D0XpMRHTTmLE9BJ21/CrFYKu1KQR2O7gI699OUd4FClUzJymXhBdDCMXW9jNQ5OAsTpnDJ6z6mOHMNdHvjRtO8xSWhgnwHYy0Wwuj+nuDcbEsDNllwcRhn/g40i/FNAYXxkmkXY1h7K+/IPYgv0DrlpXN8gK1nXGKKriy6oGMi3Xp/sg2rzV+FfND+0Vfxj6evcpwsTXrc73LnWtaZn0QWFvC0LJBJ8g4kJKq5g=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU2S4RVAFU", "Fl7B9LWppMYtV6DhtnbTkMkt6r+jWCfnq0Lro+nF", "FwoGZXIvYXdzEDQaDJ1NuXuaLg+h531GiyK8Ab1lNhSn8gWNJJ7HSpEWJsIxqcx3W3B68SiWq+OV5q7lXwk4LuUpW0tY0WsS7cWkKlFLDXFbpPg2bK1xXEwfBl2kPoGKIm1pPsR9QdG2Ha6R2SUi3zfcimj9SY2VpetTxQRQfwuNfxegiffyTXaDRXx5ekbscDxkbkeYBiZW342XnEpKwUw5QjxQpHdoRjWWPtZ7Qp8yfN8dT1ht138xGgKocqYtTh3tcO8pS48koWRxXWuq+whdb+TS/TubKN/f0KoGMi0mjHJfI9PTBqxu4jXFPZ71JMKnSatL4pu+2b9fgh3NaPMYcbyB6bzNCgFPI4Y=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -216,7 +244,7 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUWDVRPKAU", "yaSA7dZEgLCD+Yl9bbbfFnmAbr7fBDfZpwHjNlaY", "FwoGZXIvYXdzEB0aDNVKLrJDrK/0xOz8rSK8AarOEXpYHK5V3fa0Gu+lLwR54v2ERskVDVQGdmCYwwzoTU7fNuHLdl+ISnj0yOwfq8F3JIRb+H3MUY9z58udIcbaSMc7D0XpMRHTTmLE9BJ21/CrFYKu1KQR2O7gI699OUd4FClUzJymXhBdDCMXW9jNQ5OAsTpnDJ6z6mOHMNdHvjRtO8xSWhgnwHYy0Wwuj+nuDcbEsDNllwcRhn/g40i/FNAYXxkmkXY1h7K+/IPYgv0DrlpXN8gK1nXGKKriy6oGMi3Xp/sg2rzV+FfND+0Vfxj6evcpwsTXrc73LnWtaZn0QWFvC0LJBJ8g4kJKq5g=", RegionEndpoint.USEast1))
+            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU2S4RVAFU", "Fl7B9LWppMYtV6DhtnbTkMkt6r+jWCfnq0Lro+nF", "FwoGZXIvYXdzEDQaDJ1NuXuaLg+h531GiyK8Ab1lNhSn8gWNJJ7HSpEWJsIxqcx3W3B68SiWq+OV5q7lXwk4LuUpW0tY0WsS7cWkKlFLDXFbpPg2bK1xXEwfBl2kPoGKIm1pPsR9QdG2Ha6R2SUi3zfcimj9SY2VpetTxQRQfwuNfxegiffyTXaDRXx5ekbscDxkbkeYBiZW342XnEpKwUw5QjxQpHdoRjWWPtZ7Qp8yfN8dT1ht138xGgKocqYtTh3tcO8pS48koWRxXWuq+whdb+TS/TubKN/f0KoGMi0mjHJfI9PTBqxu4jXFPZ71JMKnSatL4pu+2b9fgh3NaPMYcbyB6bzNCgFPI4Y=", RegionEndpoint.USEast1))
             {
                 foreach (var fileName in selectedFileNames)
                 {
@@ -262,6 +290,8 @@ namespace Healthy_Haven.Controllers
 
             return View(forumDetails);
         }
+
+
 
     }
 }
