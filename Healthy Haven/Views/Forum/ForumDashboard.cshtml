@@ -97,7 +97,7 @@
             {
                 <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage Your Forums</a>
             }
-            else if (User.IsInRole("Moderator"))
+            else if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
             {
                 <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage Forums</a>
             }
