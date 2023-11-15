@@ -48,6 +48,24 @@
                                     <a class="nav-link" asp-area="" asp-controller="Forum" asp-action="ForumManagement">Forum Management</a>
                                 </li>
                             }
+                            if (User.IsInRole("Member"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Consultations" asp-action="ConsultationsMember">Consultations</a>
+                                </li>
+                            }
+                            if (User.IsInRole("Instructor"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Consultations" asp-action="ConsultationsInstructor">Consultations</a>
+                                </li>
+                            }
+                            if (User.IsInRole("Moderator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Consultations" asp-action="ConsultationsManagement">Consultations</a>
+                                </li>
+                            }
                         }
                     </ul>
                 </div>

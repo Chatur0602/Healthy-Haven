@@ -145,7 +145,7 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
         public IActionResult MemberCreate(ConsultationsEntity consultationsDetails)
         {
-            if (ModelState.IsValid)
+
             {
                 var currentMemberId = _userManager.GetUserId(User);
                 consultationsDetails.student_id = currentMemberId;
@@ -218,6 +218,7 @@ namespace Healthy_Haven.Controllers
         public IActionResult InstructorCreate()
         {
             var members = _userManager.GetUsersInRoleAsync("Member").Result;
+            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
 
             // Populate the ViewBag.Members with lists of SelectListItem
             ViewBag.Members = members
@@ -230,7 +231,7 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
         public IActionResult InstructorCreate(ConsultationsEntity consultationsDetails)
         {
-            if (ModelState.IsValid)
+
             {
                 var currentInstructorId = _userManager.GetUserId(User);
                 consultationsDetails.instructor_id = currentInstructorId;

@@ -1,6 +1,6 @@
 ﻿@model ConsultationsEntity
 
-<form method="post" asp-controller="Consultations" asp-action="Create">
+<form method="post" asp-controller="Consultations" asp-action="InstructorCreate">
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
@@ -9,7 +9,7 @@
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="description"></label>
+                <label asp-for="description">Description</label>
                 <input asp-for="description" class="form-control" />
                 <span asp-validation-for="description" class="text-danger"></span>
             </div>
@@ -17,13 +17,14 @@
         <br />
         <div class="row">
             <div class="col-4">
+                <label asp-for="student_id">Student</label>
                 <select asp-for="student_id" class="form-control" asp-items="@ViewBag.Members"></select>
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="date"></label>
+                <label asp-for="date">Date</label>
                 <input asp-for="date" class="form-control" />
                 <span asp-validation-for="date" class="text-danger"></span>
             </div>

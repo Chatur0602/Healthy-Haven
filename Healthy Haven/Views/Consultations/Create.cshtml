@@ -9,7 +9,7 @@
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="description"></label>
+                <label asp-for="description">Description</label>
                 <input asp-for="description" class="form-control"/>
                 <span asp-validation-for="description" class="text-danger"></span>
             </div>
@@ -20,7 +20,7 @@
                 @* <label asp-for="student_id"></label>
                 @Html.DropDownListFor(model => model.student_id, new SelectList(ViewBag.Members, "Value", "Text"), "Select Member", new { @class = "form-control" })
                 <span asp-validation-for="student_id" class="text-danger"></span> *@
-
+                <label asp-for="student_id">Student</label>
                 <select asp-for="student_id" class="form-control" asp-items="@ViewBag.Members"></select>
             </div>
         </div>
@@ -30,14 +30,14 @@
                 @* <label asp-for="instructor_id"></label>
                 @Html.DropDownListFor(model => model.instructor_id, new SelectList(ViewBag.Instructors, "Value", "Text"), "Select Instructor", new { @class = "form-control" })
                 <span asp-validation-for="instructor_id" class="text-danger"></span> *@
-
+                <label asp-for="instructor_id">Instructor</label>
                 <select asp-for="instructor_id" class="form-control" asp-items="@ViewBag.Instructors"></select>
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="date"></label>
+                <label asp-for="date">Date</label>
                 <input asp-for="date" class="form-control" />
                 <span asp-validation-for="date" class="text-danger"></span>
             </div>
