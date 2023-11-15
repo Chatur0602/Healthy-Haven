@@ -31,12 +31,6 @@
                     <tr>
                         <td>@Html.DisplayFor(modelItem=>item.Id)</td>
                         <td>@Html.DisplayFor(modelItem=>item.Name)</td>
-                        <td width="20%">
-                            <div class="w-100 btn-group" role="group">
-                                <a asp-controller="AppRoles" asp-action="DeleteRole" asp-route-Id="@item.Id"
-                                   class="btn btn-danger">Delete</a>
-                            </div>
-                        </td>
                     </tr>
                 }
             </tbody>
