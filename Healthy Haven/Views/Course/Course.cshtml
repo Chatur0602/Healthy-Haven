@@ -86,6 +86,7 @@ td, th {
                         <th>Course Date</th>
                         <th>Credit Hours</th>
                         <th>Instructor ID</th>
+                        <th>Photo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,6 +98,7 @@ td, th {
                             <td width="20%">@item.course_date</td>
                             <td width="20%">@item.credit_hours</td>
                             <td width="20%">@item.instructor_id</td>
+                            <td width="20%">@item.photo</td>
                             <td width="30%">
                                 <div class="w-100 btn-group" role="group">
                                     <a asp-controller="Course" asp-action="Edit" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>

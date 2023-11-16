@@ -29,10 +29,7 @@
                             <a class="nav-link" asp-area="" asp-controller="Forum" asp-action="ForumDashboard">Forums</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Course" asp-action="Course">Courses</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="UserCourse" asp-action="UserCourse">Courses Category</a>
+                            <a class="nav-link" asp-area="" asp-controller="Course" asp-action="UserCourse">Courses Category</a>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
@@ -44,6 +41,9 @@
                             }
                             if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
                             {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Course" asp-action="Course">Courses</a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="UserManagement">User Management</a>
                                 </li>
