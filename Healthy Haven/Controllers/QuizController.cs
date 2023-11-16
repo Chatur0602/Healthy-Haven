@@ -54,6 +54,8 @@ namespace Healthy_Haven.Controllers
         */
         public IActionResult CreateQuiz()
         {
+            ViewBag.Courses = _db.Courses.ToList(); // Assuming you have a DbSet<CoursesModel> in your DbContext
+
             return View();
         }
 

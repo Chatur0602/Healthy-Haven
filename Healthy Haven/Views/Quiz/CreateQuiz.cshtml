@@ -1,5 +1,5 @@
-﻿@using System.Security.Claims;
-@model Healthy_Haven.Models.QuizzesModel
+﻿@model Healthy_Haven.Models.QuizzesModel
+@using System.Security.Claims;
 
 @{
     ViewData["Title"] = "Create Quiz";
@@ -22,9 +22,17 @@
         @Html.ValidationMessageFor(model => model.Description) <!-- Display validation error for Description -->
     </div>
 
+    <!-- Add dropdown for selecting courses -->
+    <div class="form-group">
+        <label for="CourseId">Select Course:</label>
+        <select asp-for="CourseId" asp-items="@(new SelectList(ViewBag.Courses, "Id", "Name"))" class="form-control" required>
+            <option value="">Select Course</option>
+        </select>
+        @Html.ValidationMessageFor(model => model.CourseId) <!-- Display validation error for CourseId -->
+    </div>
+
     <!-- Hidden fields for additional details -->
     <input type="hidden" asp-for="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
-    <input type="hidden" asp-for="CourseId" value="1" /> <!-- Replace with an appropriate course ID -->
     <input type="hidden" asp-for="Date" value="@DateTime.Now" />
 
     <!-- Add more fields as needed -->
