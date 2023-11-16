@@ -13,6 +13,6 @@ namespace Healthy_Haven.Models
         public decimal credit_hours { get; set; }
 
 
-        public int instructor_id { get; set; }
+        public string instructor_id { get; set; }  //i'm sorry for changing your code but its necessary. This has to be a string
     }
 }
