@@ -2,6 +2,7 @@
 using Healthy_Haven.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
 namespace Healthy_Haven.Controllers
@@ -54,7 +55,7 @@ namespace Healthy_Haven.Controllers
         */
         public IActionResult CreateQuiz()
         {
-            ViewBag.Courses = _db.Courses.ToList(); // Assuming you have a DbSet<CoursesModel> in your DbContext
+            //ViewBag.Courses = new SelectList(_db.Courses, "Id", "Name"); // Assuming you have a DbSet<CoursesModel> in your DbContext
 
             return View();
         }

@@ -22,6 +22,8 @@
         @Html.ValidationMessageFor(model => model.Description) <!-- Display validation error for Description -->
     </div>
 
+    @*
+        *implement course relation here later
     <!-- Add dropdown for selecting courses -->
     <div class="form-group">
         <label for="CourseId">Select Course:</label>
@@ -30,10 +32,12 @@
         </select>
         @Html.ValidationMessageFor(model => model.CourseId) <!-- Display validation error for CourseId -->
     </div>
+    *@
 
     <!-- Hidden fields for additional details -->
     <input type="hidden" asp-for="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
     <input type="hidden" asp-for="Date" value="@DateTime.Now" />
+    <input type="hidden" asp-for="CourseId" value=2 />
 
     <!-- Add more fields as needed -->
     <br />
