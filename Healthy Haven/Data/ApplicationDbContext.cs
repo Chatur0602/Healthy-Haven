@@ -24,7 +24,8 @@ namespace Healthy_Haven.Data
         
         public DbSet<CoursesModel> Courses {  get; set; } 
 
-        public DbSet<QuizModel> Quizzes { get; set; }   
+        public DbSet<QuizModel> Quizzes { get; set; }  
+        public DbSet<QuizDBEntity> Questions { get; set; }
  
     }
 }
