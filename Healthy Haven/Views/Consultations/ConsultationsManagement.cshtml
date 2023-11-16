@@ -1,9 +1,115 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using Healthy_Haven.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext _db;
 @model IEnumerable<ConsultationsEntity>
+
+@{
+    ViewData["Title"] = "Consultations Management";
+
+    //Get the current user's identity
+    var userId = UserManager.GetUserId(User);
+    System.Diagnostics.Debug.WriteLine(userId);
+    var isMemberOrInstructor = User.IsInRole("Instructor") || User.IsInRole("Member");
+
+    IEnumerable
+    <ConsultationsEntity> filteredConsultations;
+
+    if (isMemberOrInstructor)
+    {
+        filteredConsultations = Model.Where(f => f.instructor_id == userId.ToString());
+    }
+    else
+    {
+        // Filter forums based on the current user's identity
+        filteredConsultations = Model;
+    }
+}
+
+<div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+    {
+        <div class="row pt-4">
+            <div class="col-9">
+                <h2>Admin|Mod Consultations Management Dashboard</h2>
+            </div>
+        </div>
+        <br />
+        <table class="table table-bordered table-hover table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Member</th>
+                    <th>Instructor</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var user = _db.Users.Find(item.User_Id);
+                    var firstName = user.FirstName;
+                    var lastName = user.LastName;
+
+                    <tr>
+                        <td width="20%">@item.description</td>
+                        <td width="20%">@item.student_id</td>
+                        <td width="20%">@item.instructor_id</td>
+                        <td width="20%">@item.date</td>
+                        <td width="30%">
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Consultations" asp-action="DeleteConsultations" asp-route-Id="@item.id"
+                                   class="btn btn-danger mx-1">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else if (User.IsInRole("Instructor") || User.IsInRole("Member"))
+    {
+        <div class="row pt-4">
+            <div class="col-9">
+                <h2>Personal Forum Management Dashboard</h2>
+            </div>
+        </div>
+        <br />
+        <div class="col-12 text-lg-end">
+            <a asp-controller="Forum" asp-action="CreateForum" class="btn btn-success">Let's Talk!</a>
+        </div>
+        <br />
+        <table class="table table-bordered table table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in filteredConsultations)
+                {
+                    <tr>
+                        <td width="15%">@item.Title</td>
+                        <td width="20%">@item.Description</td>
+                        <td width="5%">@item.Created_At</td>
+                        <td width="20%">
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Forum" asp-action="EditForum" asp-route-Id="@item.Id"
+                                   class="btn btn-primary mx-1">Edit</a>
+                                <a asp-controller="Forum" asp-action="DeleteForum" asp-route-Id="@item.Id"
+                                   class="btn btn-danger">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    }
+</div>
 
 <div>
     <div class="row pt=4">
