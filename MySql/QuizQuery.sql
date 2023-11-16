@@ -1,6 +1,7 @@
 use HHDB;
 
 /*
+ * dropped tables
 CREATE TABLE Quizzes (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
@@ -11,44 +12,11 @@ CREATE TABLE Quizzes (
 );
 
 drop table Quizzes;
-*/
-
--- implementaion based on nothing
-CREATE TABLE Quizzes (
-  quizID INT auto_increment,
-  name VARCHAR(500) NOT NULL,
-  description VARCHAR(500) NOT NULL,
-  authorID VARCHAR(255) NOT NULL,
-  date DATE NOT NULL,
-  quiz_data JSON NOT NULL,
-  PRIMARY KEY (quizID),
-  FOREIGN KEY (authorID) REFERENCES AspNetUsers(id)
-);
-
-Select * FROM QuizResponses;
 
 CREATE TABLE Categories(
 	category_id int NOT NULL AUTO_INCREMENT,
     category_name VARCHAR(500) NOT NULL,
     PRIMARY KEY (category_id)
-);
-
-CREATE TABLE Questions (
-    question_id int NOT NULL AUTO_INCREMENT,
-    category_id int NOT NULL,
-    question_name VARCHAR(500) NOT NULL,
-    isActive BIT NOT NULL DEFAULT 1,
-    isMultiple BIT NOT NULL DEFAULT 0,
-    PRIMARY KEY (question_id),
-    FOREIGN KEY (category_id) REFERENCES Categories(category_id)
-);
-
-CREATE TABLE Options(
-	option_id int NOT NULL AUTO_INCREMENT,
-    question_id INT NOT NULL,
-    option_name VARCHAR(500) NOT NULL,
-    PRIMARY KEY (option_id),
-    FOREIGN KEY (question_id) REFERENCES Questions(question_id)
 );
 
 CREATE TABLE Answers(
@@ -68,10 +36,50 @@ CREATE TABLE Results(
     FOREIGN KEY (question_id) REFERENCES Questions(question_id),
     FOREIGN KEY (user_id) REFERENCES AspNetUsers(id)
 );
+*/
+
+-- implementaion based on nothing
+CREATE TABLE Quizzes (
+  id INT auto_increment,
+  title VARCHAR(250) NOT NULL,
+  description VARCHAR(500) NOT NULL,
+  courseId INT NOT NULL,
+  userId VARCHAR(255) NOT NULL,
+  date DATE NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (courseId) REFERENCES Courses(id),
+  FOREIGN KEY (userId) REFERENCES AspNetUsers(id)
+);
+
+Select * FROM Quizzes;
+
+CREATE TABLE Questions (
+    id int NOT NULL AUTO_INCREMENT,
+    quizId int NOT NULL,
+    questionText VARCHAR(500) NOT NULL,
+    isActive BIT NOT NULL DEFAULT 1,
+    PRIMARY KEY (id),
+    FOREIGN KEY (quizId) REFERENCES Quizzes(id)
+);
+
+CREATE TABLE Options(
+	id int NOT NULL AUTO_INCREMENT,
+    questionId INT NOT NULL,
+    optionText VARCHAR(500) NOT NULL,
+    isCorrect BIT default 0 NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (questionId) REFERENCES Questions(id)
+);
+
+
 
 drop table Questions;
-select * from Questions;
 
+
+select * from Quizzes;
+
+insert into Categories (category_name) values ("Nutrition");
+insert into Questions (category_id, question_name) values (1, "How many calories in an apple?");
 
 
 

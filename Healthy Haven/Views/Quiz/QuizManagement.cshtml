@@ -1,15 +1,15 @@
-﻿@model IEnumerable<QuizDBEntity>
+﻿@model IEnumerable<QuestionsModel>
 
 @{
     ViewData["Title"] = "QuizManagement";
 }
-
+@*
 <div>
     <div class="row pt-4">
-        <h2 class="text-success">View All Employees</h2>
+        <h2 class="text-success">View All Quizzes</h2>
     </div>
     <div class="col-12 text-lg-end">
-        <a asp-controller="Quiz" asp-action="Create" class="btn btn-primary">Add Question Details</a>
+        <a asp-controller="Quiz" asp-action="QuizBuilder" class="btn btn-primary">Add Question Details</a>
     </div>
 </div>
 <br />
@@ -46,3 +46,4 @@
     <br />
     <p><b>No Records Found</b></p>
 }
+*@

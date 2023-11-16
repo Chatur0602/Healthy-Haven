@@ -9,6 +9,7 @@ namespace Healthy_Haven.Controllers
     {
         private readonly ILogger<QuizController> _logger;
         private readonly ApplicationDbContext _db;
+        
 
         public QuizController(ILogger<QuizController> logger, ApplicationDbContext db)
         {
@@ -19,19 +20,27 @@ namespace Healthy_Haven.Controllers
         [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult QuizManagement()
         {
-            List<QuizDBEntity> questions = new List<QuizDBEntity>();
+            List<QuestionsModel> questions = new List<QuestionsModel>();
             questions = _db.Questions.ToList();
             return View(questions);
         }
 
-        public IActionResult Create() 
+        public IActionResult QuizBuilder()
+        {
+            CategoryViewModel objCategoryViewModel = new CategoryViewModel();
+            
+            return View();
+        }
+
+        public IActionResult CreateQuiz() 
         {
             return View();
         }
 
         [HttpPost]
-        public  IActionResult Create(QuizDBEntity questionDetails)
+        public  IActionResult CreateQuiz(QuestionsModel questionDetails)
         {
+            //modify later -- should link to the builder tab as it says tho
             if (ModelState.IsValid)
             {
                 _db.Questions.Add(questionDetails);
