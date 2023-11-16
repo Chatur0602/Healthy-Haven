@@ -53,23 +53,26 @@ namespace Healthy_Haven.Controllers
         }
 
         [HttpPost]
-		public async IActionResult Create(CoursesModel coursedetails, List<IFormFile> file)
+		public async Task<IActionResult> Create(CoursesModel coursedetails, List<IFormFile> files)
 		{
             using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
             {
-                using (var memorystream = new MemoryStream())
+                foreach (var file in files)
                 {
-                    file.CopyTo(memorystream);
-                    var request = new TransferUtilityUploadRequest
+                    using (var memorystream = new MemoryStream())
                     {
-                        InputStream = memorystream,
-                        Key = file.FileName,
-                        BucketName = "healthyhavens3",
-                        ContentType = file.ContentType,
-                    };
+                        file.CopyTo(memorystream);
+                        var request = new TransferUtilityUploadRequest
+                        {
+                            InputStream = memorystream,
+                            Key = file.FileName,
+                            BucketName = "healthyhavens3",
+                            ContentType = file.ContentType,
+                        };
 
-                    var transferUtility = new TransferUtility(amazonS3client);
-                    await transferUtility.UploadAsync(request);
+                        var transferUtility = new TransferUtility(amazonS3client);
+                        await transferUtility.UploadAsync(request);
+                    }
                 }
             }
 
