@@ -73,14 +73,42 @@ CREATE TABLE Options(
 
 
 
-drop table Questions;
+-- drop table Questions;
 
 
-select * from Quizzes;
+select * from Questions;
 
-insert into Categories (category_name) values ("Nutrition");
-insert into Questions (category_id, question_name) values (1, "How many calories in an apple?");
+-- Dummy data
+INSERT INTO Quizzes (title, description, courseId, userId, date) VALUES
+('Quiz 1', 'Description for Quiz 1', 1, '0f021eb3-4a7a-4388-b9cb-b4c9ade57012', '2023-11-16'),
+('Quiz 2', 'Description for Quiz 2', 2, '0f021eb3-4a7a-4388-b9cb-b4c9ade57012', '2023-11-17'),
+('Quiz 3', 'Description for Quiz 3', 3, '0f021eb3-4a7a-4388-b9cb-b4c9ade57012', '2023-11-18'),
+('Quiz 4', 'Description for Quiz 4', 2, '0f021eb3-4a7a-4388-b9cb-b4c9ade57012', '2023-11-19');
 
+INSERT INTO Questions (quizId, questionText, isActive) VALUES
+(5, 'Question 1 for Quiz 1', 1),
+(5, 'Question 2 for Quiz 1', 1),
+(6, 'Question 1 for Quiz 2', 1),
+(6, 'Question 2 for Quiz 2', 1),
+(7, 'Question 1 for Quiz 3', 1),
+(7, 'Question 2 for Quiz 3', 1),
+(8, 'Question 1 for Quiz 4', 1),
+(8, 'Question 2 for Quiz 4', 1);
+
+
+INSERT INTO Options (questionId, optionText, isCorrect) VALUES
+(17, 'Option 1 for Question 1', 1),
+(17, 'Option 2 for Question 1', 0),
+(17, 'Option 3 for Question 1', 0),
+(18, 'Option 1 for Question 2', 0),
+(18, 'Option 2 for Question 2', 1),
+(18, 'Option 3 for Question 2', 0),
+(19, 'Option 1 for Question 3', 1),
+(19, 'Option 2 for Question 3', 0),
+(19, 'Option 3 for Question 3', 0),
+(20, 'Option 1 for Question 4', 0),
+(20, 'Option 2 for Question 4', 1),
+(20, 'Option 3 for Question 4', 0);
 
 
 

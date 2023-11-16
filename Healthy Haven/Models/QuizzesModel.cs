@@ -8,18 +8,18 @@ namespace Healthy_Haven.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(250)]
+        
+        
         public string Title { get; set; }
 
-        [Required]
-        [StringLength(500)]
+        
+        
         public string Description { get; set; }
 
-        [Required]
+        
         public int CourseId { get; set; }
 
-        [Required]
+        
         public string UserId { get; set; }
 
         [Required]
@@ -27,9 +27,9 @@ namespace Healthy_Haven.Models
 
         // Navigation properties
         //public CourseModel Course { get; set; }
-        public ApplicationUser Author { get; set; }
+        //public ApplicationUser Author { get; set; }
 
         // Collection navigation property for questions
-        public ICollection<QuestionsModel> Questions { get; set; }
+        //public ICollection<QuestionsModel> Questions { get; set; }
     }
 }
