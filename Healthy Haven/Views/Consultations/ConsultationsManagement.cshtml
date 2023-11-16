@@ -10,15 +10,20 @@
     //Get the current user's identity
     var userId = UserManager.GetUserId(User);
     System.Diagnostics.Debug.WriteLine(userId);
-    var isMemberOrInstructor = User.IsInRole("Instructor") || User.IsInRole("Member");
 
     IEnumerable
     <ConsultationsEntity> filteredConsultations;
 
-    if (isMemberOrInstructor)
+    if (User.IsInRole("Instructor"))
     {
         filteredConsultations = Model.Where(f => f.instructor_id == userId.ToString());
     }
+ 
+    else if (User.IsInRole("Member"))
+    {
+        filteredConsultations = Model.Where(f => f.student_id == userId.ToString());
+    }
+
     else
     {
         // Filter forums based on the current user's identity
