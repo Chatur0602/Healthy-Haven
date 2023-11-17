@@ -1,0 +1,45 @@
+﻿@model Healthy_Haven.Models.QuizzesModel
+@using System.Security.Claims;
+
+@{
+    ViewData["Title"] = "Create Quiz";
+}
+
+<h2>Create a New Quiz</h2>
+
+<form asp-action="CreateQuiz" method="post">
+    @Html.ValidationSummary(true) <!-- Display summary of validation errors -->
+
+    <div class="form-group">
+        <label for="Title">Quiz Title:</label>
+        <input asp-for="Title" class="form-control" required>
+        @Html.ValidationMessageFor(model => model.Title) <!-- Display validation error for Title -->
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Quiz Description:</label>
+        <textarea asp-for="Description" class="form-control" required></textarea>
+        @Html.ValidationMessageFor(model => model.Description) <!-- Display validation error for Description -->
+    </div>
+
+    @*
+        *implement course relation here later
+    <!-- Add dropdown for selecting courses -->
+    <div class="form-group">
+        <label for="CourseId">Select Course:</label>
+        <select asp-for="CourseId" asp-items="@(new SelectList(ViewBag.Courses, "Id", "Name"))" class="form-control" required>
+            <option value="">Select Course</option>
+        </select>
+        @Html.ValidationMessageFor(model => model.CourseId) <!-- Display validation error for CourseId -->
+    </div>
+    *@
+
+    <!-- Hidden fields for additional details -->
+    <input type="hidden" asp-for="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+    <input type="hidden" asp-for="Date" value="@DateTime.Now" />
+    <input type="hidden" asp-for="CourseId" value=2 />
+
+    <!-- Add more fields as needed -->
+    <br />
+    <button type="submit" class="btn btn-primary">Create Quiz</button>
+</form>
