@@ -1,42 +1,107 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Healthy_Haven.Data;
 using Healthy_Haven.Models;
-using Microsoft.AspNetCore.Mvc.Rendering; // For SelectListItem
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
-
-
 
 namespace Healthy_Haven.Controllers
 {
     public class ConsultationsController : Controller
     {
+        private readonly ILogger<ConsultationsController> _logger;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ConsultationsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
+        public ConsultationsController(ILogger<ConsultationsController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
+            _logger = logger;
             _db = db;
             _userManager = userManager;
         }
 
-        //CONSULTATIONS CONTROLLER MANAGEMENT FOR MODERATOR
+        // ... (other actions)
+
+        [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
         public IActionResult ConsultationsManagement()
         {
             List<ConsultationsEntity> consultations = _db.Consultations.ToList();
             return View(consultations);
         }
 
-        public IActionResult Create()
+        [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
+        public IActionResult CreateConsultations()
         {
-            var members = _userManager.GetUsersInRoleAsync("Member").Result;
+            var currentUser = _userManager.GetUserAsync(User).Result;
 
-            // Get users with the "Instructor" role
+            if (User.IsInRole("Instructor"))
+            {
+                // Instructors can only select members
+                var members = _userManager.GetUsersInRoleAsync("Member").Result;
+                ViewBag.Members = members
+                    .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                    .ToList();
+
+                ViewBag.Instructors = new List<SelectListItem>
+        {
+            new SelectListItem { Value = currentUser.Id, Text = $"{currentUser.FirstName} {currentUser.LastName}" }
+        };
+            }
+            else if (User.IsInRole("Member"))
+            {
+                // Members can only select instructors
+                var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+                ViewBag.Instructors = instructors
+                    .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                    .ToList();
+
+                ViewBag.Members = new List<SelectListItem>
+        {
+            new SelectListItem { Value = currentUser.Id, Text = $"{currentUser.FirstName} {currentUser.LastName}" }
+        };
+            }
+            else
+            {
+                // Admins/Moderators can select both members and instructors
+                var members = _userManager.GetUsersInRoleAsync("Member").Result;
+                ViewBag.Members = members
+                    .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                    .ToList();
+
+                var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+                ViewBag.Instructors = instructors
+                    .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                    .ToList();
+            }
+
+            return View();
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
+        public IActionResult CreateConsultations(ConsultationsEntity consultationsDetails)
+        {
+            if (ModelState.IsValid)
+            {
+                // You can access the current user's ID and set it in the consultationsDetails object
+                var currentUserId = _userManager.GetUserId(User);
+                consultationsDetails.instructor_id = currentUserId; // Assuming you want to set the instructor_id
+
+                _db.Consultations.Add(consultationsDetails);
+                _db.SaveChanges();
+                return RedirectToAction("ConsultationsManagement");
+            }
+
+            // If the model state is not valid, return the view with the model to display validation errors
+            // You may also need to repopulate ViewBag.Members and ViewBag.Instructors if needed
+
+            var members = _userManager.GetUsersInRoleAsync("Member").Result;
             var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
 
-            // Populate the ViewBag.Members and ViewBag.Instructors with lists of SelectListItem
             ViewBag.Members = members
                 .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
                 .ToList();
@@ -45,21 +110,13 @@ namespace Healthy_Haven.Controllers
                 .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
                 .ToList();
 
-            return View();
+            return View(consultationsDetails);
         }
 
-        [HttpPost]
-        public IActionResult Create(ConsultationsEntity consultationsDetails)
-        {
-            
-            {
-                _db.Consultations.Add(consultationsDetails);
-                _db.SaveChanges();
-                return RedirectToAction("ConsultationsManagement");
-            }
-        }
 
-        public IActionResult Edit(int? id)
+
+        [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
+        public IActionResult EditConsultations(int? id)
         {
             var consultationsDetails = _db.Consultations.Find(id);
             if (consultationsDetails == null)
@@ -82,30 +139,41 @@ namespace Healthy_Haven.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(ConsultationsEntity consultationsDetails)
+        [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
+        public IActionResult EditConsultations(ConsultationsEntity consultationsDetails)
         {
             if (ModelState.IsValid)
             {
+                // You can access the current user's ID and set it in the consultationsDetails object
+                var currentUserId = _userManager.GetUserId(User);
+                consultationsDetails.instructor_id = currentUserId; // Assuming you want to set the instructor_id
+
                 _db.Consultations.Update(consultationsDetails);
                 _db.SaveChanges();
                 return RedirectToAction("ConsultationsManagement");
             }
 
-            return View();
-        }
+            // If the model state is not valid, return the view with the model to display validation errors
+            // You may also need to repopulate ViewBag.Members and ViewBag.Instructors if needed
 
-        public IActionResult Delete(int? Id)
-        {
-            var consultationsDetails = _db.Consultations.Find(Id);
-            if (consultationsDetails == null)
-            {
-                return NotFound();
-            }
+            var members = _userManager.GetUsersInRoleAsync("Member").Result;
+            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+
+            ViewBag.Members = members
+                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                .ToList();
+
+            ViewBag.Instructors = instructors
+                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                .ToList();
 
             return View(consultationsDetails);
         }
 
-        [HttpPost]
+
+        // ... (other actions)
+
+        [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
         public IActionResult DeleteConsultations(int? Id)
         {
             var consultationsDetails = _db.Consultations.Find(Id);
@@ -119,180 +187,8 @@ namespace Healthy_Haven.Controllers
 
             return RedirectToAction("ConsultationsManagement");
         }
-        //END FOR MODERATOR
 
-
-
-        //CONSULTATIONS CONTROLLER FOR MEMBER
-        public IActionResult ConsultationsMember()
-        {
-            List<ConsultationsEntity> consultations = _db.Consultations.ToList();
-            return View(consultations);
-        }
-
-        public IActionResult MemberCreate()
-        {
-            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
-
-            // Populate the ViewBag.Instructors with lists of SelectListItem
-            ViewBag.Instructors = instructors
-                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                .ToList();
-
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult MemberCreate(ConsultationsEntity consultationsDetails)
-        {
-
-            {
-                var currentMemberId = _userManager.GetUserId(User);
-                consultationsDetails.student_id = currentMemberId;
-
-                _db.Consultations.Add(consultationsDetails);
-                _db.SaveChanges();
-                return RedirectToAction("ConsultationsMember");
-            }
-
-
-            return View();
-        }
-
-        public IActionResult MemberEdit(int id)
-        {
-            var consultationsDetails = _db.Consultations.Find(id);
-            if (consultationsDetails == null)
-            {
-                return NotFound();
-            }
-
-            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
-
-            ViewBag.Instructors = instructors
-                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                .ToList();
-
-            return View(consultationsDetails);
-        }
-
-        [HttpPost]
-        public IActionResult MemberEdit(ConsultationsEntity consultationsDetails)
-        {
-            {
-                // Get the current member's ID
-                var currentMemberId = _userManager.GetUserId(User);
-
-                // Set the student_id property in the consultationsDetails object
-                consultationsDetails.student_id = currentMemberId;
-
-                _db.Consultations.Update(consultationsDetails);
-                _db.SaveChanges();
-                return RedirectToAction("ConsultationsMember");
-            }
-
-            return View();
-        }
-
-        public IActionResult MemberDelete(int? Id)
-        {
-            var consultationsDetails = _db.Consultations.Find(Id);
-            if (consultationsDetails == null)
-            {
-                return NotFound();
-            }
-
-            return View(consultationsDetails);
-        }
-        //END FOR MODERATOR
-
-
-
-        //CONSULTATIONS CONTROLLER FOR INSTRUCTOR
-        public IActionResult ConsultationsInstructor()
-        {
-            List<ConsultationsEntity> consultations = _db.Consultations.ToList();
-            return View(consultations);
-        }
-
-        public IActionResult InstructorCreate()
-        {
-            var members = _userManager.GetUsersInRoleAsync("Member").Result;
-            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
-
-            // Populate the ViewBag.Members with lists of SelectListItem
-            ViewBag.Members = members
-                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                .ToList();
-
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult InstructorCreate(ConsultationsEntity consultationsDetails)
-        {
-
-            {
-                var currentInstructorId = _userManager.GetUserId(User);
-                consultationsDetails.instructor_id = currentInstructorId;
-
-                _db.Consultations.Add(consultationsDetails);
-                _db.SaveChanges();
-                return RedirectToAction("ConsultationsInstructor");
-            }
-
-            return View(consultationsDetails);
-        }
-
-        public IActionResult InstructorEdit(int id)
-        {
-            var consultationsDetails = _db.Consultations.Find(id);
-            if (consultationsDetails == null)
-            {
-                return NotFound();
-            }
-
-            var members = _userManager.GetUsersInRoleAsync("Member").Result;
-
-            ViewBag.Members = members
-                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                .ToList();
-
-            return View(consultationsDetails);
-        }
-
-        [HttpPost]
-        public IActionResult InstructorEdit(ConsultationsEntity consultationsDetails)
-        {
-            {
-                // Get the current instructor's ID
-                var currentInstructorId = _userManager.GetUserId(User);
-
-                // Set the instructor_id property in the consultationsDetails object
-                consultationsDetails.instructor_id = currentInstructorId;
-
-                _db.Consultations.Update(consultationsDetails);
-                _db.SaveChanges();
-                return RedirectToAction("ConsultationsInstructor");
-            }
-
-            return View();
-        }
-
-        public IActionResult InstructorDelete(int? Id)
-        {
-            var consultationsDetails = _db.Consultations.Find(Id);
-            if (consultationsDetails == null)
-            {
-                return NotFound();
-            }
-
-            return View(consultationsDetails);
-        }
-        //END FOR INSTRUCTOR
-
-
-
+        // ... (other actions)
 
         public IActionResult Index()
         {

@@ -1,10 +1,10 @@
 ﻿@model ConsultationsEntity
 
-<form method="post" asp-controller="Consultations" asp-action="MemberCreate">
+<form method="post" asp-controller="Consultations" asp-action="CreateConsultations">
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
-            <h2 class="text-black">Book Consultations</h2>
+            <h2 class="text-black">Add Consultations Details</h2>
         </div>
         <br />
         <div class="row">
@@ -12,6 +12,13 @@
                 <label asp-for="description">Description</label>
                 <input asp-for="description" class="form-control" />
                 <span asp-validation-for="description" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="student_id">Student</label>
+                <select asp-for="student_id" class="form-control" asp-items="@ViewBag.Members"></select>
             </div>
         </div>
         <br />
@@ -32,7 +39,7 @@
         <br />
         <div class="w-12 btn-group" role="group">
             <input type="submit" class="btn btn-primary" value="Save details" />
-            <a asp-action="ConsultationsMember" class="btn btn-primary mx-1">Back To List</a>
+            <a asp-action="ConsultationsManagement" class="btn btn-primary mx-1">Back To List</a>
         </div>
     </div>
 </form>

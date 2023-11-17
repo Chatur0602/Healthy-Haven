@@ -1,15 +1,16 @@
 ﻿@model ConsultationsEntity
 
-<form method="post" asp-controller="Consultations" asp-action="InstructorCreate">
+<form method="post" asp-action="EditConsultations">
+    <input asp-for="id" hidden />
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
-            <h2 class="text-black">Book Consultations</h2>
+            <h2>Edit Consultations Details</h2>
         </div>
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="description">Description</label>
+                <label asp-for="description"></label>
                 <input asp-for="description" class="form-control" />
                 <span asp-validation-for="description" class="text-danger"></span>
             </div>
@@ -17,22 +18,29 @@
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="student_id">Student</label>
+                <label asp-for="student_id"></label>
                 <select asp-for="student_id" class="form-control" asp-items="@ViewBag.Members"></select>
             </div>
         </div>
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="date">Date</label>
-                <input asp-for="date" class="form-control" />
+                <label asp-for="instructor_id"></label>
+                <select asp-for="instructor_id" class="form-control" asp-items="@ViewBag.Instructors"></select>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="date"></label>
+                <input asp-for="date" class="form-control" value="@Model.date.ToString("yyyy-MM-ddTHH:mm")" />
                 <span asp-validation-for="date" class="text-danger"></span>
             </div>
         </div>
         <br />
         <div class="w-12 btn-group" role="group">
-            <input type="submit" class="btn btn-primary" value="Save details" />
-            <a asp-action="ConsultationsInstructor" class="btn btn-primary mx-1">Back To List</a>
+            <input type="submit" class="btn btn-success" value="Update Details" />
+            <a asp-action="ConsultationsManagement" class="btn btn-primary mx-1">Back To List</a>
         </div>
     </div>
 </form>
