@@ -1,4 +1,6 @@
-﻿@model IEnumerable<CoursesModel>
+﻿@using Healthy_Haven.Data;
+@inject ApplicationDbContext _db;
+@model IEnumerable<CoursesModel>
 <style>
     .image-carousel {
         width: 100%;
@@ -53,13 +55,40 @@
     <div class="row">
         @foreach (var item in Model)
         {
+            var course = _db.Courses.Find(item.id);
+
+            var courseImages = _db.CourseImages.Where(x => x.course_id == item.id).ToList();
+            var imagePaths = courseImages.Select(img => img.image_path).ToList();
+
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="image-carousel">
-                            <div>
-                                <img src="" alt="Image">
-                            </div>
+                            @foreach (var path in imagePaths)
+                            {
+                                @using Amazon.S3;
+                                @using Amazon.S3.Model;
+                                @using Amazon.S3.Util;
+
+                                var s3Client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", Amazon.RegionEndpoint.USEast1);
+
+                                string bucketName = "healthyhavens3";
+                                string folderName = "CourseImages";
+                                string imagePath = $"{folderName}/{path}";
+
+                                System.Diagnostics.Debug.WriteLine("IMAGE PATH= " + imagePath);
+                                GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                                {
+                                    BucketName = bucketName,
+                                    Key = imagePath,
+                                    Expires = DateTime.Now.AddMinutes(60)
+                                };
+                                string preSignedURL = s3Client.GetPreSignedURL(request);
+                                <div>
+                                    <img src="@preSignedURL" alt="Image">
+                                </div>
+                            }
+
                         </div>
                         <h5 class="card-title">@item.name</h5>
                         <p style="padding-top: 10px;" class="card-text">@item.description</p>

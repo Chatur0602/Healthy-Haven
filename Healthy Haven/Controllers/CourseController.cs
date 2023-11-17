@@ -60,8 +60,13 @@ namespace Healthy_Haven.Controllers
         {
             try
             {
+                Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
+                _db.Courses.Add(coursedetails);
+                _db.SaveChanges();
 
-                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
+                int course_Id = coursedetails.id;
+
+                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", RegionEndpoint.USEast1))
                 {
                 foreach (var file in files)
                 {
@@ -82,14 +87,12 @@ namespace Healthy_Haven.Controllers
                         await transferUtility.UploadAsync(request);
                         Debug.WriteLine($"Image uploaded successfully.");
 
-                            CoursesModel courseImage = new CoursesModel();
-                        courseImage.photo = file.FileName;
+                            CourseImages courseImages = new CourseImages();
+                            courseImages.image_path = file.FileName;
+                            courseImages.course_id = course_Id;
                     }
                 }
             }
-            Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
-            _db.Courses.Add(coursedetails);
-            _db.SaveChanges();
 
             return RedirectToAction("Course");
             }
