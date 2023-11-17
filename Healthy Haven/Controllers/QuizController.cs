@@ -29,10 +29,30 @@ namespace Healthy_Haven.Controllers
 
         public IActionResult QuizBuilder(int quizId)
         {
-            // Retrieve questions for the specified quizId from the database
-            List<QuestionsModel> questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+            // Create a new empty question object
+            QuestionsModel question = new QuestionsModel();
 
-            return View(questions);
+            // Set the quiz ID
+            question.QuizId = quizId;
+
+            return View(question);
+        }
+
+        [HttpPost]
+        public IActionResult AddQuestion(int quizId, QuestionsModel question)
+        {
+            if (ModelState.IsValid)
+            {
+                // Add the question to the database
+                _db.Questions.Add(question);
+                _db.SaveChanges();
+
+                // Redirect back to the quiz builder page for the same quiz
+                return RedirectToAction("QuizBuilder", new { quizId = quizId });
+            }
+
+            // Validation failed, return to the quiz builder page
+            return RedirectToAction("QuizBuilder", new { quizId = quizId });
         }
 
         /* Video implementation. For reference
