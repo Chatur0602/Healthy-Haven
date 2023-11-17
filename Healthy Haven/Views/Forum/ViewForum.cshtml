@@ -140,9 +140,48 @@
             <p id="description">@Model.Description</p>
         </div>
     </div>
+
+    @{
+        var currentTime = DateTime.Now;
+        var creationTime = Model.Created_At;
+        var timeDifference = currentTime - creationTime;
+
+        string timeAgo;
+
+        if (timeDifference.TotalMinutes < 1)
+        {
+            timeAgo = "just now";
+        }
+        else if (timeDifference.TotalHours < 1)
+        {
+            var minutes = (int)timeDifference.TotalMinutes;
+            timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+        }
+        else if (timeDifference.TotalDays < 1)
+        {
+            var hours = (int)timeDifference.TotalHours;
+            timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+        }
+        else if (timeDifference.TotalDays < 30)
+        {
+            var days = (int)timeDifference.TotalDays;
+            timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+        }
+        else if (timeDifference.TotalDays < 365)
+        {
+            var months = (int)(timeDifference.TotalDays / 30);
+            timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+        }
+        else
+        {
+            var years = (int)(timeDifference.TotalDays / 365);
+            timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+        }
+    }
+
     <div class="row">
         <div class="col-6">
-            <p id="posted-item"><strong>Posted By</strong> @firstName @lastName | <strong>Posted On</strong> @Model.Created_At</p>
+            <p id="posted-item"><strong>Posted By</strong> @firstName @lastName, @timeAgo</p>
         </div>
     </div>
     <div class="row">
@@ -198,8 +237,46 @@
                     <div class="card-body">
                         <p style="font-size:18px;">@comment.CommentText</p>
                     </div>
+                        @{
+                            var currentTime2 = DateTime.Now;
+                            var creationTime2 = comment.CreatedAt;
+                            var timeDifference2 = currentTime2 - creationTime2;
+
+                            string timeAgo2;
+
+                            if (timeDifference2.TotalMinutes < 1)
+                            {
+                                timeAgo2 = "just now";
+                            }
+                            else if (timeDifference2.TotalHours < 1)
+                            {
+                                var minutes = (int)timeDifference2.TotalMinutes;
+                                timeAgo2 = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                            }
+                            else if (timeDifference2.TotalDays < 1)
+                            {
+                                var hours = (int)timeDifference2.TotalHours;
+                                timeAgo2 = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                            }
+                            else if (timeDifference2.TotalDays < 30)
+                            {
+                                var days = (int)timeDifference2.TotalDays;
+                                timeAgo2 = $"{days} {(days == 1 ? "day" : "days")} ago";
+                            }
+                            else if (timeDifference2.TotalDays < 365)
+                            {
+                                var months = (int)(timeDifference2.TotalDays / 30);
+                                timeAgo2 = $"{months} {(months == 1 ? "month" : "months")} ago";
+                            }
+                            else
+                            {
+                                var years = (int)(timeDifference2.TotalDays / 365);
+                                timeAgo2 = $"{years} {(years == 1 ? "year" : "years")} ago";
+                            }
+                        }
+
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <p class="mb-0 mr-3"><strong>Posted By</strong> @firstName2 @lastName2 | <strong>Posted On</strong> @comment.CreatedAt</p>
+                            <p class="mb-0 mr-3"><strong>Posted By</strong> @firstName2 @lastName2, @timeAgo2</p>
                             <div class="d-flex align-items-center">
                             @{
                                 var userId2 = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
