@@ -181,7 +181,7 @@
 
     <div class="row">
         <div class="col-6">
-            <p id="posted-item"><strong>Posted By</strong> @firstName @lastName, @timeAgo</p>
+            <p id="posted-item"><strong>Posted By</strong> @firstName @lastName | @timeAgo</p>
         </div>
     </div>
     <div class="row">
@@ -276,7 +276,7 @@
                         }
 
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <p class="mb-0 mr-3"><strong>Posted By</strong> @firstName2 @lastName2, @timeAgo2</p>
+                            <p class="mb-0 mr-3"><strong>Posted By</strong> @firstName2 @lastName2 | @timeAgo2</p>
                             <div class="d-flex align-items-center">
                             @{
                                 var userId2 = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
