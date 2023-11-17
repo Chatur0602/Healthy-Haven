@@ -18,6 +18,6 @@ namespace Healthy_Haven.Models
         public bool IsCorrect { get; set; }
 
         // Navigation properties
-        public QuestionsModel Question { get; set; }
+        //public QuestionsModel Question { get; set; }
     }
 }
