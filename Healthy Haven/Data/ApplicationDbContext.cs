@@ -24,11 +24,15 @@ namespace Healthy_Haven.Data
         
         public DbSet<CoursesModel> Courses {  get; set; }
         
+        //public DbSet<QuizModel> Quizzes { get; set; }  
         
+        public DbSet<QuizzesModel> Quizzes { get; set; }
         
-
-
-
+        public DbSet<QuestionsModel> Questions { get; set; }
+        
+        public DbSet<OptionsModel> Options { get; set; }
+       
+        public DbSet<ConsultationsEntity> Consultations { get; set; }
 
     }
 }
