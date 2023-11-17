@@ -7,7 +7,7 @@ namespace Healthy_Haven.Models
         [Key]
         public int id { get; set; }
 
-        public int course_id { get; set; }
+        public int? course_id { get; set; }
         public string image_path { get; set; }
     }
 }

@@ -45,8 +45,16 @@
         <br />
         <div class="row">
             <div class="col-4">
-                <label asp-for="photo"></label>
-                <input asp-for="photo" readonly class="form-control" />
+                <ul>
+                    @if (ViewBag.CourseImages != null)
+                    {
+                        foreach (var image in ViewBag.CourseImages)
+                        {
+                            <li>@image.image_path</li>
+                            <input type="hidden" name="selectedFileNames" value="@image.image_path" />
+                        }
+                    }
+                </ul>
             </div>
         </div>
         <br />

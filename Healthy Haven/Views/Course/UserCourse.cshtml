@@ -1,7 +1,16 @@
 ﻿@using Healthy_Haven.Data;
 @inject ApplicationDbContext _db;
 @model IEnumerable<CoursesModel>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+</head>
+
+
 <style>
+
     .image-carousel {
         width: 100%;
         height: auto;
@@ -27,23 +36,26 @@
         color: darkgoldenrod;
     }
 
-    .slick-prev,
-    .slick-next {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1;
+    .slick-dots {
+        display: flex !important;
+        justify-content: center !important;
+        flex-direction: row !important;
+        align-items: center !important;
     }
 
-    .slick-prev {
-        left: 10px;
-        opacity: 0.5;
-    }
+        .slick-dots li {
+            margin: 0 5px !important;
+            cursor: pointer;
+            color: darkgreen !important;
+        }
 
-    .slick-next {
-        right: 10px;
-        opacity: 0.5;
-    }
+            .slick-dots li:hover {
+                color: darkgoldenrod !important;
+            }
+
+            .slick-dots li button {
+                display: none !important;
+            }
 </style>
 <div>
     <div class="row pt-4">
@@ -70,7 +82,7 @@
                                 @using Amazon.S3.Model;
                                 @using Amazon.S3.Util;
 
-                                var s3Client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", Amazon.RegionEndpoint.USEast1);
+                                var s3Client = new AmazonS3Client("ASIA55H4D3RUQGOO6EQB", "Jv9ebiMrVz2ZQ7ORXa8m2N4pTeD1hHtmq9IQ3Gym", "FwoGZXIvYXdzEG0aDHoXKHtl3q7HnsoQNSK8AUlMPWKfzwaw4jqfYITulPqOrhEKs0ZDdir7qW7yRXvXCESwUV5I4xAxM9BE7YmA+ZArdSvso1S9QE9MpIg0dDamEKmRdp2MwWP6/nu7ZrWprUwP/n64ykAfJq6K4u6yQsu8NO9af3ZGlwZrc5nkDR9puPAx9UXcSc+wlB2LBe/eac2j//Qpei4cNfPyg56/4iFI402dbABavnXFrCFvgrM8LGUyq5UGV/PR68+0tIHrZtdpdi6B5yotxscPKICk3aoGMi1vz0AbsFU2br2oWMimqtDdbs/2idJbXslx3/E0lsHw8cynO3SRnk59eg2SxRo=", Amazon.RegionEndpoint.USEast1);
 
                                 string bucketName = "healthyhavens3";
                                 string folderName = "CourseImages";
@@ -99,3 +111,22 @@
         }
     </div>
 </div>
+
+<script>
+    var forums = document.querySelectorAll('.card');
+    for (var i = 0; i < forums.length; i++) {
+        var carouselImages = forums[i].querySelectorAll('.image-carousel img');
+        if (carouselImages.length > 1) {
+            $(forums[i]).find('.image-carousel').slick({
+                infinite: true,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                dots: true, // Add dots
+                autoplay: true, // Enable autoplay
+                autoplaySpeed: 5000, // Set autoplay speed to 3 seconds
+                prevArrow: false, // Hide the previous arrow
+                nextArrow: false // Hide the next arrow
+            });
+        }
+    }
+</script>
