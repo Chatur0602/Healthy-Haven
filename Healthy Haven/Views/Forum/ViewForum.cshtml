@@ -76,15 +76,15 @@
     }
 
         .btn-like i {
-            font-size: 1.5rem; /* Adjust the size as needed */
+            font-size: 1.5rem;
         }
 
         .btn-like .liked {
-            color: red; /* Color for the liked state */
+            color: red;
         }
 
     .heart-outline {
-        color: goldenrod; /* Set the color to gold or your desired color */
+        color: goldenrod; 
     }
 </style>
 
@@ -107,10 +107,11 @@
 
                     foreach (var path in imagePaths)
                     {
-                        var s3Client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", Amazon.RegionEndpoint.USEast1);
+                        var s3Client = new AmazonS3Client("ASIA55H4D3RU724N5C7R", "RaF4OK0LqeCrG24HK2hjNkI0ZuAupcTLpnzJTerF", "FwoGZXIvYXdzEDcaDJesX7iztkrIziEroSK8AZW9c4kXSoj/uM80fgrhY4FxwSROiJ9IQi0W8IMVdf6M+eDjp34ipf/LaBW3AlKsRLfE1wj1Z9atg7L6a4I1yptzZFkAkreYIkBxN6HdW0pv0sazwDq1nust1UgT8GK0EZV+D+BCTTqW3oY0oA+wVmKJaK7zcpBO6H8KAAeGUj6eNOk+vtJgqkzfkSAVmUAazrKmxE4WZEdPEC350Av2thiz6pbyVupYGPYoDs4eClAQRoXDOuvWdMoPtO8vKJOy0aoGMi2qrmkzUL3TsAikaVIiDa7HTNeBFFoL0bihWxBg7IxAybH6f/AEmduqBe5TDBY=", Amazon.RegionEndpoint.USEast1);
 
                         string bucketName = "healthyhavens3";
-                        string imagePath = path;
+                        string folderName = "ForumImages";
+                        string imagePath = $"{folderName}/{path}";
 
                         GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
                         {
@@ -146,6 +147,10 @@
     </div>
     <div class="row">
         <div class="col-6 d-flex align-items-center">
+            <button class="btn btn-info mx-1" onclick="shareForum('@Model.Id')">
+                Share <i class="fas fa-share-alt"></i>
+            </button>
+
             @{
                 @using System.Security.Claims;
 
@@ -175,6 +180,8 @@
             <h5 class="mb-0 ml-2"><span id="forumLikeCount_@Model.Id"><strong>@forumLikeCount</strong></span></h5>
         </div>
     </div>
+    <br />
+    <br />
     <div class="row">
         <div class="col-12">
             <h3>Comments</h3>
@@ -199,7 +206,16 @@
                                 var hasLikedComment = _db.CommentLikes.Any(x => x.CommentId == comment.Id && x.UserId == userId2);
                                 var likeCount = _db.CommentLikes.Count(x => x.CommentId == comment.Id);
 
-                                
+                                    if (comment.UserId == userId2 || User.IsInRole("Moderator") || User.IsInRole("Admin"))
+                                    {
+                                        <form asp-controller="Comment" asp-action="DeleteComment" method="post">
+                                            <input type="hidden" name="commentId" value="@comment.Id" />
+                                            <input type="hidden" name="forumId" value="@Model.Id" />
+                                            <button type="submit" class="btn btn-like">
+                                                <i class="fas fa-trash-alt text-danger"></i>
+                                            </button>
+                                        </form>
+                                    }
 
                                 if (hasLikedComment)
                                 {
@@ -230,6 +246,7 @@
             }
         </div>
     </div>
+    <br />
     @if (User.IsInRole("Instructor") || User.IsInRole("Member") || User.IsInRole("Moderator"))
     {
         <div class="row">
@@ -274,5 +291,25 @@
         } else {
             document.getElementById("commentForm").submit();
         }
+    }
+
+    function shareForum(forumId) {
+        var baseUrl = 'http://healthyhaven.us-east-1.elasticbeanstalk.com';
+
+        var forumUrl = baseUrl + '/Forum/ViewForum/' + forumId;
+
+        var dummyInput = document.createElement('input');
+        document.body.appendChild(dummyInput);
+        dummyInput.value = forumUrl;
+        dummyInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyInput);
+
+        showMessage('Forum Link Copied To Clipboard!');
+    }
+
+    function showMessage(message) {
+
+        alert(message);
     }
 </script>

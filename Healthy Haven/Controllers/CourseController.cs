@@ -26,21 +26,63 @@ namespace Healthy_Haven.Controllers
 			return View(Courses);
 		}
 
-		public IActionResult Create()
+        
+        public IActionResult CreateCourse()
+        {
+            return View();
+        }
+
+        [HttpPost]
+		public IActionResult Create(CoursesModel coursedetails)
 		{
-			return View();
+            //Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
+            _db.Courses.Add(coursedetails);
+			_db.SaveChanges();
+
+            return RedirectToAction("Course");
+		}
+
+		public IActionResult Edit(int? id)
+		{
+			var coursedetails = _db.Courses.Find(id);
+			if (coursedetails == null)
+			{
+				return NotFound();
+			}
+			return View("CreateCourse", coursedetails);
 		}
 
 		[HttpPost]
-		public IActionResult Create(CourseModel coursedetails)
-		{
+        public IActionResult Edit(CoursesModel coursedetails)
+        {
 			if (ModelState.IsValid)
 			{
-				//_db.Courses.Add(coursedetails);
-				_db.SaveChanges();
-				return RedirectToAction("Course");
+				_db.Courses.Update(coursedetails);
 			}
-			return View();
-		}
-	}
+            return View("CreateCourse", coursedetails);
+        }
+
+        public IActionResult Delete(int? id)
+        {
+            var coursedetails = _db.Courses.Find(id);
+            if (coursedetails == null)
+            {
+                return NotFound();
+            }
+            return View("CreateCourse", coursedetails);
+        }
+
+   //     [HttpPost]
+   //     public IActionResult Delete(int? id)
+   //     {
+   //         var coursedetails = _db.Courses.Find(id);
+   //         if (coursedetails == null)
+   //         {
+   //             return NotFound();
+   //         }
+			//_db.Courses.Remove(coursedetails);
+			//_db.SaveChanges();
+   //         return RedirectToAction("Course");
+   //     }
+    }
 }

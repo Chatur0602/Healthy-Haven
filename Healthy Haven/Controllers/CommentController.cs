@@ -17,10 +17,8 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
         public IActionResult AddComment(int forumId, string commentText)
         {
-            // Get the current user
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // Create a new comment
             var newComment = new CommentModel
             {
                 CommentText = commentText,
@@ -29,11 +27,28 @@ namespace Healthy_Haven.Controllers
                 CreatedAt = DateTime.Now
             };
 
-            // Add the new comment to the database
             _db.Comments.Add(newComment);
             _db.SaveChanges();
 
-            // Redirect back to the forum page after adding the comment
+            return RedirectToAction("ViewForum", "Forum", new { Id = forumId });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteComment(int commentId, int forumId)
+        {
+            var commentToDelete = _db.Comments.FirstOrDefault(c => c.Id == commentId);
+            
+
+            if (commentToDelete == null)
+            {
+                return NotFound();
+            }
+            var commentLikes = _db.CommentLikes.Where(x => x.CommentId == commentId).ToList();
+
+            _db.CommentLikes.RemoveRange(commentLikes);
+            _db.Comments.Remove(commentToDelete);
+            _db.SaveChanges();
+
             return RedirectToAction("ViewForum", "Forum", new { Id = forumId });
         }
     }

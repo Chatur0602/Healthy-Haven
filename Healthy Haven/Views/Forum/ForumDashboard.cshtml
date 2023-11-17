@@ -8,6 +8,7 @@
 
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 </head>
@@ -40,22 +41,25 @@
         color: darkgoldenrod;
     }
 
-    .slick-prev,
-    .slick-next {
-        position: absolute; 
-        top: 50%; 
-        transform: translateY(-50%); 
-        z-index: 1;
+    .slick-dots {
+        display: flex !important;
+        justify-content: center !important;
+        flex-direction: row !important;
+        align-items: center !important;
     }
 
-    .slick-prev {
-        left: 10px;
-        opacity: 0.5;
-    }
+        .slick-dots li {
+            margin: 0 5px !important;
+            cursor: pointer ;
+            color: darkgreen !important;
+        }
 
-    .slick-next {
-        right: 10px;
-        opacity: 0.5;
+        .slick-dots li:hover{
+            color: darkgoldenrod !important;
+        }
+
+    .slick-dots li button {
+        display: none !important;
     }
 </style>
 
@@ -66,10 +70,38 @@
         </div>
     </div>
     <br />
-    <div class="col-12 text-lg-end">
-        @if (User.IsInRole("Instructor") || User.IsInRole("Member") || User.IsInRole("Moderator")){
-        <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage your Forums</a>
-        }
+    <div class="row">
+        <div class="col-md-2">
+            <form asp-action="ForumDashboard" method="get">
+                <div class="input-group mb-3">
+                    <select class="form-select" name="sortBy" onchange="this.form.submit()">
+                        <option value="" selected disabled>Sort By</option>
+                        <option value="newToOld">New to Old</option>
+                        <option value="oldToNew">Old to New</option>
+                        <option value="likesLeastToMost">Likes: Least to Most</option>
+                        <option value="likesMostToLeast">Likes: Most to Least</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 offset-md-1">
+            <form asp-action="ForumDashboard" method="get">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search" name="searchTerm" value="@ViewBag.SearchTerm">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3 text-lg-end">
+            @if (User.IsInRole("Instructor") || User.IsInRole("Member"))
+            {
+                <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage Your Forums</a>
+            }
+            else if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
+            {
+                <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-success">Manage Forums</a>
+            }
+        </div>
     </div>
     <br />
     <div class="row">
@@ -81,12 +113,12 @@
 
             var forumImages = _db.ForumImages.Where(x => x.Forum_Id == item.Id).ToList();
             var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
-
+            var forumLikeCount = _db.ForumLikes.Count(x => x.ForumId == item.Id);
 
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">@item.Title</h5>
+                        <h5 style="padding-bottom: 5px;" class="card-title">@item.Title</h5>
                         <div class="image-carousel">
                             @foreach (var path in imagePaths)
                             {
@@ -95,11 +127,12 @@
                                 @using Amazon.S3.Util;
 
                                 // Create an S3 client
-                                var s3Client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", Amazon.RegionEndpoint.USEast1);
+                                var s3Client = new AmazonS3Client("ASIA55H4D3RU724N5C7R", "RaF4OK0LqeCrG24HK2hjNkI0ZuAupcTLpnzJTerF", "FwoGZXIvYXdzEDcaDJesX7iztkrIziEroSK8AZW9c4kXSoj/uM80fgrhY4FxwSROiJ9IQi0W8IMVdf6M+eDjp34ipf/LaBW3AlKsRLfE1wj1Z9atg7L6a4I1yptzZFkAkreYIkBxN6HdW0pv0sazwDq1nust1UgT8GK0EZV+D+BCTTqW3oY0oA+wVmKJaK7zcpBO6H8KAAeGUj6eNOk+vtJgqkzfkSAVmUAazrKmxE4WZEdPEC350Av2thiz6pbyVupYGPYoDs4eClAQRoXDOuvWdMoPtO8vKJOy0aoGMi2qrmkzUL3TsAikaVIiDa7HTNeBFFoL0bihWxBg7IxAybH6f/AEmduqBe5TDBY=", Amazon.RegionEndpoint.USEast1);
 
                                 // Define your bucket name and image key (path)
                                 string bucketName = "healthyhavens3";
-                                string imagePath = path;
+                                string folderName = "ForumImages";
+                                string imagePath = $"{folderName}/{path}";
 
                                 // Generate a pre-signed URL with a short expiration time
                                 GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
@@ -115,10 +148,24 @@
                                 </div>
                             }
                         </div>
-                        <p style="padding-top: 10px;" class="card-text">@item.Description</p>
-                        <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id"
-                           class="btn btn-primary mx-1">View Forum</a>
+                        <p style="padding-bottom: 5px;" class="card-text">@item.Description</p>
 
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id" class="btn btn-primary mx-1">
+                                View Forum
+                            </a>
+
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-info mx-1" onclick="shareForum('@item.Id')">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                &nbsp;&nbsp;
+                                <i class="fas fa-heart text-danger mr-1"></i>
+                                &nbsp;
+                                <h5 class="mb-0 ml-2"><span id="forumLikeCount_@item.Id"><strong>@forumLikeCount</strong></span></h5>
+                            </div>
+                        </div>
+                        
                         @{
                             var currentTime = DateTime.Now;
                             var creationTime = item.Created_At;
@@ -166,12 +213,40 @@
 </div>
 
 <script>
-    // Initialize the Slick Carousel
-    $('.image-carousel').slick({
-        infinite: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        prevArrow: '<button class="slick-prev"><</button>',
-        nextArrow: '<button class="slick-next">></button>'
-    });
+    var forums = document.querySelectorAll('.card');
+    for (var i = 0; i < forums.length; i++) {
+        var carouselImages = forums[i].querySelectorAll('.image-carousel img');
+        if (carouselImages.length > 1) {
+            $(forums[i]).find('.image-carousel').slick({
+                infinite: true,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                dots: true, // Add dots
+                autoplay: true, // Enable autoplay
+                autoplaySpeed: 5000, // Set autoplay speed to 3 seconds
+                prevArrow: false, // Hide the previous arrow
+                nextArrow: false // Hide the next arrow
+            });
+        }
+    }
+
+    function shareForum(forumId) {
+        var baseUrl = 'http://healthyhaven.us-east-1.elasticbeanstalk.com';
+
+        var forumUrl = baseUrl + '/Forum/ViewForum/' + forumId;
+
+        var dummyInput = document.createElement('input');
+        document.body.appendChild(dummyInput);
+        dummyInput.value = forumUrl;
+        dummyInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyInput);
+
+        showMessage('Forum Link Copied To Clipboard!');
+    }
+
+    function showMessage(message) {
+        
+        alert(message);
+    }
 </script>

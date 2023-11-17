@@ -23,6 +23,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
+
+builder.Services.Configure<IdentityOptions>(opts =>
+{ 
+    opts.SignIn.RequireConfirmedEmail = true;
+});
+
 builder.Services.AddDefaultIdentity<ApplicationUser>().AddDefaultTokenProviders().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Get the AWS profile information from configuration providers

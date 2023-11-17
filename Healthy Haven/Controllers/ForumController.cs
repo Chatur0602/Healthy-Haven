@@ -25,13 +25,41 @@ namespace Healthy_Haven.Controllers
             _userManager = userManager; 
         }
 
-        public IActionResult ForumDashboard()
+        public IActionResult ForumDashboard(string searchTerm, string sortBy)
         {
-            List<ForumModel> forums = new List<ForumModel>();
-            forums = _db.Forums.ToList();
+            // Get all forums from the database
+            var forums = _db.Forums.ToList();
 
+            // Filter forums based on the search term
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                forums = forums.Where(f => f.Title.Contains(searchTerm) || f.Description.Contains(searchTerm)).ToList();
+            }
+
+            // Sort forums based on the selected option
+            switch (sortBy)
+            {
+                case "newToOld":
+                    forums = forums.OrderByDescending(f => f.Created_At).ToList();
+                    break;
+                case "oldToNew":
+                    forums = forums.OrderBy(f => f.Created_At).ToList();
+                    break;
+                case "likesLeastToMost":
+                    forums = forums.OrderBy(f => _db.ForumLikes.Count(x => x.ForumId == f.Id)).ToList();
+                    break;
+                case "likesMostToLeast":
+                    forums = forums.OrderByDescending(f => _db.ForumLikes.Count(x => x.ForumId == f.Id)).ToList();
+                    break;
+                // Add more cases if needed
+
+                default:
+                    forums = forums.OrderByDescending(f => f.Created_At).ToList();
+                    break;
+            }
+
+            // Pass the sorted and filtered forums to the view
             return View(forums);
-
         }
 
 
@@ -62,13 +90,13 @@ namespace Healthy_Haven.Controllers
                 {
                     int totalSizeLimit = 5 * 1024 * 1024; // 5MB
                     int maxFileCount = 5;
-                    string[] allowedImageTypes = { "image/jpeg", "image/png", "image/gif" };
+                    string[] allowedImageTypes = { "image/jpeg", "image/jpg", "image/png", "image/gif" };
 
                     int totalSize = 1;
                     int fileCount = 1;
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU724N5C7R", "RaF4OK0LqeCrG24HK2hjNkI0ZuAupcTLpnzJTerF", "FwoGZXIvYXdzEDcaDJesX7iztkrIziEroSK8AZW9c4kXSoj/uM80fgrhY4FxwSROiJ9IQi0W8IMVdf6M+eDjp34ipf/LaBW3AlKsRLfE1wj1Z9atg7L6a4I1yptzZFkAkreYIkBxN6HdW0pv0sazwDq1nust1UgT8GK0EZV+D+BCTTqW3oY0oA+wVmKJaK7zcpBO6H8KAAeGUj6eNOk+vtJgqkzfkSAVmUAazrKmxE4WZEdPEC350Av2thiz6pbyVupYGPYoDs4eClAQRoXDOuvWdMoPtO8vKJOy0aoGMi2qrmkzUL3TsAikaVIiDa7HTNeBFFoL0bihWxBg7IxAybH6f/AEmduqBe5TDBY=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -94,7 +122,7 @@ namespace Healthy_Haven.Controllers
                                 }
                                 else if (!allowedImageTypes.Contains(file.ContentType))
                                 {
-                                    ViewBag.Error = "Invalid file type. Only image files (JPEG, PNG, GIF) are allowed.";
+                                    ViewBag.Error = "Invalid file type. Only image files (JPEG, JPG, PNG, GIF) are allowed.";
                                     DelFunction(forumId);
                                     break;
                                 }
@@ -103,10 +131,14 @@ namespace Healthy_Haven.Controllers
                                     using (var memorystream = new MemoryStream())
                                     {
                                         file.CopyTo(memorystream);
+
+                                        var folderPath = "ForumImages/";
+                                        var key = folderPath + file.FileName;
+
                                         var request = new TransferUtilityUploadRequest
                                         {
                                             InputStream = memorystream,
-                                            Key = file.FileName,
+                                            Key = key,
                                             BucketName = "healthyhavens3",
                                             ContentType = file.ContentType,
                                         };
@@ -194,6 +226,9 @@ namespace Healthy_Haven.Controllers
         public IActionResult DelFunction(int? Id)
         {
             var forumDel = _db.Forums.Find(Id);
+            var forumImage = _db.ForumImages.Where(x => x.Forum_Id == Id).ToList();
+
+            _db.ForumImages.RemoveRange(forumImage);
             _db.Forums.Remove(forumDel);
             _db.SaveChanges();
 
@@ -204,30 +239,46 @@ namespace Healthy_Haven.Controllers
         public async Task<IActionResult> DeleteForumPost(int? Id, List<string> selectedFileNames)
         {
             var forumDetails = _db.Forums.Find(Id);
+            var forumComments = _db.Comments.Where(x => x.ForumId == Id).ToList();
+            var forumLikes = _db.ForumLikes.Where(x => x.ForumId == Id).ToList();
+            
+
             if (forumDetails == null)
             {
                 return NotFound();
             }
 
-                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", RegionEndpoint.USEast1))
+            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU724N5C7R", "RaF4OK0LqeCrG24HK2hjNkI0ZuAupcTLpnzJTerF", "FwoGZXIvYXdzEDcaDJesX7iztkrIziEroSK8AZW9c4kXSoj/uM80fgrhY4FxwSROiJ9IQi0W8IMVdf6M+eDjp34ipf/LaBW3AlKsRLfE1wj1Z9atg7L6a4I1yptzZFkAkreYIkBxN6HdW0pv0sazwDq1nust1UgT8GK0EZV+D+BCTTqW3oY0oA+wVmKJaK7zcpBO6H8KAAeGUj6eNOk+vtJgqkzfkSAVmUAazrKmxE4WZEdPEC350Av2thiz6pbyVupYGPYoDs4eClAQRoXDOuvWdMoPtO8vKJOy0aoGMi2qrmkzUL3TsAikaVIiDa7HTNeBFFoL0bihWxBg7IxAybH6f/AEmduqBe5TDBY=", RegionEndpoint.USEast1))
+            {
+                foreach (var fileName in selectedFileNames)
                 {
-                    foreach (var fileName in selectedFileNames)
+                    System.Diagnostics.Debug.WriteLine("filename" + fileName);
+
+                    // Construct the full key with folder path
+                    var folderPath = "ForumImages/";
+                    var key = folderPath + fileName;
+
+                    await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
                     {
-                        System.Diagnostics.Debug.WriteLine("filename" + fileName );
+                        BucketName = "healthyhavens3",
+                        Key = key
+                    });
 
-                        await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
-                        {
-                            BucketName = "healthyhavens3",
-                            Key = fileName
-                        });
+                    var forumImage = _db.ForumImages.FirstOrDefault(x => x.Forum_Id == Id);
 
-                            var forumImage = _db.ForumImages.FirstOrDefault(x => x.Forum_Id == Id);
-                     
-                            _db.ForumImages.Remove(forumImage);
-                            _db.SaveChanges();
-                    }
-                    
+                    _db.ForumImages.Remove(forumImage);
+                    _db.SaveChanges();
                 }
+            }
+
+            _db.Comments.RemoveRange(forumComments);
+            _db.ForumLikes.RemoveRange(forumLikes);
+            foreach(var comment in forumComments)
+            {
+                var commentLikes = _db.CommentLikes.Where(x => x.CommentId == comment.Id).ToList();
+                _db.CommentLikes.RemoveRange(commentLikes);
+            }
+            
 
             _db.Forums.Remove(forumDetails);
             _db.SaveChanges();
@@ -235,7 +286,7 @@ namespace Healthy_Haven.Controllers
             return RedirectToAction("ForumManagement");
         }
 
-        
+
         public IActionResult ViewForum(int? Id)
         {
             var forumDetails = _db.Forums.Find(Id);
@@ -247,6 +298,8 @@ namespace Healthy_Haven.Controllers
 
             return View(forumDetails);
         }
+
+
 
     }
 }
