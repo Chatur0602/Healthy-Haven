@@ -182,11 +182,25 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
+            return View("ConfirmDeleteConsultations", consultationsDetails);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
+        public IActionResult ConfirmDeleteConsultations(int? Id)
+        {
+            var consultationsDetails = _db.Consultations.Find(Id);
+            if (consultationsDetails == null)
+            {
+                return NotFound();
+            }
+
             _db.Consultations.Remove(consultationsDetails);
             _db.SaveChanges();
 
             return RedirectToAction("ConsultationsManagement");
         }
+
 
         // ... (other actions)
 
