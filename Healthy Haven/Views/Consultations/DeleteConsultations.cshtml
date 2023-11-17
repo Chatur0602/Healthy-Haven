@@ -1,0 +1,44 @@
+﻿@model ConsultationsEntity
+
+<form method="post" asp-action="DeleteConsultations">
+    <input asp-for="id" hidden />
+    <div class="border p-5">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <h2 class="text-black">Delete Consultations Details</h2>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="description">Description</label>
+                <input asp-for="description" readonly class="form-control" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="student_id">Student</label>
+                <input asp-for="student_id" readonly class="form-control" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="instructor_id">Instructor</label>
+                <input asp-for="instructor_id" readonly class="form-control" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="date">Date</label>
+                <input asp-for="date" readonly class="form-control" />
+            </div>
+        </div>
+        <br />
+        <div class="w-12 btn-group" role="group">
+            <input type="submit" class="btn btn-danger" value="Delete details" />
+            <a asp-action="ConsultationsManagement" class="btn btn-primary mx-1">Back To List</a>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,162 @@
+﻿@using Healthy_Haven.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext _db;
+@model IEnumerable<ConsultationsEntity>
+
+@{
+    ViewData["Title"] = "Consultations Management";
+
+    //Get the current user's identity
+    var userId = UserManager.GetUserId(User);
+    System.Diagnostics.Debug.WriteLine(userId);
+
+    IEnumerable
+    <ConsultationsEntity> filteredConsultations;
+  
+}
+
+<div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+    {
+        <div class="row pt-4">
+            <div class="col-9">
+                <h2>Admin|Mod Consultations Management Dashboard</h2>
+            </div>
+        </div>
+        <br />
+        <div class="col-12 text-lg-end">
+            <a asp-controller="Consultations" asp-action="CreateConsultations" class="btn btn-success">Add New Consultation</a>
+        </div>
+        <br/>
+        <table class="table table-bordered table-hover table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Member</th>
+                    <th>Instructor</th>
+                    <th>DateTime</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var instructor_user = _db.Users.Find(item.instructor_id);
+                    var instructorFirstName = instructor_user.FirstName;
+                    var instructorLastName = instructor_user.LastName;
+                    var member_user = _db.Users.Find(item.student_id);
+                    var memberFirstName = member_user.FirstName;
+                    var memberLastName = member_user.LastName;
+
+                    <tr>
+                        <td width="20%">@item.description</td>
+                        <td width="20%">@item.student_id (@memberFirstName @memberLastName)</td>
+                        <td width="20%">@item.instructor_id (@instructorFirstName @instructorLastName)</td>
+                        <td width="20%">@item.date</td>
+                        <td width="30%">
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Consultations" asp-action="DeleteConsultations" asp-route-Id="@item.id"
+                                   class="btn btn-danger mx-1">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else if (User.IsInRole("Instructor"))
+    {
+        filteredConsultations = Model.Where(f => f.instructor_id == userId.ToString());
+
+        <div class="row pt-4">
+            <div class="col-9">
+                <h2>Personal Consultations Management Dashboard</h2>
+            </div>
+        </div>
+        <br />
+        <div class="col-12 text-lg-end">
+            <a asp-controller="Consultations" asp-action="CreateConsultations" class="btn btn-success">Add New Consultation</a>
+        </div>
+        <br />
+        <table class="table table-bordered table table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Student</th>
+                    <th>DateTime</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in filteredConsultations)
+                {
+                    var member_user = _db.Users.Find(item.student_id);
+                    var memberFirstName = member_user.FirstName;
+                    var memberLastName = member_user.LastName;
+
+                    <tr>
+                        <td width="20%">@item.description</td>
+                        <td width="20%">@item.student_id (@memberFirstName @memberLastName)</td>
+                        <td width="20%">@item.date</td>
+                        <td width="30%">
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Consultations" asp-action="EditConsultations" asp-route-Id="@item.id"
+                                   class="btn btn-primary mx-1">Edit</a>
+                                <a asp-controller="Consultations" asp-action="DeleteConsultations" asp-route-Id="@item.id"
+                                   class="btn btn-danger mx-1">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    }
+    else if (User.IsInRole("Member"))
+    {
+        filteredConsultations = Model.Where(f => f.student_id == userId.ToString());
+
+        <div class="row pt-4">
+            <div class="col-9">
+                <h2>Personal Consultations Management Dashboard</h2>
+            </div>
+        </div>
+        <br />
+        <div class="col-12 text-lg-end">
+            <a asp-controller="Consultations" asp-action="CreateConsultations" class="btn btn-success">Add New Consultation</a>
+        </div>
+        <br />
+        <table class="table table-bordered table table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Instructor</th>
+                    <th>DateTime</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in filteredConsultations)
+                {
+                    var instructor_user = _db.Users.Find(item.instructor_id);
+                    var instructorFirstName = instructor_user.FirstName;
+                    var instructorLastName = instructor_user.LastName;
+
+                    <tr>
+                        <td width="20%">@item.description</td>
+                        <td width="20%">@item.instructor_id (@instructorFirstName @instructorLastName)</td>
+                        <td width="20%">@item.date</td>
+                        <td width="30%">
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="Consultations" asp-action="EditConsultations" asp-route-Id="@item.id"
+                                   class="btn btn-primary mx-1">Edit</a>
+                                <a asp-controller="Consultations" asp-action="DeleteConsultations" asp-route-Id="@item.id"
+                                   class="btn btn-danger mx-1">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    }
+</div>

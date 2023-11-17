@@ -7,14 +7,13 @@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
-    //var user = await UserManager.GetUserAsync(User);
-    //var firstName = user.FirstName; 
-    //var lastName = user.LastName;
+    var user = await UserManager.GetUserAsync(User);
+    var firstName = user.FirstName; 
 
     <li class="nav-item">
             <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                 <span style="font-size: 20px; font-weight: bold; color: silver; white-space: nowrap;">
-                    Greetings, @UserManager.GetUserName(User)!
+                    Greetings, @firstName!
                 </span>
             </a>
     </li>

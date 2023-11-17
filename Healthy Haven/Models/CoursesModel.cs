@@ -25,6 +25,5 @@ namespace Healthy_Haven.Models
 
         [ForeignKey("instructor_id")]
         public ApplicationUser Instructor { get; set; }
-        public string? photo {  get; set; }
     }
 }

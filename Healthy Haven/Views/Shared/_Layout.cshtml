@@ -31,6 +31,9 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Course" asp-action="UserCourse">Courses</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement">Quizzes</a>
+                        </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             if (User.IsInRole("Admin"))
@@ -49,6 +52,12 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Forum" asp-action="ForumManagement">Forum Management</a>
+                                </li>
+                            }
+                            if (User.IsInRole("Admin") || User.IsInRole("Moderator") || User.IsInRole("Instructor") || User.IsInRole("Member"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Consultations" asp-action="ConsultationsManagement">Consultations</a>
                                 </li>
                             }
                         }
