@@ -29,9 +29,10 @@ namespace Healthy_Haven.Controllers
 
         public IActionResult QuizBuilder(int quizId)
         {
-            CategoryViewModel objCategoryViewModel = new CategoryViewModel();
-            
-            return View();
+            // Retrieve questions for the specified quizId from the database
+            List<QuestionsModel> questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+
+            return View(questions);
         }
 
         /* Video implementation. For reference
@@ -68,6 +69,7 @@ namespace Healthy_Haven.Controllers
                 _db.Quizzes.Add(quizDetails);
                 _db.SaveChanges();
 
+                // Redirect to the quiz builder page with the newly created quiz ID
                 return RedirectToAction("QuizBuilder", new { quizId = quizDetails.Id });
             }
 

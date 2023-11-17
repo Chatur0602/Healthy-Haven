@@ -1,0 +1,56 @@
+﻿@model Healthy_Haven.Models.QuestionsModel
+
+@{
+    ViewData["Title"] = "Quiz Builder";
+}
+
+<h2>Quiz Builder</h2>
+
+<h3>Create New Question</h3>
+
+<form asp-action="QuizBuilder" method="post">
+    <div class="form-group">
+        <label for="QuestionText">Question:</label>
+        <textarea asp-for="QuestionText" class="form-control" required></textarea>
+        @Html.ValidationMessageFor(model => model.QuestionText)
+    </div>
+
+    <h4>Options:</h4>
+
+    <div id="optionsContainer" class="form-group">
+        <!-- Options will be added dynamically here -->
+    </div>
+
+    <button type="button" class="btn btn-primary" id="addOption">Add Option</button>
+
+    <h4>Added Options:</h4>
+    <ul id="optionList"></ul>
+
+    <button type="submit" class="btn btn-success">Add Question</button>
+</form>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            var optionCounter = 1;
+
+            $('#addOption').click(function () {
+                var optionText = $('input[name="Options[' + optionCounter + '].OptionText"]').val();
+                var isCorrect = $('input[name="Options[' + optionCounter + '].IsCorrect"]').prop('checked');
+
+                var optionHtml = '<div class="form-group">' +
+                    '<label for="Options[' + optionCounter + '].OptionText">Option Text:</label>' +
+                    '<input type="text" name="Options[' + optionCounter + '].OptionText" class="form-control" required>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label for="Options[' + optionCounter + '].IsCorrect">Is Correct:</label>' +
+                    '<input type="checkbox" name="Options[' + optionCounter + '].IsCorrect" class="form-check-input">' +
+                    '</div>';
+
+                $('#optionsContainer').append(optionHtml);
+
+                optionCounter++;
+            });
+        });
+    </script>
+}

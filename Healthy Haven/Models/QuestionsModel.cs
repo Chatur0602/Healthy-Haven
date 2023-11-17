@@ -19,10 +19,10 @@ namespace Healthy_Haven.Models
         public bool IsActive { get; set; } = true;
 
         // Navigation properties
-        public QuizzesModel Quiz { get; set; }
+        //public QuizzesModel Quiz { get; set; }
 
         // Collection navigation property for options
-        public ICollection<OptionsModel> Options { get; set; }
+        //public ICollection<OptionsModel> Options { get; set; }
 
     }
 }
