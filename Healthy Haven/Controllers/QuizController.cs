@@ -104,12 +104,16 @@ namespace Healthy_Haven.Controllers
 
         public IActionResult AddOptions(int quizId, int questionId)
         {
-            // Retrieve the question based on questionId
-            var question = new QuestionsModel
+            // Retrieve the question based on questionId from the database
+            var question = _db.Questions
+                              .Where(q => q.Id == questionId && q.QuizId == quizId)
+                              .FirstOrDefault();
+
+            if (question == null)
             {
-                QuizId = quizId,
-                Id = questionId // Assuming you set the Id property for the question
-            };
+                // Handle the case where the question is not found
+                return NotFound();
+            }
 
             // Pass the question to the view
             return View(question);
