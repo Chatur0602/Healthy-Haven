@@ -11,7 +11,7 @@ namespace Healthy_Haven.Controllers
     {
         private readonly ILogger<QuizController> _logger;
         private readonly ApplicationDbContext _db;
-        
+
 
         public QuizController(ILogger<QuizController> logger, ApplicationDbContext db)
         {
@@ -38,33 +38,12 @@ namespace Healthy_Haven.Controllers
             return View(question);
         }
 
-        
 
-        /* Video implementation. For reference
-        public IActionResult CreateQuiz() 
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public  IActionResult CreateQuiz(QuestionsModel questionDetails)
-        {
-            //modify later -- should link to the builder tab as it says tho
-            if (ModelState.IsValid)
-            {
-                _db.Questions.Add(questionDetails);
-                _db.SaveChanges();
-                return RedirectToAction("QuizBuilder");
-            }
-            return View();
-        }
-        */
         public IActionResult CreateQuiz()
         {
-            //ViewBag.Courses = new SelectList(_db.Courses, "Id", "Name"); // Assuming you have a DbSet<CoursesModel> in your DbContext
-
             return View();
         }
+
 
         [HttpPost]
         public IActionResult CreateQuiz(QuizzesModel quizDetails)
@@ -125,12 +104,16 @@ namespace Healthy_Haven.Controllers
 
         public IActionResult AddOptions(int quizId, int questionId)
         {
-            // Retrieve the question based on questionId
-            var question = new QuestionsModel
+            // Retrieve the question based on questionId from the database
+            var question = _db.Questions
+                              .Where(q => q.Id == questionId && q.QuizId == quizId)
+                              .FirstOrDefault();
+
+            if (question == null)
             {
-                QuizId = quizId,
-                Id = questionId // Assuming you set the Id property for the question
-            };
+                // Handle the case where the question is not found
+                return NotFound();
+            }
 
             // Pass the question to the view
             return View(question);
@@ -205,9 +188,44 @@ namespace Healthy_Haven.Controllers
             return BadRequest("Invalid number of options.");
         }
 
+        [HttpPost]
+        public IActionResult SaveAndNewQuestion([FromBody] List<OptionsModel> options, int quizId)
+        {
+            if (options != null && options.Count >= 2 && options.Count <= 4)
+            {
+                // Ensure that only one option is selected as correct
+                if (options.Count(o => o.IsCorrect) != 1)
+                {
+                    // Handle the case where no correct option is selected
+                    return BadRequest("Please select exactly one answer as correct.");
+                }
 
+                // Add options to the database
+                _db.Options.AddRange(options);
+                _db.SaveChanges();
 
+                // Get the newly created question ID
+                int questionId = options.FirstOrDefault()?.QuestionId ?? 0;
 
+                if (questionId != 0)
+                {
+                    // Update the options with the correct QuestionId
+                    foreach (var option in options)
+                    {
+                        option.QuestionId = questionId;
+                    }
+
+                    // Save the changes
+                    _db.SaveChanges();
+                }
+
+                // Return a success status and redirect to CreateQuestion
+                return CreateQuestion(quizId);
+            }
+
+            // Handle the case where there are validation errors or an incorrect number of options
+            return BadRequest("Invalid number of options.");
+        }
 
     }
 }

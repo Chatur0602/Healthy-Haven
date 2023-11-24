@@ -4,9 +4,13 @@
     ViewData["Title"] = "Add Options";
 }
 
-<h2>Add Options</h2>
 
-<h3>Question ID: @Model.Id</h3>
+<h2>Question: @Model.QuestionText</h2>
+<br />
+<h3>Add Options</h3>
+
+
+
 
 <div>
     <label for="OptionText">Option:</label>
@@ -15,17 +19,21 @@
     <span class="text-danger" id="maxOptionsError" style="display:none;">You can add a maximum of 4 options.</span>
 </div>
 
-<button type="button" class="btn btn-primary mt-3" id="addOption">Add Option</button>
+<button type="button" class="btn btn-warning mt-3" id="addOption">Add Option</button>
 
 <div id="optionList" class="mt-3">
     <!-- Existing options (if any) can be displayed here -->
 </div>
 
+<button type="button" class="btn btn-primary mt-3" id="addQuestion">Add Question</button>
 <button type="button" class="btn btn-success mt-3" id="saveOptions">Complete Quiz</button>
 <span class="text-danger" id="minOptionsError" style="display:none;">Please add at least 2 options.</span>
 
 @section scripts {
     <script>
+        // Create an array to store the options
+        var options = [];
+
         $(document).ready(function () {
             $('#addOption').click(function () {
                 var optionText = $('#optionText').val().trim();
@@ -88,8 +96,7 @@
                             contentType: 'application/json; charset=utf-8',
                             data: JSON.stringify(options),
                             success: function () {
-                                // Handle success, e.g., redirect to a success page
-                                //window.location.href = "/Quiz/OptionsAddedSuccessfully";
+                                //comment out later
                                 alert("success");
                             },
                             error: function () {
@@ -107,5 +114,24 @@
                 }
             });
         });
+
+        $('#addQuestion').click(function () {
+            // Make an AJAX call to create a new question
+            $.ajax({
+                type: 'POST',
+                url: '/Quiz/SaveAndNewQuestion',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({ options: options, quizId: @Model.QuizId }),
+                success: function (data) {
+                    // Redirect to the new question page
+                    //window.location.href = '/Quiz/CreateQuestion?quizId=' + @Model.QuizId + '&questionId=' + data.questionId;
+                },
+                error: function () {
+                    // Handle error, e.g., display an error message
+                    alert("An error occurred while adding a new question.");
+                }
+            });
+        });
+
     </script>
 }
