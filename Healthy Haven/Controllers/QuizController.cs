@@ -29,6 +29,7 @@ namespace Healthy_Haven.Controllers
             return View(quizzes);
         }
 
+        /*
         public IActionResult QuizBuilder(int quizId)
         {
             // Create a new empty question object
@@ -39,7 +40,7 @@ namespace Healthy_Haven.Controllers
 
             return View(question);
         }
-
+        */
 
         public IActionResult CreateQuiz()
         {
@@ -92,6 +93,39 @@ namespace Healthy_Haven.Controllers
             _db.SaveChanges();
 
             return RedirectToAction("InstructorModeratorQuizManagement");
+        }
+
+        public IActionResult EditQuiz (int quizId)
+        {
+            var quizDetails = _db.Quizzes.Find(quizId);
+
+            return View(quizDetails);
+        }
+
+        [HttpPost]
+        public IActionResult EditQuizDetails (QuizzesModel quizDetails)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingQuiz = _db.Quizzes.Find(quizDetails.Id);
+
+                if (existingQuiz == null)
+                {
+                    return NotFound();
+                }
+
+                
+                existingQuiz.Title = quizDetails.Title;
+                existingQuiz.Description = quizDetails.Description;
+                existingQuiz.Date = quizDetails.Date;
+
+                // Save the changes to the database
+                _db.SaveChanges();
+
+                return RedirectToAction("InstructorModeratorQuizManagement");
+            }
+
+            return View();
         }
 
         public IActionResult CreateQuestion(int quizId)
