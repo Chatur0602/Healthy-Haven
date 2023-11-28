@@ -75,9 +75,6 @@
                 if ($('#optionList input[type="radio"]').length >= 2) {
                     // Check if any radio button is selected
                     if ($('#optionList input[type="radio"]:checked').length > 0) {
-                        // Create an array to store the options
-                        var options = [];
-
                         // Iterate through each radio button
                         $('#optionList input[type="radio"]').each(function () {
                             var option = {
@@ -116,19 +113,20 @@
         });
 
         $('#addQuestion').click(function () {
-            // Make an AJAX call to create a new question
+            // Make an AJAX call to create a new question           //fucking dumbass
+                                                                    //expecting a list but were providing fuck all
             $.ajax({
                 type: 'POST',
-                url: '/Quiz/SaveAndNewQuestion',
+                url: '/Quiz/SaveOptions',
                 contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({ options: options, quizId: @Model.QuizId }),
+                data: JSON.stringify(options),
                 success: function (data) {
                     // Redirect to the new question page
-                    //window.location.href = '/Quiz/CreateQuestion?quizId=' + @Model.QuizId + '&questionId=' + data.questionId;
+                    window.location.href = '/Quiz/CreateQuestion?quizId=' + @Model.QuizId;
                 },
                 error: function () {
                     // Handle error, e.g., display an error message
-                    alert("An error occurred while adding a new question.");
+                    alert("An error occurred while adding a new question."+error);
                 }
             });
         });

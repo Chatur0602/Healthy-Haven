@@ -84,6 +84,8 @@ namespace Healthy_Haven.Controllers
             return View(question);
         }
 
+        
+
 
         [HttpPost]
         public IActionResult AddQuestion(int quizId, QuestionsModel question)
@@ -119,47 +121,9 @@ namespace Healthy_Haven.Controllers
             return View(question);
         }
 
-        /*
-         * backtrack in case saveOptions doesn;t work
+        
         [HttpPost]
-        public IActionResult AddOptions(int quizId, int questionId, [FromBody] List<OptionsModel> options)
-        {
-            try
-            {
-                if (options != null && options.Count >= 2 && options.Count <= 4)
-                {
-                    // Ensure that only one option is selected as correct
-                    if (options.Count(o => o.IsCorrect) != 1)
-                    {
-                        return BadRequest("Please select exactly one answer as correct.");
-                    }
-
-                    // Set the QuestionId for all options
-                    foreach (var option in options)
-                    {
-                        option.QuestionId = questionId;
-                    }
-
-                    // Add options to the database
-                    _db.Options.AddRange(options);
-                    _db.SaveChanges();
-
-                    // Return success
-                    return Ok("Options added successfully.");
-                }
-
-                // Handle the case where there are validation errors or an incorrect number of options
-                return BadRequest("Invalid number of options.");
-            }
-            catch (Exception ex)
-            {
-                // Log the exception, handle accordingly
-                return StatusCode(500, "An error occurred while processing the request.");
-            }
-        }
-        */
-        [HttpPost]
-        public IActionResult SaveOptions([FromBody] List<OptionsModel> options)
+        public IActionResult SaveOptions([FromBody] List<OptionsModel> options)  //saves options on submit in Add Options
         {
             if (options != null && options.Count >= 2 && options.Count <= 4)
             {
@@ -188,44 +152,7 @@ namespace Healthy_Haven.Controllers
             return BadRequest("Invalid number of options.");
         }
 
-        [HttpPost]
-        public IActionResult SaveAndNewQuestion([FromBody] List<OptionsModel> options, int quizId)
-        {
-            if (options != null && options.Count >= 2 && options.Count <= 4)
-            {
-                // Ensure that only one option is selected as correct
-                if (options.Count(o => o.IsCorrect) != 1)
-                {
-                    // Handle the case where no correct option is selected
-                    return BadRequest("Please select exactly one answer as correct.");
-                }
-
-                // Add options to the database
-                _db.Options.AddRange(options);
-                _db.SaveChanges();
-
-                // Get the newly created question ID
-                int questionId = options.FirstOrDefault()?.QuestionId ?? 0;
-
-                if (questionId != 0)
-                {
-                    // Update the options with the correct QuestionId
-                    foreach (var option in options)
-                    {
-                        option.QuestionId = questionId;
-                    }
-
-                    // Save the changes
-                    _db.SaveChanges();
-                }
-
-                // Return a success status and redirect to CreateQuestion
-                return CreateQuestion(quizId);
-            }
-
-            // Handle the case where there are validation errors or an incorrect number of options
-            return BadRequest("Invalid number of options.");
-        }
+        
 
     }
 }
