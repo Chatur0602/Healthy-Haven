@@ -92,6 +92,11 @@ namespace Healthy_Haven.Controllers
         {
             if (ModelState.IsValid)
             {
+                //Automatically assign number to question e.g 1. something
+                int quizCount = _db.Questions.Count(q => q.QuizId == quizId);
+                String qNo = (quizCount+1) + ". ";
+                question.QuestionText = qNo + question.QuestionText;
+
                 // Add the question to the database
                 _db.Questions.Add(question);
                 _db.SaveChanges();
@@ -131,7 +136,7 @@ namespace Healthy_Haven.Controllers
                 if (options.Count(o => o.IsCorrect) != 1)
                 {
                     // Handle the case where no correct option is selected
-                    return BadRequest("Please select exactly one answer as correct.");
+                    return BadRequest("Please select one answer as correct.");
                 }
 
                 // Set the QuestionId for all options
