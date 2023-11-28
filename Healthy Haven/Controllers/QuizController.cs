@@ -24,6 +24,7 @@ namespace Healthy_Haven.Controllers
         {
             List<QuizzesModel> quizzes = new List<QuizzesModel>();
             quizzes = _db.Quizzes.ToList();
+            quizzes.Reverse();
             return View(quizzes);
         }
 

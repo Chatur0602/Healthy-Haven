@@ -88,7 +88,8 @@
                             contentType: 'application/json; charset=utf-8',
                             data: JSON.stringify(options),
                             success: function () {
-                                alert("Success");
+                                alert("Quiz Saved Successfully!");
+                                window.location.href = '/Quiz/InstructorModeratorQuizManagement';
                             },
                             error: function () {
                                 alert("An error occurred while saving options.");
