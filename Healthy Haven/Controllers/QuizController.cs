@@ -3,6 +3,7 @@ using Healthy_Haven.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Healthy_Haven.Controllers
@@ -58,8 +59,39 @@ namespace Healthy_Haven.Controllers
                 return RedirectToAction("CreateQuestion", new { quizId = quizDetails.Id });
             }
 
-            // If validation fails, return to the same view
             return View();
+        }
+
+
+        public IActionResult DeleteQuiz(int quizId)
+        {
+            var quiz = _db.Quizzes.Find(quizId);
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
+            // Retrieve associated questions
+            var questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+
+            foreach (var question in questions)
+            {
+                // Retrieve associated options
+                var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+
+                // Remove options
+                _db.Options.RemoveRange(options);
+
+                // Remove question
+                _db.Questions.Remove(question);
+            }
+
+            // delete quiz and save
+            _db.Quizzes.Remove(quiz);
+            _db.SaveChanges();
+
+            return RedirectToAction("InstructorModeratorQuizManagement");
         }
 
         public IActionResult CreateQuestion(int quizId)
