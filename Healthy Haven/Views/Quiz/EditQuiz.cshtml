@@ -1,0 +1,56 @@
+﻿@model Healthy_Haven.Models.QuizzesModel
+@using System.Security.Claims;
+
+@{
+    ViewData["Title"] = "EditQuiz";
+}
+
+
+<div>
+    <h3>Current Quiz Details</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-xl-1">Title:</dt>
+        <dd class="col-xl-11">@Model.Title</dd>
+
+        <dt class="col-xl-1">Description:</dt>
+        <dd class="col-xl-11">@Model.Description</dd>
+
+    </dl>
+</div>
+
+<hr />
+<br />
+
+<h3>Edit Quiz</h3>
+
+<form asp-action="EditQuizDetails" method="post">
+    @Html.ValidationSummary(true)
+
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" required />
+        @Html.ValidationMessageFor(model => model.Title)
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control" required></textarea>
+        @Html.ValidationMessageFor(model => model.Description)
+    </div>
+
+    <!-- Hidden fields for additional details -->
+    <input type="hidden" asp-for="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+    <input type="hidden" asp-for="Id" value="@Model.Id" />
+    <input type="hidden" asp-for="Date" value="@DateTime.Now" />
+    <input type="hidden" asp-for="CourseId" value=2 />
+
+
+    <div class="form-group">
+        <br />
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-danger">Cancel</a>
+    </div>
+</form>
+
+

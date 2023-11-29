@@ -3,6 +3,7 @@ using Healthy_Haven.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Healthy_Haven.Controllers
@@ -24,20 +25,9 @@ namespace Healthy_Haven.Controllers
         {
             List<QuizzesModel> quizzes = new List<QuizzesModel>();
             quizzes = _db.Quizzes.ToList();
+            quizzes.Reverse();
             return View(quizzes);
         }
-
-        public IActionResult QuizBuilder(int quizId)
-        {
-            // Create a new empty question object
-            QuestionsModel question = new QuestionsModel();
-
-            // Set the quiz ID
-            question.QuizId = quizId;
-
-            return View(question);
-        }
-
 
         public IActionResult CreateQuiz()
         {
@@ -53,17 +43,71 @@ namespace Healthy_Haven.Controllers
                 _db.Quizzes.Add(quizDetails);
                 _db.SaveChanges();
 
-                // Redirect to the quiz builder page with the newly created quiz ID
                 return RedirectToAction("CreateQuestion", new { quizId = quizDetails.Id });
             }
 
-            // If validation fails, return to the same view
+            return View();
+        }
+
+
+        public IActionResult DeleteQuiz(int quizId)
+        {
+            var quiz = _db.Quizzes.Find(quizId);
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
+            var questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+
+            foreach (var question in questions)
+            {
+                var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+
+                _db.Options.RemoveRange(options);
+                _db.Questions.Remove(question);
+            }
+
+            // delete quiz and save
+            _db.Quizzes.Remove(quiz);
+            _db.SaveChanges();
+
+            return RedirectToAction("InstructorModeratorQuizManagement");
+        }
+
+        public IActionResult EditQuiz (int quizId)
+        {
+            var quizDetails = _db.Quizzes.Find(quizId);
+            return View(quizDetails);
+        }
+
+        [HttpPost]
+        public IActionResult EditQuizDetails (QuizzesModel quizDetails)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingQuiz = _db.Quizzes.Find(quizDetails.Id);
+
+                if (existingQuiz == null)
+                {
+                    return NotFound();
+                }
+
+                existingQuiz.Title = quizDetails.Title;
+                existingQuiz.Description = quizDetails.Description;
+                existingQuiz.Date = quizDetails.Date;
+
+                _db.SaveChanges();
+
+                return RedirectToAction("InstructorModeratorQuizManagement");
+            }
+
             return View();
         }
 
         public IActionResult CreateQuestion(int quizId)
         {
-            // Retrieve the quiz based on quizId
             var quiz = _db.Quizzes.Find(quizId);
 
             if (quiz == null)
@@ -72,17 +116,14 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            // Create a new empty question object
             QuestionsModel question = new QuestionsModel();
-
-            // Set the quiz ID
             question.QuizId = quizId;
-
-            // Pass the quiz to the view
             ViewData["Quiz"] = quiz;
 
             return View(question);
         }
+
+        
 
 
         [HttpPost]
@@ -90,15 +131,17 @@ namespace Healthy_Haven.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Add the question to the database
+                //Automatically assign number to question e.g 1. something
+                int quizCount = _db.Questions.Count(q => q.QuizId == quizId);
+                String qNo = (quizCount+1) + ". ";
+                question.QuestionText = qNo + question.QuestionText;
+
                 _db.Questions.Add(question);
                 _db.SaveChanges();
 
-                // Redirect to the page for adding options with the newly created question ID
                 return RedirectToAction("AddOptions", new { quizId = quizId, questionId = question.Id });
             }
 
-            // Validation failed, return to the create question page
             return RedirectToAction("CreateQuestion", new { quizId = quizId });
         }
 
@@ -111,72 +154,24 @@ namespace Healthy_Haven.Controllers
 
             if (question == null)
             {
-                // Handle the case where the question is not found
                 return NotFound();
             }
 
-            // Pass the question to the view
             return View(question);
         }
 
-        /*
-         * backtrack in case saveOptions doesn;t work
+        
         [HttpPost]
-        public IActionResult AddOptions(int quizId, int questionId, [FromBody] List<OptionsModel> options)
-        {
-            try
-            {
-                if (options != null && options.Count >= 2 && options.Count <= 4)
-                {
-                    // Ensure that only one option is selected as correct
-                    if (options.Count(o => o.IsCorrect) != 1)
-                    {
-                        return BadRequest("Please select exactly one answer as correct.");
-                    }
-
-                    // Set the QuestionId for all options
-                    foreach (var option in options)
-                    {
-                        option.QuestionId = questionId;
-                    }
-
-                    // Add options to the database
-                    _db.Options.AddRange(options);
-                    _db.SaveChanges();
-
-                    // Return success
-                    return Ok("Options added successfully.");
-                }
-
-                // Handle the case where there are validation errors or an incorrect number of options
-                return BadRequest("Invalid number of options.");
-            }
-            catch (Exception ex)
-            {
-                // Log the exception, handle accordingly
-                return StatusCode(500, "An error occurred while processing the request.");
-            }
-        }
-        */
-        [HttpPost]
-        public IActionResult SaveOptions([FromBody] List<OptionsModel> options)
+        public IActionResult SaveOptions([FromBody] List<OptionsModel> options)  //saves options on submit in Add Options
         {
             if (options != null && options.Count >= 2 && options.Count <= 4)
             {
-                // Ensure that only one option is selected as correct
                 if (options.Count(o => o.IsCorrect) != 1)
                 {
                     // Handle the case where no correct option is selected
-                    return BadRequest("Please select exactly one answer as correct.");
+                    return BadRequest("Please select one answer as correct.");
                 }
 
-                // Set the QuestionId for all options
-                foreach (var option in options)
-                {
-                    //option.QuestionId = questionId;
-                }
-
-                // Add options to the database
                 _db.Options.AddRange(options);
                 _db.SaveChanges();
 
@@ -184,48 +179,10 @@ namespace Healthy_Haven.Controllers
                 return Ok();
             }
 
-            // Handle the case where there are validation errors or an incorrect number of options
             return BadRequest("Invalid number of options.");
         }
 
-        [HttpPost]
-        public IActionResult SaveAndNewQuestion([FromBody] List<OptionsModel> options, int quizId)
-        {
-            if (options != null && options.Count >= 2 && options.Count <= 4)
-            {
-                // Ensure that only one option is selected as correct
-                if (options.Count(o => o.IsCorrect) != 1)
-                {
-                    // Handle the case where no correct option is selected
-                    return BadRequest("Please select exactly one answer as correct.");
-                }
-
-                // Add options to the database
-                _db.Options.AddRange(options);
-                _db.SaveChanges();
-
-                // Get the newly created question ID
-                int questionId = options.FirstOrDefault()?.QuestionId ?? 0;
-
-                if (questionId != 0)
-                {
-                    // Update the options with the correct QuestionId
-                    foreach (var option in options)
-                    {
-                        option.QuestionId = questionId;
-                    }
-
-                    // Save the changes
-                    _db.SaveChanges();
-                }
-
-                // Return a success status and redirect to CreateQuestion
-                return CreateQuestion(quizId);
-            }
-
-            // Handle the case where there are validation errors or an incorrect number of options
-            return BadRequest("Invalid number of options.");
-        }
+        
 
     }
 }
