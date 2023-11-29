@@ -29,7 +29,7 @@
                             <a class="nav-link" asp-area="" asp-controller="Forum" asp-action="ForumDashboard">Forums</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Course" asp-action="Course">Courses</a>
+                            <a class="nav-link" asp-area="" asp-controller="Course" asp-action="UserCourse">Courses</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement">Quizzes</a>
@@ -45,10 +45,19 @@
                             if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
                             {
                                 <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Course" asp-action="Course">Courses Management</a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="UserManagement">User Management</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" asp-area="" asp-controller="Forum" asp-action="ForumManagement">Forum Management</a>
+                                </li>
+                            }
+                            if (User.IsInRole("Admin") || User.IsInRole("Moderator") || User.IsInRole("Instructor") || User.IsInRole("Member"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Consultations" asp-action="ConsultationsManagement">Consultations</a>
                                 </li>
                             }
                         }

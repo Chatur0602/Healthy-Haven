@@ -96,7 +96,7 @@ namespace Healthy_Haven.Controllers
                     int fileCount = 1;
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU724N5C7R", "RaF4OK0LqeCrG24HK2hjNkI0ZuAupcTLpnzJTerF", "FwoGZXIvYXdzEDcaDJesX7iztkrIziEroSK8AZW9c4kXSoj/uM80fgrhY4FxwSROiJ9IQi0W8IMVdf6M+eDjp34ipf/LaBW3AlKsRLfE1wj1Z9atg7L6a4I1yptzZFkAkreYIkBxN6HdW0pv0sazwDq1nust1UgT8GK0EZV+D+BCTTqW3oY0oA+wVmKJaK7zcpBO6H8KAAeGUj6eNOk+vtJgqkzfkSAVmUAazrKmxE4WZEdPEC350Av2thiz6pbyVupYGPYoDs4eClAQRoXDOuvWdMoPtO8vKJOy0aoGMi2qrmkzUL3TsAikaVIiDa7HTNeBFFoL0bihWxBg7IxAybH6f/AEmduqBe5TDBY=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -248,7 +248,7 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU724N5C7R", "RaF4OK0LqeCrG24HK2hjNkI0ZuAupcTLpnzJTerF", "FwoGZXIvYXdzEDcaDJesX7iztkrIziEroSK8AZW9c4kXSoj/uM80fgrhY4FxwSROiJ9IQi0W8IMVdf6M+eDjp34ipf/LaBW3AlKsRLfE1wj1Z9atg7L6a4I1yptzZFkAkreYIkBxN6HdW0pv0sazwDq1nust1UgT8GK0EZV+D+BCTTqW3oY0oA+wVmKJaK7zcpBO6H8KAAeGUj6eNOk+vtJgqkzfkSAVmUAazrKmxE4WZEdPEC350Av2thiz6pbyVupYGPYoDs4eClAQRoXDOuvWdMoPtO8vKJOy0aoGMi2qrmkzUL3TsAikaVIiDa7HTNeBFFoL0bihWxBg7IxAybH6f/AEmduqBe5TDBY=", RegionEndpoint.USEast1))
+            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", RegionEndpoint.USEast1))
             {
                 foreach (var fileName in selectedFileNames)
                 {

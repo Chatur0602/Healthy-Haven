@@ -16,6 +16,8 @@ namespace Healthy_Haven.Data
 
         public DbSet<ForumImages> ForumImages { get; set; }
 
+        public DbSet<CourseImages> CourseImages { get; set; }
+
         public DbSet<CommentLikeModel> CommentLikes { get; set; }
 
         public DbSet<ForumLikeModel> ForumLikes { get; set; }
@@ -23,12 +25,16 @@ namespace Healthy_Haven.Data
         public DbSet<CommentModel> Comments { get; set; }
         
         public DbSet<CoursesModel> Courses {  get; set; }
-
+        
         //public DbSet<QuizModel> Quizzes { get; set; }  
+        
         public DbSet<QuizzesModel> Quizzes { get; set; }
+        
         public DbSet<QuestionsModel> Questions { get; set; }
+        
         public DbSet<OptionsModel> Options { get; set; }
-
+       
+        public DbSet<ConsultationsEntity> Consultations { get; set; }
 
     }
 }
