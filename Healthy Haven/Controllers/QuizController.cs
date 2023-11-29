@@ -31,22 +31,34 @@ namespace Healthy_Haven.Controllers
 
         public IActionResult CreateQuiz()
         {
-            return View();
+            var coursesList = _db.Courses.ToList();  // Replace _db.Courses with your actual DbSet for courses
+
+            var quizCoursesModel = new QuizCoursesModel
+            {
+                Quizzes = new QuizzesModel(), // we fill this in the view
+                CoursesList = coursesList
+            };
+
+            return View(quizCoursesModel);
         }
 
 
         [HttpPost]
-        public IActionResult CreateQuiz(QuizzesModel quizDetails)
+        public IActionResult CreateQuiz(QuizCoursesModel details)
         {
-            if (ModelState.IsValid)
+            var coursesList = _db.Courses.ToList();
+            var quizCoursesModel = new QuizCoursesModel
             {
-                _db.Quizzes.Add(quizDetails);
-                _db.SaveChanges();
+                Quizzes = new QuizzesModel(), // in case it dont work we can reload this way
+                CoursesList = coursesList
+            };
 
-                return RedirectToAction("CreateQuestion", new { quizId = quizDetails.Id });
-            }
+            
+            _db.Quizzes.Add(details.Quizzes);
+            _db.SaveChanges();
 
-            return View();
+            return RedirectToAction("CreateQuestion", new { quizId = details.Quizzes.Id });
+            
         }
 
 
