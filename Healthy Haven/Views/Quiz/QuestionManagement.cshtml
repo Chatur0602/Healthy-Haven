@@ -1,0 +1,74 @@
+﻿@model IEnumerable<QuestionsModel>
+
+@{
+    ViewData["Title"] = "QuestionManagement";
+}
+
+<style>
+    .table th, .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 3em;
+        max-width: 200px; /* Set your desired maximum width */
+    }
+</style>
+
+<div>
+    <div class="row pt-4">
+        <h2 class="col-9">Question Management Menu</h2>
+    </div>
+    <div class="col-12 text-lg-end">
+        <!-- Add button for creating a new quiz -->
+        <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-success">Return to Dashboard</a>
+    </div>
+</div>
+<br />
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered table-hover table-striped" width="100%">
+        <thead>
+            <tr>
+                <th>Questions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var question in Model)
+            {
+                <tr data-question-id="@question.Id">
+                    <td width="80%">@question.QuestionText</td>
+                    <td width="20%">
+                        <div class="w-100 btn-group" role="group">
+                            <!-- Edit button -->
+                            <a asp-controller="Quiz" asp-action="EditQuestion" asp-route-quizId="@question.Id" class="btn btn-primary mx-1">Edit</a>
+                            <!-- Delete button -->
+                            <a asp-controller="Quiz" asp-action="DeleteQuestion" asp-route-questionId="@question.Id" class="btn btn-danger">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+    <div class="text-lg-start">
+        <a asp-controller="Quiz" asp-action="CreateQuestion" asp-route-quizId="@Model.First().QuizId" class="btn btn-success btn-lg">Add Questions</a>
+    </div>
+}
+else
+{
+    <br />
+    <p><b>No Questions Found</b></p>
+}
+
+<script>
+    // Attach a click event to all rows
+    document.querySelectorAll('tbody tr').forEach(function (row) {
+        row.addEventListener('click', function () {
+            var questionId = row.getAttribute('data-question-id');
+
+            window.location.href = '/Quiz/OptionManagement?questionId=' + questionId;
+        });
+    });
+</script>
+

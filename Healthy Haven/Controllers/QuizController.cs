@@ -76,6 +76,26 @@ namespace Healthy_Haven.Controllers
             return RedirectToAction("InstructorModeratorQuizManagement");
         }
 
+
+        public IActionResult DeleteQuestion (int  questionId)
+        {
+            var question = _db.Questions.Find(questionId);
+
+            if(question == null)
+            {
+                return NotFound();
+            }
+
+            var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+            _db.Options.RemoveRange(options);
+            _db.Questions.Remove(question);
+            _db.SaveChanges();
+
+
+            return RedirectToAction("QuestionManagement", new { quizId = question.QuizId });
+        }
+
+
         public IActionResult EditQuiz (int quizId)
         {
             var quizDetails = _db.Quizzes.Find(quizId);
@@ -104,6 +124,39 @@ namespace Healthy_Haven.Controllers
             }
 
             return View();
+        }
+
+        /*
+         So, i take them to the view to edit the question
+         post to method which then updates the model based on the questionId
+         post method redirects to questionManagement with quizID in the question Model
+         */
+        public IActionResult EditQuestion( int quizId)  //can imporve but later
+        {
+            var question = _db.Questions.Find(quizId);
+            return View(question);
+        }
+
+        [HttpPost]
+        public IActionResult EditQuestion (QuestionsModel questionDetails )
+        {   
+            if (ModelState.IsValid)
+            {
+                var existingQuestions = _db.Questions.Find(questionDetails.Id);
+
+                if (existingQuestions == null)
+                {
+                    return NotFound();
+                }
+
+                existingQuestions.QuestionText = questionDetails.QuestionText;
+                _db.SaveChanges();
+
+                return RedirectToAction("QuestionManagement", new { quizId = questionDetails.QuizId });
+            }
+
+            return View();
+
         }
 
         public IActionResult CreateQuestion(int quizId)
@@ -160,6 +213,44 @@ namespace Healthy_Haven.Controllers
             return View(question);
         }
 
+        public IActionResult EditOptions(int questionId)
+        {
+            var question = _db.Questions.Find(questionId);
+
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            return View(question);
+        }
+
+        [HttpPost]
+        public IActionResult EditOptions([FromBody] List<OptionsModel> options)
+        {
+            if (options != null && options.Count >= 2 && options.Count <= 4)
+            {
+                if (options.Count(o => o.IsCorrect) != 1)
+                {
+                    // Handle the case where no correct option is selected
+                    return BadRequest("Please select one answer as correct.");
+                }
+
+
+                var questionId = options[0].QuestionId;
+                var existingOptions = _db.Options.Where(o => o.QuestionId == options[0].QuestionId).ToList();
+                _db.Options.RemoveRange(existingOptions);
+                _db.SaveChanges();
+
+                _db.Options.AddRange(options);
+                _db.SaveChanges();
+
+                return RedirectToAction("OptionManagement", new { questionId = questionId });
+            }
+
+            return BadRequest("Invalid number of options.");
+        }
+
         
         [HttpPost]
         public IActionResult SaveOptions([FromBody] List<OptionsModel> options)  //saves options on submit in Add Options
@@ -175,13 +266,24 @@ namespace Healthy_Haven.Controllers
                 _db.Options.AddRange(options);
                 _db.SaveChanges();
 
-                // Return a success status
-                return Ok();
+                return RedirectToAction("InstructorModeratorQuizManagement");
             }
 
             return BadRequest("Invalid number of options.");
         }
 
+
+        public IActionResult QuestionManagement(int quizId)  
+        {
+            var questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+            return View(questions);
+        }
+
+        public IActionResult OptionManagement (int questionId)
+        {
+            var options = _db.Options.Where(q => q.QuestionId == questionId).ToList();
+            return View(options);
+        }
         
 
     }
