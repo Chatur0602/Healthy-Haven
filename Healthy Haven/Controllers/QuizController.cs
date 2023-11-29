@@ -111,32 +111,39 @@ namespace Healthy_Haven.Controllers
         public IActionResult EditQuiz (int quizId)
         {
             var quizDetails = _db.Quizzes.Find(quizId);
-            return View(quizDetails);
+            var coursesList = _db.Courses.ToList();
+
+            var quizCoursesModel = new QuizCoursesModel
+            {
+                Quizzes = quizDetails,
+                CoursesList = coursesList
+            };
+
+            return View(quizCoursesModel);
         }
 
         [HttpPost]
-        public IActionResult EditQuizDetails (QuizzesModel quizDetails)
+        public IActionResult EditQuizDetails(QuizCoursesModel quizCoursesModel)
         {
-            if (ModelState.IsValid)
-            {
-                var existingQuiz = _db.Quizzes.Find(quizDetails.Id);
+            
+                var existingQuiz = _db.Quizzes.Find(quizCoursesModel.Quizzes.Id);
 
                 if (existingQuiz == null)
                 {
                     return NotFound();
                 }
 
-                existingQuiz.Title = quizDetails.Title;
-                existingQuiz.Description = quizDetails.Description;
-                existingQuiz.Date = quizDetails.Date;
+                existingQuiz.Title = quizCoursesModel.Quizzes.Title;
+                existingQuiz.Description = quizCoursesModel.Quizzes.Description;
+                existingQuiz.Date = quizCoursesModel.Quizzes.Date;
+                existingQuiz.CourseId = quizCoursesModel.Quizzes.CourseId;
 
                 _db.SaveChanges();
 
                 return RedirectToAction("InstructorModeratorQuizManagement");
-            }
-
-            return View();
+            
         }
+
 
         /*
          So, i take them to the view to edit the question
