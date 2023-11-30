@@ -25,6 +25,8 @@ namespace Healthy_Haven.Data
         public DbSet<CommentModel> Comments { get; set; }
         
         public DbSet<CoursesModel> Courses {  get; set; }
+
+        public DbSet<ModulesModel> Modules { get; set; }
         
         //public DbSet<QuizModel> Quizzes { get; set; }  
         

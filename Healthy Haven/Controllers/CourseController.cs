@@ -29,15 +29,28 @@ namespace Healthy_Haven.Controllers
             return View(Courses);
         }
 
+        public IActionResult ViewModules()
+        {
+            List<ModulesModel> Modules = new List<ModulesModel>();
+            Modules = _db.Modules.ToList();
+            return View(Modules);
+        }
+
         public IActionResult CourseDetails(int? id)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             var coursedetails = _db.Courses.Find(id);
+
             if (coursedetails == null)
             {
                 return NotFound();
             }
 
-            return View("UserCourse", new List<CoursesModel> { coursedetails });
+            return View("CourseDetails", new List<CoursesModel> { coursedetails });
         }
 
         public IActionResult Course()
@@ -68,7 +81,7 @@ namespace Healthy_Haven.Controllers
                 int fileCount = 1;
                 int course_Id = coursedetails.id;
 
-                using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RUQGOO6EQB", "Jv9ebiMrVz2ZQ7ORXa8m2N4pTeD1hHtmq9IQ3Gym", "FwoGZXIvYXdzEG0aDHoXKHtl3q7HnsoQNSK8AUlMPWKfzwaw4jqfYITulPqOrhEKs0ZDdir7qW7yRXvXCESwUV5I4xAxM9BE7YmA+ZArdSvso1S9QE9MpIg0dDamEKmRdp2MwWP6/nu7ZrWprUwP/n64ykAfJq6K4u6yQsu8NO9af3ZGlwZrc5nkDR9puPAx9UXcSc+wlB2LBe/eac2j//Qpei4cNfPyg56/4iFI402dbABavnXFrCFvgrM8LGUyq5UGV/PR68+0tIHrZtdpdi6B5yotxscPKICk3aoGMi1vz0AbsFU2br2oWMimqtDdbs/2idJbXslx3/E0lsHw8cynO3SRnk59eg2SxRo=", RegionEndpoint.USEast1))
+                using (var amazonS3client = new AmazonS3Client("ASIA2LWVJXALHUDRZVDO", "p3nm02aDr+4SLIH4jkel61bCJCrmoOlk82vZls5I", "FwoGZXIvYXdzEI///////////wEaDOX0v6WYbOuOQ+hgbiK8AVMynKu6MJSVhrV5ZgsOMv1dtK9GZVjQOYFLdmFanAfou3y62GHkxwSUYFqhbQ7eSEU2jMgoGLnatsDdU9XpzGr2q1K6wP24H2E73snbEjicgQeskI7wAZrMDVXfT6bY/T9OjntH8TST49+uLErUDZ188iZHIaQ8QO21/p8rQBGflqRbPc9gJq1oC5+Nn+eD6er3mZdopju70+rqa6uvyDHYqP95uiY+j+Q7lUD7uSeOY40BAfFGzcBlHOT0KPT8nKsGMi2Mhsv2xonmj+7bidiaBmgEGUfv2o0ehJ0vzSnM+d1+udgDwLUuuVgeruxeubM=", RegionEndpoint.USEast1))
                 {
                     foreach (var file in files)
                     {
@@ -89,7 +102,7 @@ namespace Healthy_Haven.Controllers
                                 {
                                     InputStream = memorystream,
                                     Key = key,
-                                    BucketName = "healthyhavens3",
+                                    BucketName = "healthyheaven",
                                     ContentType = file.ContentType,
                                 };
 
@@ -189,7 +202,7 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            using (var amazons3client = new AmazonS3Client("ASIA55H4D3RUQGOO6EQB", "Jv9ebiMrVz2ZQ7ORXa8m2N4pTeD1hHtmq9IQ3Gym", "FwoGZXIvYXdzEG0aDHoXKHtl3q7HnsoQNSK8AUlMPWKfzwaw4jqfYITulPqOrhEKs0ZDdir7qW7yRXvXCESwUV5I4xAxM9BE7YmA+ZArdSvso1S9QE9MpIg0dDamEKmRdp2MwWP6/nu7ZrWprUwP/n64ykAfJq6K4u6yQsu8NO9af3ZGlwZrc5nkDR9puPAx9UXcSc+wlB2LBe/eac2j//Qpei4cNfPyg56/4iFI402dbABavnXFrCFvgrM8LGUyq5UGV/PR68+0tIHrZtdpdi6B5yotxscPKICk3aoGMi1vz0AbsFU2br2oWMimqtDdbs/2idJbXslx3/E0lsHw8cynO3SRnk59eg2SxRo=", RegionEndpoint.USEast1))
+            using (var amazons3client = new AmazonS3Client("ASIA2LWVJXALJ24ABY7U", "S0fef4bzmZwwJEkEmNeE6tLvefZueL2Pa2kOHrdv", "FwoGZXIvYXdzEIr//////////wEaDM7cef35Y8pGytHEjyK8ATTeAChswZ9YoVsiYne9JD4IqS7ZOfQ/9cWGG2rxH5DsnEPp1tKw54mRR+1IrXFct4Vj44mZwiPGMhqX2rVU7Fv8KmXYg+EXeSiXofXmhfTDQDhlCRuxxL7uGUSjCAEP2mQw8s5vk10Vyga/cLhSyTAVOUbYUNm9gbmScvRd47K5z69zDH7ONdyWrFT5HTAt1HjMfRUl4PobIY+B5ESvOqkVUY688apRN9D9HlnqOvCqGTOnYvFmg/dZAP7KKM72m6sGMi01erfYCJBRlVfIbET4HFYezAGwkZmCQFAK0s+KV362m0HQRiUTJWkR6Qc/DG8=", RegionEndpoint.USEast1))
             {
                 foreach(var fileName in selectedFileNames)
                 {
@@ -200,7 +213,7 @@ namespace Healthy_Haven.Controllers
 
                     await amazons3client.DeleteObjectAsync(new DeleteObjectRequest()
                     {
-                        BucketName = "healthyhavens3",
+                        BucketName = "healthyheaven",
                         Key = key,
                     });
 
