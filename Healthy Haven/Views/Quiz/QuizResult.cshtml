@@ -6,14 +6,20 @@
     ViewData["Title"] = "QuizResult";
 }
 
-
-
 <style>
+    body {
+        color: goldenrod;
+        font-family: 'Arial', sans-serif;
+        margin: 20px;
+    }
+
     .result-bar {
-        background-color: goldenrod;
-        color: darkslategray;
-        padding: 10px;
-        text-align: center;
+        background-color: #ffc107;
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        align-content: center;
     }
 
     .correct-answer {
@@ -27,6 +33,76 @@
     .normal-answer {
         color: black;
     }
+
+    .question-section {
+        background-color: #fff6c9;
+        color: #132B25;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .details-section {
+        background-color: #ffc107;
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .details-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 48%;
+    }
+
+    h1, h3 {
+        margin: 0;
+        color: #132B25;
+    }
+
+    h3 {
+        margin-bottom: 10px;
+    }
+
+    form {
+        margin-top: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.9em;
+    }
+
+    p {
+        text-indent: 30px;
+        color: #000000;
+        /*font-size: 12pt;*/
+    }
+
+    input[type="radio"] {
+        margin-right: 10px;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        border: 2px solid #132B25;
+        border-radius: 50%;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+        input[type="radio"]:checked {
+            background-color: goldenrod;
+        }
+
+        input[type="radio"]:hover {
+            border-color: #132B25;
+        }
 </style>
 
 <div class="result-bar">
@@ -34,25 +110,33 @@
     <p>Score: @Model.CorrectAnswers / @Model.TotalQuestions</p>
 </div>
 
+
 @foreach (var question in _db.Questions.Where(q => q.QuizId == Model.QuizId).ToList())
 {
+    <div class="question-section">
     <label>@question.QuestionText</label>
 
-    var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
-    var selectedOptionId = Model.QuestionResponses.ContainsKey(question.Id) ? Model.QuestionResponses[question.Id] : -1;
-    var correctOptionId = options.FirstOrDefault(o => o.IsCorrect)?.Id ?? -1;
-
-    foreach (var option in options)
-    {
-        var optionClass = option.Id == correctOptionId
-            ? "correct-answer"
-            : (option.Id == selectedOptionId ? "incorrect-answer" : "normal-answer");
-
-        <p class="@optionClass">
-            <input type="radio" name="QuestionResponses[@question.Id]" value="@option.Id" disabled />
-            @option.OptionText
-        </p>
+    @{
+            var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+            var selectedOptionId = Model.QuestionResponses.ContainsKey(question.Id) ? Model.QuestionResponses[question.Id] : -1;
+            var correctOptionId = options.FirstOrDefault(o => o.IsCorrect)?.Id ?? -1;
     }
+    
+
+        @foreach (var option in options)
+        {
+            var optionClass = option.IsCorrect
+            ? "correct-answer"
+            : (Model.QuestionResponses.ContainsKey(question.Id) && Model.QuestionResponses[question.Id] == option.Id ? "incorrect-answer" : "normal-answer");
+
+            <p class="@optionClass">
+                <input type="radio" name="QuestionResponses[@question.Id]" value="@option.Id" disabled />
+                @option.OptionText
+            </p>
+        }
+    </div>
+    
 }
 
-<button type="button" onclick="location.href='@Url.Action("QuizRender", "Quiz", new { quizId = Model.QuizId })'">Retry Quiz</button>
+
+<button class="btn btn-warning btn-lg" type="button" onclick="location.href='@Url.Action("QuizRender", "Quiz", new { quizId = Model.QuizId })'">Retry Quiz</button>
