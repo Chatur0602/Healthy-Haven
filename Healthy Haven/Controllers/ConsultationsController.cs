@@ -87,9 +87,17 @@ namespace Healthy_Haven.Controllers
         {
             if (ModelState.IsValid)
             {
-                // You can access the current user's ID and set it in the consultationsDetails object
-                var currentUserId = _userManager.GetUserId(User);
-                consultationsDetails.instructor_id = currentUserId; // Assuming you want to set the instructor_id
+                // Set instructor_id based on the current user's role
+                if (User.IsInRole("Instructor"))
+                {
+                    consultationsDetails.instructor_id = _userManager.GetUserId(User);
+                }
+
+                // Set student_id based on the current user's role
+                if (User.IsInRole("Member"))
+                {
+                    consultationsDetails.student_id = _userManager.GetUserId(User);
+                }
 
                 _db.Consultations.Add(consultationsDetails);
                 _db.SaveChanges();
@@ -124,19 +132,57 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            var members = _userManager.GetUsersInRoleAsync("Member").Result;
-            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+            var currentUser = _userManager.GetUserAsync(User).Result;
 
-            ViewBag.Members = members
-                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                .ToList();
+            if (User.IsInRole("Instructor"))
+            {
+                // Instructors can only select members
+                var members = _userManager.GetUsersInRoleAsync("Member").Result;
+                ViewBag.Members = members
+                    .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                    .ToList();
 
-            ViewBag.Instructors = instructors
-                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                .ToList();
+                ViewBag.Instructors = new List<SelectListItem>
+        {
+            new SelectListItem { Value = currentUser.Id, Text = $"{currentUser.FirstName} {currentUser.LastName}" }
+        };
+
+                // Set the selected member based on the consultationsDetails
+                ViewBag.SelectedMember = consultationsDetails.student_id;
+            }
+            else if (User.IsInRole("Member"))
+            {
+                // Members can only select instructors
+                var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+                ViewBag.Instructors = instructors
+                    .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                    .ToList();
+
+                ViewBag.Members = new List<SelectListItem>
+        {
+            new SelectListItem { Value = currentUser.Id, Text = $"{currentUser.FirstName} {currentUser.LastName}" }
+        };
+
+                // Set the selected instructor based on the consultationsDetails
+                ViewBag.SelectedInstructor = consultationsDetails.instructor_id;
+            }
+            else
+            {
+                // Admins/Moderators can select both members and instructors
+                var members = _userManager.GetUsersInRoleAsync("Member").Result;
+                ViewBag.Members = members
+                    .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                    .ToList();
+
+                var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+                ViewBag.Instructors = instructors
+                    .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                    .ToList();
+            }
 
             return View(consultationsDetails);
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
@@ -144,9 +190,17 @@ namespace Healthy_Haven.Controllers
         {
             if (ModelState.IsValid)
             {
-                // You can access the current user's ID and set it in the consultationsDetails object
-                var currentUserId = _userManager.GetUserId(User);
-                consultationsDetails.instructor_id = currentUserId; // Assuming you want to set the instructor_id
+                // Set instructor_id based on the current user's role
+                if (User.IsInRole("Instructor"))
+                {
+                    consultationsDetails.instructor_id = _userManager.GetUserId(User);
+                }
+
+                // Set student_id based on the current user's role
+                if (User.IsInRole("Member"))
+                {
+                    consultationsDetails.student_id = _userManager.GetUserId(User);
+                }
 
                 _db.Consultations.Update(consultationsDetails);
                 _db.SaveChanges();
@@ -170,8 +224,6 @@ namespace Healthy_Haven.Controllers
             return View(consultationsDetails);
         }
 
-
-        // ... (other actions)
 
         [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
         public IActionResult DeleteConsultations(int? Id)
