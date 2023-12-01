@@ -1,0 +1,27 @@
+﻿@model Healthy_Haven.Models.QuestionsModel
+
+@{
+    ViewData["Title"] = "EditQuestion";
+}
+
+<h2>Edit Question</h2>
+
+@*<h3>Question ID: @Model.QuizId</h3>*@
+<h3>Question ID: @Model.QuizId</h3>
+
+<form asp-action="EditQuestion" method="post">
+    <input type="hidden" name="quizId" value="@Model.QuizId">
+    <input type="hidden" name="Id" value="@Model.Id">
+
+    <div class="form-group">
+        <label for="QuestionText">Question:</label>
+        <textarea asp-for="QuestionText" class="form-control" required></textarea>
+        @Html.ValidationMessageFor(model => model.QuestionText)
+    </div>
+    <br />
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-success">Save Question</button>
+        <a href="@Url.Action("QuestionManagement", "Quiz", new { quizId = Model.QuizId })" class="btn btn-danger">Cancel</a>
+    </div>
+</form>

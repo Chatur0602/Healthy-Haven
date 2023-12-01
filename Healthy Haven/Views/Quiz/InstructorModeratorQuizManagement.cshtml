@@ -42,7 +42,7 @@
         <tbody>
             @foreach (var quiz in Model)
             {
-                <tr>
+                <tr data-quiz-id="@quiz.Id">
                     <td width="20%">@quiz.Title</td>
                     <td width="40%">@quiz.Description</td>
                     <td width="20">@quiz.Date</td>
@@ -64,3 +64,16 @@ else
     <br />
     <p><b>No Quizzes Found</b></p>
 }
+
+<script>
+    // Attach a click event to all rows
+    document.querySelectorAll('tbody tr').forEach(function (row) {
+        row.addEventListener('click', function () {
+            // Retrieve the quizId from the data attribute
+            var quizId = row.getAttribute('data-quiz-id');
+
+            // Redirect to the QuestionManagement controller with the quizId
+            window.location.href = '/Quiz/QuestionManagement?quizId=' + quizId;
+        });
+    });
+</script>

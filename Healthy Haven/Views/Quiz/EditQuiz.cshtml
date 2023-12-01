@@ -1,20 +1,22 @@
-﻿@model Healthy_Haven.Models.QuizzesModel
+﻿@model Healthy_Haven.Models.QuizCoursesModel
 @using System.Security.Claims;
 
 @{
     ViewData["Title"] = "EditQuiz";
 }
 
-
 <div>
     <h3>Current Quiz Details</h3>
     <hr />
     <dl class="row">
         <dt class="col-xl-1">Title:</dt>
-        <dd class="col-xl-11">@Model.Title</dd>
+        <dd class="col-xl-11">@Model.Quizzes.Title</dd>
 
         <dt class="col-xl-1">Description:</dt>
-        <dd class="col-xl-11">@Model.Description</dd>
+        <dd class="col-xl-11">@Model.Quizzes.Description</dd>
+
+        <dt class="col-xl-1">Course:</dt>
+        <dd class="col-xl-11">@Model.CoursesList.FirstOrDefault(c => c.id == Model.Quizzes.CourseId)?.name</dd>
 
     </dl>
 </div>
@@ -28,23 +30,36 @@
     @Html.ValidationSummary(true)
 
     <div class="form-group">
-        <label asp-for="Title"></label>
-        <input asp-for="Title" class="form-control" required />
-        @Html.ValidationMessageFor(model => model.Title)
+        <label asp-for="Quizzes.Title"></label>
+        <input asp-for="Quizzes.Title" class="form-control" required />
+        @Html.ValidationMessageFor(model => model.Quizzes.Title)
     </div>
 
     <div class="form-group">
-        <label asp-for="Description"></label>
-        <textarea asp-for="Description" class="form-control" required></textarea>
-        @Html.ValidationMessageFor(model => model.Description)
+        <label asp-for="Quizzes.Description"></label>
+        <textarea asp-for="Quizzes.Description" class="form-control" required></textarea>
+        @Html.ValidationMessageFor(model => model.Quizzes.Description)
     </div>
 
     <!-- Hidden fields for additional details -->
-    <input type="hidden" asp-for="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
-    <input type="hidden" asp-for="Id" value="@Model.Id" />
-    <input type="hidden" asp-for="Date" value="@DateTime.Now" />
-    <input type="hidden" asp-for="CourseId" value=2 />
+    <input type="hidden" asp-for="Quizzes.UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+    <input type="hidden" asp-for="Quizzes.Id" value="@Model.Quizzes.Id" />
+    <input type="hidden" asp-for="Quizzes.Date" value="@Model.Quizzes.Date" />
 
+    <div class="form-group">
+        <label asp-for="Quizzes.CourseId">Select Course:</label>
+        <select asp-for="Quizzes.CourseId" class="form-control" required>
+            <option value="">Select Course</option>
+            @if (Model.CoursesList != null)
+            {
+                foreach (var course in Model.CoursesList)
+                {
+                    <option value="@course.id" selected="@course.id == Model.Quizzes.CourseId">@course.name</option>
+                }
+            }
+        </select>
+        @Html.ValidationMessageFor(model => model.Quizzes.CourseId)
+    </div>
 
     <div class="form-group">
         <br />
@@ -52,5 +67,3 @@
         <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-danger">Cancel</a>
     </div>
 </form>
-
-
