@@ -12,3 +12,7 @@ CREATE TABLE Courses (
 );
 
 drop table Courses;
+
+DELETE FROM Courses where id = 1;
+select * from Courses;
+
