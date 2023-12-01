@@ -203,10 +203,7 @@ namespace Healthy_Haven.Controllers
         {
             if (ModelState.IsValid)
             {
-                //Automatically assign number to question e.g 1. something
-                int quizCount = _db.Questions.Count(q => q.QuizId == quizId);
-                String qNo = (quizCount+1) + ". ";
-                question.QuestionText = qNo + question.QuestionText;
+                question.QuestionText = question.QuestionText;
 
                 _db.Questions.Add(question);
                 _db.SaveChanges();
