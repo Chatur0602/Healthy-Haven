@@ -300,7 +300,42 @@ namespace Healthy_Haven.Controllers
             var options = _db.Options.Where(q => q.QuestionId == questionId).ToList();
             return View(options);
         }
-        
+
+        public IActionResult QuizRender(int quizId)
+        {
+            var quiz = _db.Quizzes.Find(quizId);
+            return View(quiz);
+        }
+
+        [HttpPost]
+        public IActionResult QuizResult(int quizId, Dictionary<int, int> questionResponses)
+        {
+            var questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+            int correctAnswers = 0;
+
+            foreach (var question in questions)
+            {
+                var selectedOptionId = questionResponses.ContainsKey(question.Id) ? questionResponses[question.Id] : -1;
+
+                var correctOption = _db.Options.FirstOrDefault(o => o.QuestionId == question.Id && o.IsCorrect);
+
+                if (correctOption != null && correctOption.Id == selectedOptionId)
+                {
+                    correctAnswers++;
+                }
+            }
+
+            var viewModel = new QuizResultViewModel
+            {
+                QuizId = quizId,
+                CorrectAnswers = correctAnswers,
+                TotalQuestions = questions.Count,
+                QuestionResponses = questionResponses
+            };
+
+            return View("QuizResult", viewModel);
+        }
+
 
     }
 }

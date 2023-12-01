@@ -1,0 +1,90 @@
+﻿@using Healthy_Haven.Data;
+@inject ApplicationDbContext _db;
+@model QuizzesModel;
+@{
+    ViewData["Title"] = "QuizRender";
+}
+
+<style>
+    body {
+        background-color: darkslategray;
+        color: goldenrod;
+        font-family: 'Arial', sans-serif;
+        margin: 20px;
+    }
+
+    h2, p {
+        color: black;
+    }
+
+    form {
+        margin-top: 20px;
+    }
+
+    p {
+        margin-bottom: 10px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="radio"] {
+        margin-right: 5px;
+    }
+
+    button {
+        background-color: goldenrod;
+        color: darkslategray;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+<h3>Title: @Model.Title</h3>
+<h4>Description: @Model.Description</h4>
+<h4>Author: @_db.Users.Find(Model.UserId)?.FirstName @_db.Users.Find(Model.UserId)?.LastName</h4>
+<h4>Course: @_db.Courses.Find(Model.CourseId)?.name</h4>
+
+<form asp-action="QuizResult" method="post">
+    <!-- Include hidden fields for necessary details -->
+    <input type="hidden" name="quizId" value="@Model.Id" />
+    <input type="hidden" name="totalQuestions" value="@(_db.Questions.Where(q => q.QuizId == Model.Id).Count())" />
+
+    @{
+        var questions = _db.Questions.Where(q => q.QuizId == Model.Id).ToList();
+    }
+
+    @foreach (var question in questions)
+    {
+        <label>@question.QuestionText</label>
+
+        var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+
+        foreach (var option in options)
+        {
+            <p>
+                <input type="radio" name="QuestionResponses[@question.Id]" value="@option.Id" />
+                @option.OptionText
+            </p>
+        }
+    }
+
+    <button class="btn btn-success" type="submit">Submit Quiz</button>
+</form>
+
+<script>
+    function validateForm() {
+        var questions = document.querySelectorAll('[name^="QuestionResponses["]');
+        for (var i = 0; i < questions.length; i++) {
+            var selectedOptions = document.querySelectorAll('[name="' + questions[i].name + '"]:checked');
+            if (selectedOptions.length === 0) {
+                alert('Please select an option for each question before submitting.');
+                return false; // Prevent form submission
+            }
+        }
+        return true; // Allow form submission
+    }
+</script>
