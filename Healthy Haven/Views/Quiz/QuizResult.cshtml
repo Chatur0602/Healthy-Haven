@@ -1,0 +1,58 @@
+﻿@using Healthy_Haven.Data;
+@inject ApplicationDbContext _db;
+@model QuizResultViewModel
+
+@{
+    ViewData["Title"] = "QuizResult";
+}
+
+
+
+<style>
+    .result-bar {
+        background-color: goldenrod;
+        color: darkslategray;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .correct-answer {
+        color: green;
+    }
+
+    .incorrect-answer {
+        color: red;
+    }
+
+    .normal-answer {
+        color: black;
+    }
+</style>
+
+<div class="result-bar">
+    <p>Quiz Result</p>
+    <p>Score: @Model.CorrectAnswers / @Model.TotalQuestions</p>
+</div>
+
+@foreach (var question in _db.Questions.Where(q => q.QuizId == Model.QuizId).ToList())
+{
+    <label>@question.QuestionText</label>
+
+    var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+    var selectedOptionId = Model.QuestionResponses.ContainsKey(question.Id) ? Model.QuestionResponses[question.Id] : -1;
+    var correctOptionId = options.FirstOrDefault(o => o.IsCorrect)?.Id ?? -1;
+
+    foreach (var option in options)
+    {
+        var optionClass = option.Id == correctOptionId
+            ? "correct-answer"
+            : (option.Id == selectedOptionId ? "incorrect-answer" : "normal-answer");
+
+        <p class="@optionClass">
+            <input type="radio" name="QuestionResponses[@question.Id]" value="@option.Id" disabled />
+            @option.OptionText
+        </p>
+    }
+}
+
+<button type="button" onclick="location.href='@Url.Action("QuizRender", "Quiz", new { quizId = Model.QuizId })'">Retry Quiz</button>
