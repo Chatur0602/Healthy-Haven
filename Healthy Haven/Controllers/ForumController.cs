@@ -96,7 +96,7 @@ namespace Healthy_Haven.Controllers
                     int fileCount = 1;
 
           
-                 using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", RegionEndpoint.USEast1))
+                 using (var amazonS3client = new AmazonS3Client("ASIA2LWVJXALDKL5M6YV", "At4AqtBVDZZX8l5Ji7S1m5wvzmJWn1zMy7k4hYo6", "FwoGZXIvYXdzELH//////////wEaDOZS1pq0Pq0RY3QpWCK8AbrUhFcHzLFxARTfBSxqMSzIxkrYHPJwd9GaebHbu+BkFjPNGqCES6RDRzZVJfLkswFmlSFEIngINATCOSxTJNZKBeEyCReoLpB4BMEe6moId0p/YVVnm4VJeu/pbTwoiAVVjg55b3VZZC16JLaLdQ+DDH72s/88BZhXTqq1J16IbpMws2we69TdG/x67shZtgHuiomGPhxg6aIz7A6efAPJdzU4nYt8V3V6F4C4yCA3fscmhNJ51/zpLI/iKIKypKsGMi1iM+ksnHfprBLnUEiLYNl0nTewbPkXp6Fr1LLTHWsBQ8vkPGZVlTB5luATfWo=", RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -139,7 +139,7 @@ namespace Healthy_Haven.Controllers
                                         {
                                             InputStream = memorystream,
                                             Key = key,
-                                            BucketName = "healthyhavens3",
+                                            BucketName = "healthyheaven",
                                             ContentType = file.ContentType,
                                         };
 
@@ -248,7 +248,7 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", RegionEndpoint.USEast1))
+            using (var amazonS3client = new AmazonS3Client("ASIA2LWVJXALDKL5M6YV", "At4AqtBVDZZX8l5Ji7S1m5wvzmJWn1zMy7k4hYo6", "FwoGZXIvYXdzELH//////////wEaDOZS1pq0Pq0RY3QpWCK8AbrUhFcHzLFxARTfBSxqMSzIxkrYHPJwd9GaebHbu+BkFjPNGqCES6RDRzZVJfLkswFmlSFEIngINATCOSxTJNZKBeEyCReoLpB4BMEe6moId0p/YVVnm4VJeu/pbTwoiAVVjg55b3VZZC16JLaLdQ+DDH72s/88BZhXTqq1J16IbpMws2we69TdG/x67shZtgHuiomGPhxg6aIz7A6efAPJdzU4nYt8V3V6F4C4yCA3fscmhNJ51/zpLI/iKIKypKsGMi1iM+ksnHfprBLnUEiLYNl0nTewbPkXp6Fr1LLTHWsBQ8vkPGZVlTB5luATfWo=", RegionEndpoint.USEast1))
             {
                 foreach (var fileName in selectedFileNames)
                 {
@@ -260,7 +260,7 @@ namespace Healthy_Haven.Controllers
 
                     await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
                     {
-                        BucketName = "healthyhavens3",
+                        BucketName = "healthyheaven",
                         Key = key
                     });
 
