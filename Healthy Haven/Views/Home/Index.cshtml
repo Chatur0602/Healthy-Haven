@@ -1,43 +1,163 @@
-﻿@{
+﻿@using Healthy_Haven.Data;
+@{
     ViewData["Title"] = "Home";
 }
+@inject ApplicationDbContext _db;
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Healthy Haven</title>
+<!-- Add your CSS styles or link to an external stylesheet here -->
+<style>
+    #container {
+        font-family: Arial, sans-serif;
+        margin: 0 auto; /* Center the container */
+        padding: 0;
+        text-align: center;
+        display: flex; /* Use flex container for layout */
+        flex-direction: row; /* Stack items horizontally */
+        justify-content: center; /* Center items along the main axis */
+        align-items: flex-start; /* Align items at the start of the cross axis */
+        max-width: 1800px; /* Set a maximum width if desired */
+    }
 
-    <!-- Add your CSS styles or link to an external stylesheet here -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
+    #introVideo {
+        position: relative;
+        width: 70%; /* Adjust the width as needed */
+        max-width: 800px; /* Set a maximum width if desired */
+        margin: 100px; /* Adjust the margin as needed */
+        /* Add additional styling for the video container */
+    }
+
+    video {
+        width: 720px;
+        height: 100%; /* Adjust the height as needed */
+        object-fit: cover; /* Maintain video aspect ratio and cover the container */
+    }
+
+    .left-stack,
+    .right-stack {
+        flex-basis: 45%; /* Set initial size for the stacks */
+    }
+
+    .interactive-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center items along the cross axis */
+    }
+
+    .interactive-tiles {
+        display: flex;
+        flex-direction: column; /* Stack items vertically */
+        justify-content: flex-start; /* Align items at the start of the cross axis */
+        margin: 30px 0;
+    }
+
+
+    .course-tile,
+    .quiz-tile {
+        width: 300px;
+        padding: 10px;
+        margin: 10px;
+        border: 2px solid silver;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+        .course-tile:hover,
+        .quiz-tile:hover {
+            background-color: darkgoldenrod; /* Change background color on hover */
+            color: black !important;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1); /* Add box shadow on hover for elevation effect */
+            border: 4px solid silver;
+            border-radius: 8px;
+            transform: scale(1.1);
         }
 
-        h1 {
-            margin-top: 50px;
+            .quiz-tile:hover .tile-icon {
+                filter: invert(1); /* Invert the color on hover */
+            }
+
+            .course-tile:hover h3,
+            .quiz-tile:hover h3 {
+                color: silver; /* Set the title color to silver on hover */
+                font-weight: bold; /* Set font weight to bold on hover */
+            }
+
+            .course-tile:hover p,
+            .quiz-tile:hover p {
+                color: black; /* Set the description color to black on hover */
+            }
+
+        /* Additional styling for tile titles and descriptions */
+        .course-tile h3,
+        .quiz-tile h3 {
+            color: goldenrod; /* Set the title color to goldenrod */
         }
 
-        #introVideo {
-            width: 70%; /* Adjust the width as needed */
-            max-width: 800px; /* Set a maximum width if desired */
-            margin: 20px auto;
-            /* Add additional styling for the video container */
+        .course-tile p,
+        .quiz-tile p {
+            color: silver; /* Set the description color to silver */
         }
 
-        video {
-            width: 100%;
-            height: 500px; /* Adjust the height as needed */
-            object-fit: cover; /* Maintain video aspect ratio and cover the container */
+
+    .tile-icon {
+        width: 33px; /* Adjust the width as needed */
+        height: 33px; /* Adjust the height as needed */
+    }
+
+    .quiz-tile p {
+        margin: 0; /* Remove default margin to avoid spacing issues */
+    }
+
+    .quiz-details {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 0; /* Remove bottom margin */
+    }
+
+        .quiz-details img {
+            margin-right: 5px; /* Adjust the margin as needed */
+            margin-left: 5px; /* Remove left margin */
         }
-    </style>
-</head>
 
-<body>
+        .quiz-details p {
+            margin: 0; /* Remove default margin to avoid spacing issues */
+        }
 
-    <h1>Welcome To Healthy Haven</h1>
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    /* Add this style to your existing CSS */
+    .spacer {
+        flex-grow: 1;
+    }
+</style>
+<h1 style="text-align: center;"> Welcome To Healthy Haven!</h1>
+
+<div id="container">
+    <div class="left-stack interactive-container">
+        <div class="title"><img style="height: 69px; width:69px; filter: invert(1);" src="/icons8-course-assign-100.png" class="tile-icon" />Latest Courses</div>
+        <div class="interactive-tiles">
+            @{
+                // Retrieve the latest courses
+                var latestCourses = _db.Courses.OrderByDescending(c => c.course_date).Take(5).ToList();
+            }
+
+            @foreach (var course in latestCourses)
+            {
+                <div class="course-tile">
+                    <a href="/Course/CourseDetails/@course.id">
+                        <h3>@course.name</h3>
+                    </a>
+                    <p>@course.description</p>
+                    <!-- Additional course information or link can be added here -->
+                </div>
+            }
+        </div>
+    </div>
 
     <div id="introVideo">
         <video width="100%" height="400" controls autoplay muted controlsList="nodownload">
@@ -46,4 +166,70 @@
         </video>
     </div>
 
-</body>
+    <div class="right-stack interactive-container">
+        <div class="title"><img style="height: 69px; width:69px; filter: invert(1);" src="/icons8-quiz-100.png" class="tile-icon" />Latest Quizzes</div>
+        <div class="interactive-tiles">
+            @{
+                // Retrieve the latest quizzes
+                var latestQuizzes = _db.Quizzes.OrderByDescending(q => q.Date).Take(5).ToList();
+
+            }
+
+            @foreach (var quiz in latestQuizzes)
+            {
+
+                var currentTime = DateTime.Now;
+                var creationTime = quiz.Date;
+                var timeDifference = currentTime - creationTime;
+
+                string timeAgo;
+
+                if (timeDifference.TotalMinutes < 1)
+                {
+                    timeAgo = "just now";
+                }
+                else if (timeDifference.TotalHours < 1)
+                {
+                    var minutes = (int)timeDifference.TotalMinutes;
+                    timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                }
+                else if (timeDifference.TotalDays < 1)
+                {
+                    var hours = (int)timeDifference.TotalHours;
+                    timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                }
+                else if (timeDifference.TotalDays < 30)
+                {
+                    var days = (int)timeDifference.TotalDays;
+                    timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+                }
+                else if (timeDifference.TotalDays < 365)
+                {
+                    var months = (int)(timeDifference.TotalDays / 30);
+                    timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+                }
+                else
+                {
+                    var years = (int)(timeDifference.TotalDays / 365);
+                    timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+                }
+
+
+                var questionCount = _db.Questions.Count(x => x.QuizId == quiz.Id);
+
+                <div class="quiz-tile">
+                    <h3>@quiz.Title</h3>
+                    <p>@quiz.Description</p>
+                    <div class="quiz-details">
+                        <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
+                        <p>@timeAgo</p>
+                        <div class="spacer"></div> <!-- Add a spacer div for separation -->
+                        <img src="/icons8-questions-100-white.png" class="tile-icon" />
+                        <p style="margin-right: 10px !important;">@questionCount Questions</p>
+                    </div>
+                    <!-- Additional quiz information or link can be added here -->
+                </div>
+            }
+        </div>
+    </div>
+</div>
