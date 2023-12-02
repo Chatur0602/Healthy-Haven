@@ -9,6 +9,8 @@ using Amazon;
 using Microsoft.Identity.Client;
 using Amazon.S3.Model;
 using Microsoft.CodeAnalysis.Elfie.PDB;
+using System.Net.NetworkInformation;
+using Microsoft.Extensions.Configuration;
 
 namespace Healthy_Haven.Controllers
 {
@@ -95,8 +97,16 @@ namespace Healthy_Haven.Controllers
                     int totalSize = 1;
                     int fileCount = 1;
 
-          
-                 using (var amazonS3client = new AmazonS3Client("ASIA2LWVJXALDKL5M6YV", "At4AqtBVDZZX8l5Ji7S1m5wvzmJWn1zMy7k4hYo6", "FwoGZXIvYXdzELH//////////wEaDOZS1pq0Pq0RY3QpWCK8AbrUhFcHzLFxARTfBSxqMSzIxkrYHPJwd9GaebHbu+BkFjPNGqCES6RDRzZVJfLkswFmlSFEIngINATCOSxTJNZKBeEyCReoLpB4BMEe6moId0p/YVVnm4VJeu/pbTwoiAVVjg55b3VZZC16JLaLdQ+DDH72s/88BZhXTqq1J16IbpMws2we69TdG/x67shZtgHuiomGPhxg6aIz7A6efAPJdzU4nYt8V3V6F4C4yCA3fscmhNJ51/zpLI/iKIKypKsGMi1iM+ksnHfprBLnUEiLYNl0nTewbPkXp6Fr1LLTHWsBQ8vkPGZVlTB5luATfWo=", RegionEndpoint.USEast1))
+                    IConfiguration configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+                    var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+                    var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+                    var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+                    using (var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -143,7 +153,7 @@ namespace Healthy_Haven.Controllers
                                             ContentType = file.ContentType,
                                         };
 
-                                        var transferUtility = new TransferUtility(amazonS3client);
+                                        var transferUtility = new TransferUtility(s3Client);
                                         await transferUtility.UploadAsync(request);
 
                                         ForumImages forumImages = new ForumImages();
@@ -248,7 +258,17 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            using (var amazonS3client = new AmazonS3Client("ASIA2LWVJXALDKL5M6YV", "At4AqtBVDZZX8l5Ji7S1m5wvzmJWn1zMy7k4hYo6", "FwoGZXIvYXdzELH//////////wEaDOZS1pq0Pq0RY3QpWCK8AbrUhFcHzLFxARTfBSxqMSzIxkrYHPJwd9GaebHbu+BkFjPNGqCES6RDRzZVJfLkswFmlSFEIngINATCOSxTJNZKBeEyCReoLpB4BMEe6moId0p/YVVnm4VJeu/pbTwoiAVVjg55b3VZZC16JLaLdQ+DDH72s/88BZhXTqq1J16IbpMws2we69TdG/x67shZtgHuiomGPhxg6aIz7A6efAPJdzU4nYt8V3V6F4C4yCA3fscmhNJ51/zpLI/iKIKypKsGMi1iM+ksnHfprBLnUEiLYNl0nTewbPkXp6Fr1LLTHWsBQ8vkPGZVlTB5luATfWo=", RegionEndpoint.USEast1))
+
+            IConfiguration configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+            var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+            var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+            var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+            using (var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1))
             {
                 foreach (var fileName in selectedFileNames)
                 {
@@ -258,7 +278,7 @@ namespace Healthy_Haven.Controllers
                     var folderPath = "ForumImages/";
                     var key = folderPath + fileName;
 
-                    await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
+                    await s3Client.DeleteObjectAsync(new DeleteObjectRequest()
                     {
                         BucketName = "healthyheaven",
                         Key = key

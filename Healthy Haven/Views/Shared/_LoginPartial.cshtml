@@ -4,6 +4,12 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+<style>
+    .navbar-nav .dropdown:hover .dropdown-menu {
+        display: block;
+    }
+</style>
+
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
@@ -17,6 +23,40 @@
                 </span>
             </a>
     </li>
+        @if (User.Identity.IsAuthenticated)
+        {
+            @if (User.IsInRole("Instructor") || User.IsInRole("Admin") || User.IsInRole("Moderator") ||  User.IsInRole("Member"))
+            {
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Management Hub
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="managementDropdown">
+
+                        <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Profile</a>
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                        {
+                            <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="UserManagement">Users</a>
+                        }
+
+                        <a class="dropdown-item" asp-area="" asp-controller="Forum" asp-action="ForumManagement">Forums</a>
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("Moderator") || User.IsInRole("Instructor"))
+                        {
+                            <a class="dropdown-item" asp-area="" asp-controller="Course" asp-action="Course">Courses</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement">Quizzes</a>
+                        }
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a class="dropdown-item" asp-area="" asp-controller="AppRoles" asp-action="RoleManagement">Roles</a>
+                        }
+                    </div>
+            </li>
+            }
+        }
+
     <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
             <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>

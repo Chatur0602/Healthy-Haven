@@ -25,6 +25,7 @@
             </div>
         </div>
         <br />
+        @if(User.IsInRole("Admin") || User.IsInRole("Moderator")){
         <div class="row">
             <div class="col-4">
                 <label asp-for="User_Id"></label>
@@ -32,6 +33,7 @@
             </div>
         </div>
         <br />
+        }
         <div class="row">
             <div class="col-4">
                 <label asp-for="Created_At"></label>
