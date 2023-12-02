@@ -4,6 +4,14 @@
 }
 @inject ApplicationDbContext _db;
 
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+</head>
+
 <!-- Add your CSS styles or link to an external stylesheet here -->
 <style>
     #container {
@@ -16,6 +24,7 @@
         justify-content: center; /* Center items along the main axis */
         align-items: flex-start; /* Align items at the start of the cross axis */
         max-width: 1800px; /* Set a maximum width if desired */
+        
     }
 
     #introVideo {
@@ -53,7 +62,7 @@
 
     .course-tile,
     .quiz-tile {
-        width: 300px;
+        width: 333px;
         padding: 10px;
         margin: 10px;
         border: 2px solid silver;
@@ -72,7 +81,17 @@
             transform: scale(1.1);
         }
 
+        .course-tile:hover .course-tile,
+        .quiz-tile:hover .quiz-tile {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
             .quiz-tile:hover .tile-icon {
+                filter: invert(1); /* Invert the color on hover */
+            }
+
+            .course-tile:hover .tile-icon {
                 filter: invert(1); /* Invert the color on hover */
             }
 
@@ -125,7 +144,7 @@
         }
 
     .title {
-        font-size: 24px;
+        font-size: 32px;
         font-weight: bold;
         margin-top: 10px;
     }
@@ -134,12 +153,148 @@
     .spacer {
         flex-grow: 1;
     }
+
+    #description{
+        font-size: 20px !important;
+    }
+
+    .course-tile h3,
+    .quiz-tile h3 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit the number of lines to 2 */
+        -webkit-box-orient: vertical;
+    }
+
+
+    .course-tile p,
+    .quiz-tile p {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 5; /* Limit the number of lines to 2 */
+        -webkit-box-orient: vertical;
+    }
+
+    /* Add this style to your existing CSS */
+    .course-tile:hover h3,
+    .quiz-tile:hover h3,
+    .course-tile:hover p,
+    .quiz-tile:hover p {
+        -webkit-line-clamp: 10; /* Show all lines on hover */
+    }
+
+    .bottom-stack {
+        flex-basis: 100%; /* Take up the full width of the container */
+    }
+
+
+    .image-carousel {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        position: relative;
+    }
+
+        .image-carousel img {
+            height: 200px;
+            width: 100%;
+            object-fit: contain;
+        }
+
+    .card {
+        width: 100%;
+        padding: 10px;
+        margin: 10px;
+        border: 2px solid silver;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        background: rgba(255, 255, 255, 0);
+    }
+
+        .card:hover{
+            background-color: darkgoldenrod; /* Change background color on hover */
+            color: black !important;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1); /* Add box shadow on hover for elevation effect */
+            border: 4px solid silver;
+            border-radius: 8px;
+            transform: scale(1.1);
+        }
+
+        .card:hover h5{
+            color:silver !important;
+        }
+
+        .card:hover .card-text{
+            color: black !important;
+        }
+
+        .card:hover .forum-posted-by{
+            color: black !important;
+        }
+
+        .card:hover #like-count{
+            color: silver !important;
+        }
+
+
+    .card-title {
+        color: darkgoldenrod;
+        font-size: 28px;
+    }
+
+    .card-text{
+        color:silver !important; 
+        font-size: 20px;
+    }
+
+    .slick-dots {
+        display: flex !important;
+        justify-content: center !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+        .slick-dots li {
+            margin: 0 5px !important;
+            cursor: pointer;
+            color: darkgreen !important;
+        }
+
+            .slick-dots li:hover {
+                color: silver !important;
+            }
+
+            .slick-dots li button {
+                display: none !important;
+            }
+
+    /* Add a CSS class for the fading effect */
+    .fade-out {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 5; /* Limit to 5 lines */
+        -webkit-box-orient: vertical;
+    }
+
+    .fade-out-title {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit to 5 lines */
+        -webkit-box-orient: vertical;
+    }
+
+    .forum-posted-by {
+        transition: color 0.3s ease-in-out;
+        color:silver !important;
+    }
+
 </style>
 <h1 style="text-align: center;"> Welcome To Healthy Haven!</h1>
 
 <div id="container">
     <div class="left-stack interactive-container">
-        <div class="title"><img style="height: 69px; width:69px; filter: invert(1);" src="/icons8-course-assign-100.png" class="tile-icon" />Latest Courses</div>
+        <div class="title"><img style="height: 69px; width:69px; filter: invert(1);" src="/icons8-course-assign-100.png" class="tile-icon" />&nbspLatest Courses</div>
         <div class="interactive-tiles">
             @{
                 // Retrieve the latest courses
@@ -148,26 +303,84 @@
 
             @foreach (var course in latestCourses)
             {
+                var currentTime = DateTime.Now;
+                var creationTime = course.course_date;
+                var timeDifference = currentTime - creationTime;
+
+                string timeAgo;
+
+                if (timeDifference.TotalMinutes < 1)
+                {
+                    timeAgo = "just now";
+                }
+                else if (timeDifference.TotalHours < 1)
+                {
+                    var minutes = (int)timeDifference.TotalMinutes;
+                    timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                }
+                else if (timeDifference.TotalDays < 1)
+                {
+                    var hours = (int)timeDifference.TotalHours;
+                    timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                }
+                else if (timeDifference.TotalDays < 30)
+                {
+                    var days = (int)timeDifference.TotalDays;
+                    timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+                }
+                else if (timeDifference.TotalDays < 365)
+                {
+                    var months = (int)(timeDifference.TotalDays / 30);
+                    timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+                }
+                else
+                {
+                    var years = (int)(timeDifference.TotalDays / 365);
+                    timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+                }
+
                 <div class="course-tile">
                     <a href="/Course/CourseDetails/@course.id">
                         <h3>@course.name</h3>
                     </a>
-                    <p>@course.description</p>
-                    <!-- Additional course information or link can be added here -->
+                    <p id="description">@course.description</p>
+                    <div class="quiz-details">
+                    <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
+                    <p>@timeAgo</p>
+                    <div class="spacer"></div> <!-- Add a spacer div for separation -->
+                    <img hidden src="/icons8-questions-100-white.png" class="tile-icon" />
+                    <p hidden style="margin-right: 10px !important;"> Modules</p>
                 </div>
+                </div>
+              
             }
         </div>
     </div>
 
     <div id="introVideo">
-        <video width="100%" height="400" controls autoplay muted controlsList="nodownload">
+        <video width="100%" height="400" controls autoplay muted controlsList="nodownload" padding-bottom: 25px;>
             <source src="/IntroVideo.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
+
+        @if (User.IsInRole("Instructor") || User.IsInRole("Member"))
+        {
+
+        }
+
+        else if (User.IsInRole("Admin")|| User.IsInRole("Moderator"))
+        {
+
+        }
+
+        else
+        {
+            <h4 style="margin-top:25px;">Please <a id="login" asp-area="Identity" asp-page="/Account/Login">Sign In</a> To Book A Consultation Today!</h4>
+        }
     </div>
 
     <div class="right-stack interactive-container">
-        <div class="title"><img style="height: 69px; width:69px; filter: invert(1);" src="/icons8-quiz-100.png" class="tile-icon" />Latest Quizzes</div>
+        <div class="title"><img style="height: 69px; width:69px; filter: invert(1);" src="/icons8-quiz-100.png" class="tile-icon" />&nbspLatest Quizzes</div>
         <div class="interactive-tiles">
             @{
                 // Retrieve the latest quizzes
@@ -219,7 +432,7 @@
 
                 <div class="quiz-tile">
                     <h3>@quiz.Title</h3>
-                    <p>@quiz.Description</p>
+                    <p id="description">@quiz.Description</p>
                     <div class="quiz-details">
                         <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
                         <p>@timeAgo</p>
@@ -233,3 +446,206 @@
         </div>
     </div>
 </div>
+
+<div class="bottom-stack">
+    <div class="title" style="text-align:center !important; margin-bottom: 25px;"><img style="height: 75px; width:75px;" src="/icons8-new-topic-100.png" class="tile-icon" />&nbspTrending Forum Topics</div>
+
+    @{
+        var latestForums = _db.Forums.OrderByDescending(q => q.Created_At).Take(6).ToList();
+    }
+
+    <div class="row">
+
+    @foreach (var item in latestForums)
+    {
+        var user = _db.Users.Find(item.User_Id);
+        var firstName = user.FirstName;
+        var lastName = user.LastName;
+
+        var forumImages = _db.ForumImages.Where(x => x.Forum_Id == item.Id).ToList();
+        var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
+        var forumLikeCount = _db.ForumLikes.Count(x => x.ForumId == item.Id);
+
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 style="padding-bottom: 5px;" class="card-title fade-out-title">@item.Title</h5>
+                    <div class="image-carousel">
+                        @foreach (var path in imagePaths)
+                        {
+                    @using Amazon.S3;
+                    @using Amazon.S3.Model;
+                    @using Amazon.S3.Util;
+                    @using Microsoft.Extensions.Configuration;
+
+                    IConfiguration configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+                            var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+                            var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+                            var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+                            // Create an S3 client
+                            var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1);
+
+                            // Define your bucket name and image key (path)
+                            string bucketName = "healthyheaven";
+                            string folderName = "ForumImages";
+                            string imagePath = $"{folderName}/{path}";
+
+                            // Generate a pre-signed URL with a short expiration time
+                            GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                    {
+                        BucketName = bucketName,
+                        Key = imagePath,
+                        Expires = DateTime.Now.AddMinutes(60) // Adjust the expiration time as needed
+                    };
+
+                            string preSignedURL = s3Client.GetPreSignedURL(request);
+                            <div>
+                                <img src="@preSignedURL" alt="Image">
+                            </div>
+                        }
+                    </div>
+                    <p style="padding-bottom: 5px;" class="card-text fade-out">@item.Description</p>
+
+                    @{
+                        // Retrieve the top comment for the current forum
+                        var topComment = _db.Comments
+                        .Where(x => x.ForumId == item.Id)
+                        .OrderByDescending(x => _db.CommentLikes.Count(cl => cl.CommentId == x.Id))
+                        .FirstOrDefault();
+                    }
+
+                    @if (topComment != null)
+                    {
+                        <div class="mt-3" style="padding-right:20px;">
+                            <h5 style="color:darkgoldenrod">Top Comment</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-text fade-out-title">@topComment.CommentText</p>
+
+                                    @{
+                                        var user2 = _db.Users.Find(topComment.UserId);
+                                        var firstName2 = user2.FirstName;
+                                        var lastName2 = user2.LastName;
+
+                                        var likeCount = _db.CommentLikes.Count(x => x.CommentId == topComment.Id);
+                                    }
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                            <p style="font-size:14px;" class="mb-0 forum-posted-by"><strong>Posted By</strong> @firstName2 @lastName2</p>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-heart text-danger mr-1"></i>
+                                            &nbsp;
+                                            <span id="likeCount_@topComment.Id"><strong id="like-count" style="color:goldenrod">@likeCount</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between align-items-center" style="padding-top:15px;">
+                        <a asp-controller="Forum" asp-action="ViewForum" asp-route-Id="@item.Id" class="btn btn-primary mx-1">
+                            View Forum
+                        </a>
+
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-info mx-1" onclick="shareForum('@item.Id')">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            &nbsp;&nbsp;
+                            <i class="fas fa-heart text-danger mr-1"></i>
+                            &nbsp;
+                            <h5 class="mb-0 ml-2"><span id="forumLikeCount_@item.Id"><strong>@forumLikeCount</strong></span></h5>
+                        </div>
+                    </div>
+
+                    @{
+                        var currentTime = DateTime.Now;
+                        var creationTime = item.Created_At;
+                        var timeDifference = currentTime - creationTime;
+
+                        string timeAgo;
+
+                        if (timeDifference.TotalMinutes < 1)
+                        {
+                            timeAgo = "just now";
+                        }
+                        else if (timeDifference.TotalHours < 1)
+                        {
+                            var minutes = (int)timeDifference.TotalMinutes;
+                            timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                        }
+                        else if (timeDifference.TotalDays < 1)
+                        {
+                            var hours = (int)timeDifference.TotalHours;
+                            timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                        }
+                        else if (timeDifference.TotalDays < 30)
+                        {
+                            var days = (int)timeDifference.TotalDays;
+                            timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+                        }
+                        else if (timeDifference.TotalDays < 365)
+                        {
+                            var months = (int)(timeDifference.TotalDays / 30);
+                            timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+                        }
+                        else
+                        {
+                            var years = (int)(timeDifference.TotalDays / 365);
+                            timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+                        }
+                    }
+
+                    <p style="text-align: center; font-size: 14px; padding-top:20px;" class="card-text"><strong>Posted by</strong> @firstName @lastName | @timeAgo</p>
+                </div>
+            </div>
+        </div>
+    }
+    <script>
+        var forums = document.querySelectorAll('.card');
+        for (var i = 0; i < forums.length; i++) {
+            var carouselImages = forums[i].querySelectorAll('.image-carousel img');
+            if (carouselImages.length > 1) {
+                $(forums[i]).find('.image-carousel').slick({
+                    infinite: true,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    dots: true, // Add dots
+                    autoplay: true, // Enable autoplay
+                    autoplaySpeed: 5000, // Set autoplay speed to 3 seconds
+                    prevArrow: false, // Hide the previous arrow
+                    nextArrow: false // Hide the next arrow
+                });
+            }
+        }
+
+        function shareForum(forumId) {
+            var baseUrl = 'http://healthyhaven.us-east-1.elasticbeanstalk.com';
+
+            var forumUrl = baseUrl + '/Forum/ViewForum/' + forumId;
+
+            var dummyInput = document.createElement('input');
+            document.body.appendChild(dummyInput);
+            dummyInput.value = forumUrl;
+            dummyInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummyInput);
+
+            showMessage('Forum Link Copied To Clipboard!');
+        }
+
+        function showMessage(message) {
+
+            alert(message);
+        }
+    </script>
+    </div>
+</div>
+
+

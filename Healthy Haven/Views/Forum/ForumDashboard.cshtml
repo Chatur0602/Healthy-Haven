@@ -139,10 +139,19 @@
                             {
                                 @using Amazon.S3;
                                 @using Amazon.S3.Model;
-                                @using Amazon.S3.Util;
+                                @using Microsoft.Extensions.Configuration;
+
+                                IConfiguration configuration = new ConfigurationBuilder()
+                                .SetBasePath(Directory.GetCurrentDirectory())
+                                .AddJsonFile("appsettings.json")
+                                .Build();
+
+                                var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+                                var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+                                var sessionToken = configuration["AWSCredentials:SessionToken"];
 
                                 // Create an S3 client
-                                var s3Client = new AmazonS3Client("ASIA2LWVJXALDKL5M6YV", "At4AqtBVDZZX8l5Ji7S1m5wvzmJWn1zMy7k4hYo6", "FwoGZXIvYXdzELH//////////wEaDOZS1pq0Pq0RY3QpWCK8AbrUhFcHzLFxARTfBSxqMSzIxkrYHPJwd9GaebHbu+BkFjPNGqCES6RDRzZVJfLkswFmlSFEIngINATCOSxTJNZKBeEyCReoLpB4BMEe6moId0p/YVVnm4VJeu/pbTwoiAVVjg55b3VZZC16JLaLdQ+DDH72s/88BZhXTqq1J16IbpMws2we69TdG/x67shZtgHuiomGPhxg6aIz7A6efAPJdzU4nYt8V3V6F4C4yCA3fscmhNJ51/zpLI/iKIKypKsGMi1iM+ksnHfprBLnUEiLYNl0nTewbPkXp6Fr1LLTHWsBQ8vkPGZVlTB5luATfWo=", Amazon.RegionEndpoint.USEast1);
+                                var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1);
 
                                 // Define your bucket name and image key (path)
                                 string bucketName = "healthyheaven";
