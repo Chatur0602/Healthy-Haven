@@ -5,51 +5,92 @@
     ViewData["Title"] = "QuizRender";
 }
 
+
 <style>
     body {
-        background-color: darkslategray;
         color: goldenrod;
         font-family: 'Arial', sans-serif;
         margin: 20px;
     }
 
-    h2, p {
-        color: black;
+    .details-section {
+        background-color: #ffc107;
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .details-column {
+        width: 48%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .question-section {
+        background-color: #fff6c9;
+        color: #132B25;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    h1, h3 {
+        margin: 0;
+        color: #132B25;
+    }
+
+    h3 {
+        margin-bottom: 10px;
     }
 
     form {
         margin-top: 20px;
     }
 
-    p {
-        margin-bottom: 10px;
-    }
-
     label {
         display: block;
         margin-bottom: 5px;
+        font-size: 0.9em;
+    }
+
+    p{
+        text-indent : 30px;
+        color: #000000;
+        font-size: 12pt;
     }
 
     input[type="radio"] {
-        margin-right: 5px;
-    }
-
-    button {
-        background-color: goldenrod;
-        color: darkslategray;
-        padding: 10px;
-        border: none;
+        margin-right: 10px;
+        appearance: none; /* Hide default radio button style */
+        width: 15px;
+        height: 15px;
+        border: 2px solid #132B25;
+        border-radius: 50%;
+        background-color: #fff;
         cursor: pointer;
     }
+
+        input[type="radio"]:checked {
+            background-color: goldenrod;
+        }
+
+        input[type="radio"]:hover {
+            border-color: #132B25;
+        }
 </style>
 
-<h3>Title: @Model.Title</h3>
-<h4>Description: @Model.Description</h4>
-<h4>Author: @_db.Users.Find(Model.UserId)?.FirstName @_db.Users.Find(Model.UserId)?.LastName</h4>
-<h4>Course: @_db.Courses.Find(Model.CourseId)?.name</h4>
+<div class="details-section">
+    <h1 class="text-center">@Model.Title</h1>
+    <br />
+    <h3>Description: @Model.Description</h3>
+    <h3>Author:      @_db.Users.Find(Model.UserId)?.FirstName @_db.Users.Find(Model.UserId)?.LastName</h3>
+    <h3>Course:      @_db.Courses.Find(Model.CourseId)?.name</h3>
+</div>
+
 
 <form asp-action="QuizResult" method="post">
-    <!-- Include hidden fields for necessary details -->
     <input type="hidden" name="quizId" value="@Model.Id" />
     <input type="hidden" name="totalQuestions" value="@(_db.Questions.Where(q => q.QuizId == Model.Id).Count())" />
 
@@ -59,20 +100,24 @@
 
     @foreach (var question in questions)
     {
-        <label>@question.QuestionText</label>
+        <div class="question-section">
+            <label class="lead">@question.QuestionText</label>
 
-        var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+            @{
+            var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
 
-        foreach (var option in options)
-        {
-            <p>
-                <input type="radio" name="QuestionResponses[@question.Id]" value="@option.Id" />
-                @option.OptionText
-            </p>
-        }
+            }
+            @foreach (var option in options)
+            {
+                <p class="text-muted">
+                    <input type="radio" name="QuestionResponses[@question.Id]" value="@option.Id" />
+                    @option.OptionText
+                </p>
+            }
+        </div>
     }
 
-    <button class="btn btn-success" type="submit">Submit Quiz</button>
+    <button class="btn btn-warning btn-lg" type="submit">Submit Quiz</button>
 </form>
 
 <script>

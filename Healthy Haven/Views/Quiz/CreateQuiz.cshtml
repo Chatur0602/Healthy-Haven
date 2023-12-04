@@ -1,5 +1,8 @@
 ﻿@model Healthy_Haven.Models.QuizCoursesModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 @using System.Security.Claims;
+
 
 @{
     ViewData["Title"] = "Create Quiz";
@@ -30,9 +33,11 @@
         <label for="CourseId">Select Course:</label>
         <select asp-for="Quizzes.CourseId" class="form-control" required>
             <option value="">Select Course</option>
+
             @if (Model.CoursesList != null)
             {
-                foreach (var course in Model.CoursesList)
+                var userId = UserManager.GetUserId(User);
+                foreach (var course in Model.CoursesList.Where(c => c.instructor_id == userId.ToString()))
                 {
                     <option value="@course.id">@course.name</option>
                 }
