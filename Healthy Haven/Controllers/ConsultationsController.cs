@@ -23,7 +23,6 @@ namespace Healthy_Haven.Controllers
             _userManager = userManager;
         }
 
-        // ... (other actions)
 
         [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
         public IActionResult ConsultationsManagement()
@@ -65,7 +64,7 @@ namespace Healthy_Haven.Controllers
             }
             else
             {
-                // Admins/Moderators can select both members and instructors
+                // Admins|Moderators can select both members and instructors
                 var members = _userManager.GetUsersInRoleAsync("Member").Result;
                 ViewBag.Members = members
                     .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
@@ -79,6 +78,7 @@ namespace Healthy_Haven.Controllers
 
             return View();
         }
+
 
 
         [HttpPost]
@@ -99,13 +99,30 @@ namespace Healthy_Haven.Controllers
                     consultationsDetails.student_id = _userManager.GetUserId(User);
                 }
 
+                // Check if the selected date is in the future
+                if (consultationsDetails.date < DateTime.Now)
+                {
+                    ModelState.AddModelError("consultationsDetails.date", "Please select a future date.");
+                    // Provide members and instructors for repopulating the dropdowns
+                    //var members = _userManager.GetUsersInRoleAsync("Member").Result;
+                    //var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+
+
+                    ViewBag.Members = _userManager.GetUsersInRoleAsync("Member").Result
+                        .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                        .ToList();
+
+                    ViewBag.Instructors = _userManager.GetUsersInRoleAsync("Instructor").Result
+                        .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                        .ToList();
+
+                    return View(consultationsDetails);
+                }
+
                 _db.Consultations.Add(consultationsDetails);
                 _db.SaveChanges();
                 return RedirectToAction("ConsultationsManagement");
             }
-
-            // If the model state is not valid, return the view with the model to display validation errors
-            // You may also need to repopulate ViewBag.Members and ViewBag.Instructors if needed
 
             var members = _userManager.GetUsersInRoleAsync("Member").Result;
             var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
@@ -202,13 +219,29 @@ namespace Healthy_Haven.Controllers
                     consultationsDetails.student_id = _userManager.GetUserId(User);
                 }
 
+                // Check if the selected date is in the future
+                if (consultationsDetails.date < DateTime.Now)
+                {
+                    ModelState.AddModelError("consultationsDetails.date", "Please select a future date.");
+                    // Provide members and instructors for repopulating the dropdowns
+                    //var members = _userManager.GetUsersInRoleAsync("Member").Result;
+                    //var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
+
+                    ViewBag.Members = _userManager.GetUsersInRoleAsync("Member").Result
+                        .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                        .ToList();
+
+                    ViewBag.Instructors = _userManager.GetUsersInRoleAsync("Instructor").Result
+                        .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
+                        .ToList();
+
+                    return View(consultationsDetails);
+                }
+
                 _db.Consultations.Update(consultationsDetails);
                 _db.SaveChanges();
                 return RedirectToAction("ConsultationsManagement");
             }
-
-            // If the model state is not valid, return the view with the model to display validation errors
-            // You may also need to repopulate ViewBag.Members and ViewBag.Instructors if needed
 
             var members = _userManager.GetUsersInRoleAsync("Member").Result;
             var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
@@ -234,8 +267,17 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
+            
+            var student = _userManager.FindByIdAsync(consultationsDetails.student_id).Result;
+            var instructor = _userManager.FindByIdAsync(consultationsDetails.instructor_id).Result;
+
+           
+            ViewBag.StudentName = $"{student.FirstName} {student.LastName}";
+            ViewBag.InstructorName = $"{instructor.FirstName} {instructor.LastName}";
+
             return View("ConfirmDeleteConsultations", consultationsDetails);
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
@@ -254,7 +296,7 @@ namespace Healthy_Haven.Controllers
         }
 
 
-        // ... (other actions)
+      
 
         public IActionResult Index()
         {
