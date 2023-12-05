@@ -29,13 +29,6 @@ namespace Healthy_Haven.Controllers
             return View(Courses);
         }
 
-        public IActionResult ViewModules()
-        {
-            List<ModulesModel> Modules = new List<ModulesModel>();
-            Modules = _db.Modules.ToList();
-            return View(Modules);
-        }
-
         public IActionResult CourseDetails(int? id)
         {
             if (id == null)

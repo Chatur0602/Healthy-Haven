@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <Content Remove="Views\Course\Modules.cshtml" />
+    <Content Remove="Views\Modules\EditModule.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,10 +52,20 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\Course\Modules.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Modules\EditModule.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Views\Course\Modules.cshtml" />
+    <None Include="Views\Modules\EditModule.cshtml" />
+    <None Include="Views\Modules\UserModules.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Modules\EditModule.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\NewFolder2\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,92 @@
+﻿@using Healthy_Haven.Data;
+@inject ApplicationDbContext _db;
+@model IEnumerable<ModulesModel>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Chapters and Modules</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 20px; /* Add some margin for better spacing */
+        }
+
+        h2 {
+            color: yellow;
+        }
+
+        /* Style the counter cards */
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            text-align: center;
+            background-color: #f1f1f1;
+        }
+
+        table {
+            font-family: Arial, sans-serif;
+            width: 100%;
+            margin-top: 20px; /* Add some margin at the top of the table */
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+            /* Apply the font size specifically for the column with numbers */
+            td.numeric-column {
+                font-size: 12px;
+            }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>View All Chapters and Modules</h2>
+        @if (Model != null && Model.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Chapter</th>
+                     </tr>
+                     <tr>
+                        <th>Module</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        Console.WriteLine($"Current Course ID: {item.course_id}");
+                        // Assuming there is a CourseId property in your ModulesModel
+                        var modulesForCourse = _db.Modules.Where(m => m.course_id == item.course_id);
+
+                        <tr>
+                            <td>@item.chapter</td>
+                            <td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @foreach (var module in modulesForCourse)
+                                {
+                                    Console.WriteLine($"Module Name: {module.module}");
+                                    @module.module
+
+                                    <br />
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</body>
+</html>
