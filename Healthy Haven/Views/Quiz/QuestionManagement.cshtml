@@ -1,7 +1,16 @@
 ﻿@model IEnumerable<QuestionsModel>
+@using Healthy_Haven.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "QuestionManagement";
+}
+
+@{
+    //get user id
+    var userId = UserManager.GetUserId(User);
+    var adminOrMod = User.IsInRole("Admin") || User.IsInRole("Moderator");
 }
 
 <style>
@@ -29,7 +38,7 @@
         <h2 class="col-9">Question Management Menu</h2>
     </div>
     <div class="col-12 text-lg-end">
-        <!-- Add button for creating a new quiz -->
+        <!-- Return to dashboard -->
         <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-success">Return to Dashboard</a>
     </div>
 </div>
@@ -61,9 +70,21 @@
         </tbody>
     </table>
     <br />
-    <div class="text-lg-start">
-        <a asp-controller="Quiz" asp-action="CreateQuestion" asp-route-quizId="@Model.First().QuizId" class="btn btn-success btn-lg">Add Questions</a>
-    </div>
+
+    @if(!adminOrMod)
+    {
+        <div class="text-lg-start">
+            <a asp-controller="Quiz" asp-action="CreateQuestion" asp-route-quizId="@Model.First().QuizId" class="btn btn-success">Add New Questions</a>
+            <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-danger">Return</a>
+        </div>
+    }
+    else
+    {
+        <div class="text-lg-start">
+            <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-danger">Return</a>
+        </div>
+    }
+
 }
 else
 {
@@ -72,7 +93,7 @@ else
 }
 
 <script>
-    // Attach a click event to all rows
+    // click event to all rows
     document.querySelectorAll('tbody tr').forEach(function (row) {
         row.addEventListener('click', function () {
             var questionId = row.getAttribute('data-question-id');

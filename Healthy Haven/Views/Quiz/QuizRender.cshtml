@@ -5,80 +5,92 @@
     ViewData["Title"] = "QuizRender";
 }
 
-
 <style>
-    body {
-        color: goldenrod;
-        font-family: 'Arial', sans-serif;
-        margin: 20px;
-    }
+body {
+    color: goldenrod;
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+}
 
-    .details-section {
-        background-color: #ffc107;
-        color: #ffffff;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
+.details-section, .result-bar {
+    background-color: #ffc107;
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
 
-    .details-column {
-        width: 48%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+.details-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 48%;
+}
 
-    .question-section {
-        background-color: #fff6c9;
-        color: #132B25;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
+.question-section {
+    background-color: #fff6c9;
+    color: #132B25;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
 
-    h1, h3 {
-        margin: 0;
-        color: #132B25;
-    }
+h1, h3 {
+    margin: 0;
+    color: #132B25;
+}
 
-    h3 {
-        margin-bottom: 10px;
-    }
+h3 {
+    margin-bottom: 10px;
+}
 
-    form {
-        margin-top: 20px;
-    }
+form, .btn {
+    margin-top: 20px;
+}
 
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-size: 0.9em;
-    }
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
 
-    p{
-        text-indent : 30px;
-        color: #000000;
-        font-size: 12pt;
-    }
+p {
+    text-indent: 30px;
+    color: #000000;
+}
 
-    input[type="radio"] {
-        margin-right: 10px;
-        appearance: none; /* Hide default radio button style */
-        width: 15px;
-        height: 15px;
-        border: 2px solid #132B25;
-        border-radius: 50%;
-        background-color: #fff;
-        cursor: pointer;
-    }
+input[type="radio"] {
+    margin-right: 10px;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #132B25;
+    border-radius: 50%;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 0 5px #999;
+    transition: box-shadow 0.3s ease;
+}
 
-        input[type="radio"]:checked {
-            background-color: goldenrod;
-        }
+input[type="radio"]:checked {
+    background-color: goldenrod;
+}
 
-        input[type="radio"]:hover {
-            border-color: #132B25;
-        }
+input[type="radio"]:hover {
+    border-color: #132B25;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add a bit more shadow on hover */
+}
+
+.answer-icon {
+    margin-left: 5px;
+    height: 16px;
+    width: 16px;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2)); /* Add drop shadow to icons */
+}
+
 </style>
 
 <div class="details-section">
@@ -90,22 +102,21 @@
 </div>
 
 
-<form asp-action="QuizResult" method="post">
+<form asp-action="QuizResult" method="post" onsubmit="return validateForm();">
     <input type="hidden" name="quizId" value="@Model.Id" />
     <input type="hidden" name="totalQuestions" value="@(_db.Questions.Where(q => q.QuizId == Model.Id).Count())" />
 
     @{
         var questions = _db.Questions.Where(q => q.QuizId == Model.Id).ToList();
+        var questionCounter = 1; // Initialize the question counter
     }
 
     @foreach (var question in questions)
     {
         <div class="question-section">
-            <label class="lead">@question.QuestionText</label>
-
+            <label class="lead">@($"{questionCounter}. {question.QuestionText}")</label>
             @{
-            var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
-
+                var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
             }
             @foreach (var option in options)
             {
@@ -115,10 +126,12 @@
                 </p>
             }
         </div>
+        questionCounter++; // Increment the question counter
     }
 
     <button class="btn btn-warning btn-lg" type="submit">Submit Quiz</button>
 </form>
+
 
 <script>
     function validateForm() {
@@ -126,7 +139,7 @@
         for (var i = 0; i < questions.length; i++) {
             var selectedOptions = document.querySelectorAll('[name="' + questions[i].name + '"]:checked');
             if (selectedOptions.length === 0) {
-                alert('Please select an option for each question before submitting.');
+                alert('Please answer all the questions before submitting.');
                 return false; // Prevent form submission
             }
         }

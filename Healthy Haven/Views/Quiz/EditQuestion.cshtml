@@ -7,7 +7,7 @@
 <h2>Edit Question</h2>
 
 @*<h3>Question ID: @Model.QuizId</h3>*@
-<h3>Question ID: @Model.QuizId</h3>
+<h3>Current question: @Model.QuestionText</h3>
 
 <form asp-action="EditQuestion" method="post">
     <input type="hidden" name="quizId" value="@Model.QuizId">

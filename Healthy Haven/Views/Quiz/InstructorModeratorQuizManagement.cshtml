@@ -1,10 +1,15 @@
 ﻿@model IEnumerable<QuizzesModel>
+@inject ApplicationDbContext _db;
+@using Healthy_Haven.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 @*
     @model IEnumerable<QuestionsModel>
 *@
 
 @{
     ViewData["Title"] = "QuizManagement";
+
 }
 
 <style>
@@ -27,59 +32,110 @@
     }
 </style>
 
+@{
+    //get user id
+    var userId = UserManager.GetUserId(User);
+    //var user = await UserManager.FindByIdAsync(userId);
+    //var userRoles = await UserManager.GetRolesAsync(user);
+    var adminOrMod = User.IsInRole("Admin") || User.IsInRole("Moderator");
+}
+
 <div>
     <div class="row pt-4">
         <h2 class="col-9">Quiz Management Menu</h2>
     </div>
-    <div class="col-12 text-lg-end">
-        <!-- Add button for creating a new quiz -->
-        <a asp-controller="Quiz" asp-action="CreateQuiz" class="btn btn-success">Add New Quiz</a>
-    </div>
-</div>
-<br />
 
-@if (Model != null && Model.Any())
-{
-    <table class="table table-bordered table-hover table-striped" width="100%">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Date Created</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var quiz in Model)
-            {
-                <tr data-quiz-id="@quiz.Id">
-                    <td width="20%">@quiz.Title</td>
-                    <td width="40%">@quiz.Description</td>
-                    <td width="20">@quiz.Date</td>
-                    <td width="20%">
-                        <div class="w-100 btn-group" role="group">
-                            <!-- Edit button -->
+    @if (adminOrMod)    //no add quiz button & shows all quizes irrespective of user
+    {
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-bordered table-hover table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var quiz in Model)
+                    {
+                        <tr data-quiz-id="@quiz.Id">
+                            <td width="20%">@quiz.Title</td>
+                            <td width="40%">@quiz.Description</td>
+                            <td width="20">@quiz.Date</td>
+                            <td width="20%">
+                                <div class="w-100 btn-group" role="group">
+                                    <!-- Edit button -->
+                                    <!-- EditQuiz action -->
+                                    <a asp-controller="Quiz" asp-action="EditQuiz" asp-route-quizId="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
+                                    <!-- Delete button -->
+                                    <a asp-controller="Quiz" asp-action="DeleteQuiz" asp-route-quizId="@quiz.Id" class="btn btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <br />
+            <p><b>No Quizzes Found</b></p>
+        }
 
-                            <!--High jacking this button for quizRender Testing
+    }
+    else
+    {
+        <div class="col-12 text-lg-end">
+            <!-- Add button for creating a new quiz -->
+            <a asp-controller="Quiz" asp-action="CreateQuiz" class="btn btn-success">Add New Quiz</a>
+        </div>
+        <br />
 
-                                **change back to EditQuiz action Later**
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-bordered table-hover table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var quiz in Model.Where(u => u.UserId == userId))
+                    {
+                        <tr data-quiz-id="@quiz.Id">
+                            <td width="20%">@quiz.Title</td>
+                            <td width="40%">@quiz.Description</td>
+                            <td width="20">@quiz.Date</td>
+                            <td width="20%">
+                                <div class="w-100 btn-group" role="group">
+                                    <!-- Edit button -->
 
-                            -->
-                            <a asp-controller="Quiz" asp-action="QuizRender" asp-route-quizId="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
-                            <!-- Delete button -->
-                            <a asp-controller="Quiz" asp-action="DeleteQuiz" asp-route-quizId="@quiz.Id" class="btn btn-danger">Delete</a>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <br />
-    <p><b>No Quizzes Found</b></p>
-}
+                                    <!-- EditQuiz action -->
+                                    <a asp-controller="Quiz" asp-action="EditQuiz" asp-route-quizId="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
+                                    <!-- Delete button -->
+                                    <a asp-controller="Quiz" asp-action="DeleteQuiz" asp-route-quizId="@quiz.Id" class="btn btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <br />
+            <p><b>No Quizzes Found</b></p>
+        }
+    }
+
+    
+    
 
 <script>
     // Attach a click event to all rows
