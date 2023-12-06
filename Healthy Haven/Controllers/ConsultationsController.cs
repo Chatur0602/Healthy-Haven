@@ -99,41 +99,10 @@ namespace Healthy_Haven.Controllers
                     consultationsDetails.student_id = _userManager.GetUserId(User);
                 }
 
-                // Check if the selected date is in the future
-                if (consultationsDetails.date < DateTime.Now)
-                {
-                    ModelState.AddModelError("consultationsDetails.date", "Please select a future date.");
-                    // Provide members and instructors for repopulating the dropdowns
-                    //var members = _userManager.GetUsersInRoleAsync("Member").Result;
-                    //var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
-
-
-                    ViewBag.Members = _userManager.GetUsersInRoleAsync("Member").Result
-                        .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                        .ToList();
-
-                    ViewBag.Instructors = _userManager.GetUsersInRoleAsync("Instructor").Result
-                        .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                        .ToList();
-
-                    return View(consultationsDetails);
-                }
-
                 _db.Consultations.Add(consultationsDetails);
                 _db.SaveChanges();
                 return RedirectToAction("ConsultationsManagement");
             }
-
-            var members = _userManager.GetUsersInRoleAsync("Member").Result;
-            var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
-
-            ViewBag.Members = members
-                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                .ToList();
-
-            ViewBag.Instructors = instructors
-                .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
-                .ToList();
 
             return View(consultationsDetails);
         }
@@ -223,10 +192,8 @@ namespace Healthy_Haven.Controllers
                 if (consultationsDetails.date < DateTime.Now)
                 {
                     ModelState.AddModelError("consultationsDetails.date", "Please select a future date.");
-                    // Provide members and instructors for repopulating the dropdowns
-                    //var members = _userManager.GetUsersInRoleAsync("Member").Result;
-                    //var instructors = _userManager.GetUsersInRoleAsync("Instructor").Result;
 
+                    // Provide members and instructors for repopulating the dropdowns
                     ViewBag.Members = _userManager.GetUsersInRoleAsync("Member").Result
                         .Select(user => new SelectListItem { Value = user.Id, Text = $"{user.FirstName} {user.LastName}" })
                         .ToList();
