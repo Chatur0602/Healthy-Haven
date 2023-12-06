@@ -1,7 +1,16 @@
 ﻿@model IEnumerable<QuestionsModel>
+@using Healthy_Haven.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = "QuestionManagement";
+}
+
+@{
+    //get user id
+    var userId = UserManager.GetUserId(User);
+    var adminOrMod = User.IsInRole("Admin") || User.IsInRole("Moderator");
 }
 
 <style>
@@ -61,10 +70,21 @@
         </tbody>
     </table>
     <br />
-    <div class="text-lg-start">
-        <a asp-controller="Quiz" asp-action="CreateQuestion" asp-route-quizId="@Model.First().QuizId" class="btn btn-success">Add New Questions</a>
-        <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-danger">Return</a>
-    </div>
+
+    @if(!adminOrMod)
+    {
+        <div class="text-lg-start">
+            <a asp-controller="Quiz" asp-action="CreateQuestion" asp-route-quizId="@Model.First().QuizId" class="btn btn-success">Add New Questions</a>
+            <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-danger">Return</a>
+        </div>
+    }
+    else
+    {
+        <div class="text-lg-start">
+            <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-danger">Return</a>
+        </div>
+    }
+
 }
 else
 {
