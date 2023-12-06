@@ -431,7 +431,9 @@
                 var questionCount = _db.Questions.Count(x => x.QuizId == quiz.Id);
 
                 <div class="quiz-tile">
+                    <a href="/Quiz/QuizRender?quizId=@quiz.Id">
                     <h3>@quiz.Title</h3>
+                    </a>
                     <p id="description">@quiz.Description</p>
                     <div class="quiz-details">
                         <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
@@ -441,6 +443,7 @@
                         <p style="margin-right: 10px !important;">@questionCount Questions</p>
                     </div>
                     <!-- Additional quiz information or link can be added here -->
+
                 </div>
             }
         </div>

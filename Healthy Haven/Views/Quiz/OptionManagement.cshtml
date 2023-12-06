@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<OptionsModel>
+@using Healthy_Haven.Data;
+@inject ApplicationDbContext _db;
 @{
     ViewData["Title"] = "OptionManagement";
 }
+
 
 <style>
     .table th, .table td {
@@ -37,6 +40,10 @@
 
 @if (Model != null && Model.Any())
 {
+    // get quizId for back button logic
+    var questionId = Model.First().QuestionId;
+    var quizId = _db.Questions.Where(q => q.Id == questionId).Select(q => q.QuizId).FirstOrDefault();
+
     <table class="table table-bordered table-hover table-striped" width="100%">
         <thead>
             <tr>
@@ -56,7 +63,8 @@
     </table>
     <br />
     <div class="text-start">
-        <a asp-controller="Quiz" asp-action="EditOptions" asp-route-questionId="@Model.First().QuestionId" class="btn btn-warning btn-lg">Edit Options</a>
+        <a asp-controller="Quiz" asp-action="EditOptions" asp-route-questionId="@Model.First().QuestionId" class="btn btn-success">Edit Options</a>
+        <a asp-controller="Quiz" asp-action="QuestionManagement" asp-route-quizId="@quizId" class="btn btn-danger">Return</a>
     </div>
 }
 else
