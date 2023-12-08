@@ -9,7 +9,6 @@ namespace Healthy_Haven.Models
         public int id { get; set; }
         public string chapter { get; set; }
         public string module { get; set; }
-        public List<Module> Modules { get; set; }
         public int course_id { get; set; }
 
         [ForeignKey("course_id")]

@@ -12,16 +12,20 @@
 <style>
     .image-carousel {
         width: 100%;
-        height: auto;
+        height: 300px; /* Set a fixed height for the image carousel */
         position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
-        .image-carousel img {
-            max-width: 100%;
-            height: auto;
-            object-fit: contain;
-            margin: 0 auto; /* Center the image horizontally */
-        }
+    .image-carousel img {
+        max-width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
 
     body {
         font-size: 16px;
@@ -106,6 +110,7 @@
     }
 </style>
 
+<body>
 <div id="not_right_side" class="ic-app-main-content">
     <div id="content-wrapper" class="ic-Layout-contentWrapper">
 
@@ -149,7 +154,7 @@
                     <div id="direct-share-mount-point"></div>
 
 
-                    <div class="show-content user_content clearfix enhanced image-carousel">
+                        <div class="show-content user_content clearfix enhanced image-carousel">
 
                             @foreach (var path in imagePaths)
                             {
@@ -157,7 +162,7 @@
                                 @using Amazon.S3.Model;
                                 @using Amazon.S3.Util;
 
-                                var s3Client = new Amazon.S3.AmazonS3Client("ASIA2LWVJXALCKZ4I2XT", "e4q/4ucGnNcXCo5RVvcI70jgoYEgAyQ7AluGBX8P", "FwoGZXIvYXdzEMD//////////wEaDLVuDTeygiOrqtFk7yK8ASwzqS3Xt+aZ8eoFjxKy+H3j9gRiClE8E6F2GLtEc0a8vdZtF5y/vl5dhfq5yLOSOzdOvlYBDmWOE9HF3L0zp8nW8Wu9AHhTKFfigUmyA5f+F0UGFA8qBILOQJmRpIC9euiAyT038ojcxT/eGmDThzKJ6OYAO774CoWRilZDfC3hWLh6e5iBGY9u794eHLAG0uOZCF2Hc9ii53FLXX0AP8Yta2+UTt0ofIeW0wfYVD2VXxhsCgoxTL4AfUkTKKfqp6sGMi2gpKb6EJrvklVavc3n3J/Gzz/ufGjq1kDziVOl7S6nz1SXXocolXnv4SzRxII=", Amazon.RegionEndpoint.USEast1);
+                                    var s3Client = new Amazon.S3.AmazonS3Client("ASIA2LWVJXALNBRXPOHR", "+BrkhySuKQTq87LXROsJunPHXAGhm9JvsbaTWrAi", "FwoGZXIvYXdzEFEaDBBb75XQaLZNUANHVCK8Abho8hn4soqhNxdIsmI6Z6ucYiOHVVsO2WGRLBosthkERuu75poMhKSc8hdaVroGDumDoHzJawpdLKi4oayC3TjtDa7FjIC7TthJSHY8/p10rEO5i6wE8n2TwusQFcAF1Y0eM3r28njFlJOEfVr31Pj/lMSDjuZwVrRpfyIfdFdOF0UshJwwebnCngbBpXZYwM1dO+prgNFZOtuTIsLglizhJxY0n5DcTrhYQ84uYbMz1hA6MI9GRJwAT/HZKObLx6sGMi3XxJEWRwo1QhZzlb1QuIjj3n1FMGPXIZ+yEix3r9C6QvZxr9FziaeyjYNNRVo=", Amazon.RegionEndpoint.USEast1);
 
                                 string bucketName = "healthyheaven";
                                 string folderName = "CourseImages";
@@ -165,11 +170,11 @@
 
                                 System.Diagnostics.Debug.WriteLine("IMAGE PATH= " + imagePath);
                                 GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
-                    {
-                        BucketName = bucketName,
-                        Key = imagePath,
-                        Expires = DateTime.Now.AddMinutes(60)
-                    };
+                                {
+                                    BucketName = bucketName,
+                                    Key = imagePath,
+                                    Expires = DateTime.Now.AddMinutes(60)
+                                };
                                 string preSignedURL = s3Client.GetPreSignedURL(request);
 
                                 <div>
@@ -204,27 +209,29 @@
             </div>
             <div id="wizard_box"></div>
         }
-</div>
+        <script>
+            $(document).ready(function () {
+                $(".image-carousel").each(function () {
+                    var carouselImages = $(this).find('img');
 
-<script>
-    $(document).ready(function () {
-        $('.card').each(function () {
-            var carousel = $(this).find('.image-carousel');
-            var carouselImages = carousel.find('img');
-
-            if (carouselImages.length > 1) {
-                carousel.slick({
-                    infinite: true,
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    dots: true,
-                    autoplay: true,
-                    autoplaySpeed: 5000,
-                    prevArrow: false,
-                    nextArrow: false
+                    if (carouselImages.length > 1) {
+                        carouselImages.slick({
+                            infinite: true,
+                            slidesToShow: 1,
+                            slidesToScroll: 1,
+                            dots: true,
+                            autoplay: true,
+                            autoplaySpeed: 5000,
+                            prevArrow: false,
+                            nextArrow: false
+                        });
+                    }
                 });
-            }
-        });
-    });
-</script>
+            });
+        </script>
+</div>
+</div>
+</div>
+</body>
+
 

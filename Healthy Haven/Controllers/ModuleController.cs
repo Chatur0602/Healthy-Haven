@@ -31,41 +31,15 @@ namespace Healthy_Haven.Controllers
 
         public IActionResult UserModules()
         {
-            List<ModulesModel> Modules = new List<ModulesModel>();
-            Modules = _db.Modules.ToList();
-            return View("UserModules", Modules);
+            List<ModulesModel> modules = _db.Modules.ToList();
+            return View("UserModules", modules); 
         }
+
 
         public IActionResult CreateModule()
         {
             var moduledetails = new ModulesModel();
             return View("CreateModule", moduledetails);
-        }
-
-        public IActionResult ViewChaptersAndModules(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var courseDetails = _db.Courses.Find(id);
-
-            if (courseDetails == null)
-            {
-                return NotFound();
-            }
-
-            // Assuming there is a navigation property in Courses that represents modules
-            var modulesForCourse = _db.Modules.Where(m => m.course_id == id);
-
-            var viewModel = new ModulesModel
-            {
-                Course = courseDetails,
-                Modules = modulesForCourse.ToList()
-            };
-
-            return View("ViewChaptersAndModules", viewModel);
         }
 
         [HttpPost]

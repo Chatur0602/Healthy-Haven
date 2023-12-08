@@ -3,90 +3,96 @@
 @model IEnumerable<ModulesModel>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View All Chapters and Modules</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        /* Updated styles for the page color design */
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 20px; /* Add some margin for better spacing */
+            background-color: #F5F5F5; /* Light Gray */
+            color: #333; /* Dark Gray */
         }
 
-        h2 {
-            color: yellow;
-        }
-
-        /* Style the counter cards */
-        .card {
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-            padding: 16px;
+        .ui.container {
             text-align: center;
-            background-color: #f1f1f1;
+            background-color: #FFF; /* White */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        table {
-            font-family: Arial, sans-serif;
-            width: 100%;
-            margin-top: 20px; /* Add some margin at the top of the table */
+        h2.ui.header.green {
+            color: #008000; /* Dark Green */
         }
 
-        th, td {
-            text-align: left;
-            padding: 8px;
+        .ui.dropdown.button {
+            background-color: #FFD700; /* Goldenrod */
+            color: #333; /* Dark Gray */
+            border-radius: 5px; /* Rounded corners */
+            font-size: 20px; /* Adjust font size */
+            padding: 20px; /* Adjust padding */
+            width: 90%; /* Adjust width */
+            max-width: 600px; /* Set a maximum width if needed */
         }
 
-            /* Apply the font size specifically for the column with numbers */
-            td.numeric-column {
-                font-size: 12px;
+            .ui.dropdown.button:hover {
+                background-color: #FFC125; /* Darker Goldenrod on hover */
             }
+
+            .ui.dropdown.button .menu {
+                max-height: 300px;
+                overflow-y: auto;
+                background-color: #FFF; /* White */
+                border: 1px solid #DDD; /* Light Gray */
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+                width: 90%; /* Adjust width to match button width */
+                max-width: 600px; /* Set a maximum width if needed */
+            }
+
+                .ui.dropdown.button .menu .item {
+                    color: #333; /* Dark Gray */
+                    margin: 5px 0; /* Adjust margin (vertical margin horizontal margin) */
+                }
     </style>
 </head>
+
 <body>
-    <div>
-        <h2>View All Chapters and Modules</h2>
+    <div class="ui container">
+        <br /><br />
+        <h2 class="ui header green">Modules</h2>
+        <b>
+            <p>Here are the available chapters and modules</p>
+        </b>
+        <hr /><br />
+
         @if (Model != null && Model.Any())
         {
-            <table>
-                <thead>
-                    <tr>
-                        <th>Chapter</th>
-                     </tr>
-                     <tr>
-                        <th>Module</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        Console.WriteLine($"Current Course ID: {item.course_id}");
-                        // Assuming there is a CourseId property in your ModulesModel
-                        var modulesForCourse = _db.Modules.Where(m => m.course_id == item.course_id);
-
-                        <tr>
-                            <td>@item.chapter</td>
-                            <td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @foreach (var module in modulesForCourse)
-                                {
-                                    Console.WriteLine($"Module Name: {module.module}");
-                                    @module.module
-
-                                    <br />
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div>
+                @foreach (var module in Model)
+                {
+                    <div class="ui dropdown button">
+                        <span class="text">@module.chapter</span>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item">@module.module</div>
+                        </div>
+                    </div>
+                }
+            </div>
         }
     </div>
+
+    <script>
+        $(".ui.dropdown").dropdown();
+
+        function updateDropdownText(dropdown, newText) {
+            $(dropdown).find('.text').text(newText);
+        }
+    </script>
 </body>
+
 </html>
