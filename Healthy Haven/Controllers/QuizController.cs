@@ -20,7 +20,7 @@ namespace Healthy_Haven.Controllers
             _logger = logger;
         }
 
-        [Authorize(Roles = "Moderator,Instructor")]
+        [Authorize(Roles = "Admin, Moderator,Instructor")]
         public IActionResult InstructorModeratorQuizManagement()
         {
             List<QuizzesModel> quizzes = new List<QuizzesModel>();
