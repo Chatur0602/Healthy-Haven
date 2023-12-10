@@ -39,6 +39,11 @@
 
     .card-title{
         color: darkgoldenrod;
+        font-size: 28px;
+    }
+
+    .card-text{
+        font-size:20px;
     }
 
     .slick-dots {
@@ -75,6 +80,23 @@
         display: -webkit-box;
         -webkit-line-clamp: 3; /* Limit to 5 lines */
         -webkit-box-orient: vertical;
+    }
+
+    .tile-icon {
+        width: 33px; /* Adjust the width as needed */
+        height: 33px; /* Adjust the height as needed */
+        filter: invert(1);
+        padding-right: 3px;
+    }
+
+    .forum-details {
+        display: flex;
+        margin-top: 12px;
+        margin-bottom: 0; /* Remove bottom margin */
+    }
+
+    .spacer {
+        flex-grow: 1;
     }
 </style>
 
@@ -199,7 +221,7 @@
                                         }
 
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <p style="font-size:14px" class="mb-0"><strong>Posted By</strong> @firstName2 @lastName2</p>
+                                            <p style="font-size:14px" class="mb-0"><img src="/icons8-user-male-100.png" style="filter:invert(1) !important; height: 25px; width: 25px;" /> @firstName2 @lastName2</p>
                                             <div class="d-flex align-items-center">
                                                 <i class="fas fa-heart text-danger mr-1"></i>
                                                 &nbsp;
@@ -265,7 +287,13 @@
                             }
                         }
 
-                        <p style="text-align: center; font-size: 14px; padding-top:10px;" class="card-text"><strong>Posted by</strong> @firstName @lastName | @timeAgo</p>
+                        <div class="forum-details">
+                            <img src="/icons8-user-male-100.png" class="tile-icon" />
+                            <p class="card-text" style="font-size: 16px; padding-top:5px; margin-bottom: 0;">@firstName @lastName</p>
+                            <div class="spacer"></div> <!-- Add a spacer div for separation -->
+                            <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
+                            <p class="card-text" style="font-size: 16px; padding-top:5px; margin-bottom: 0;">@timeAgo</p>
+                        </div>
                     </div>
                 </div>
             </div>
