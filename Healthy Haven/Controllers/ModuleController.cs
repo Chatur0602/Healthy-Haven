@@ -42,6 +42,7 @@ namespace Healthy_Haven.Controllers
             return View("CreateModule", moduledetails);
         }
 
+
         [HttpPost]
         public IActionResult Create(ModulesModel moduledetails)
         {
