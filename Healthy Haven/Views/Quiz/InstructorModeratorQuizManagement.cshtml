@@ -3,6 +3,7 @@
 @using Healthy_Haven.Data;
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext _db;
 @*
     @model IEnumerable<QuestionsModel>
 *@
@@ -54,6 +55,7 @@
                     <tr>
                         <th>Title</th>
                         <th>Description</th>
+                        <th>Course</th>
                         <th>Date Created</th>
                         <th>Actions</th>
                     </tr>
@@ -63,8 +65,15 @@
                     {
                         <tr data-quiz-id="@quiz.Id">
                             <td width="20%">@quiz.Title</td>
-                            <td width="40%">@quiz.Description</td>
-                            <td width="20">@quiz.Date</td>
+                            <td width="37%">@quiz.Description</td>
+                            <td width="13%">
+                                @{
+                                    var course = _db.Courses.FirstOrDefault(c => c.id == quiz.CourseId);
+                                    var courseName = (course != null) ? course.name : "Course Not Found";
+                                }
+                                @courseName
+                            </td>
+                            <td width="10%">@quiz.Date</td>
                             <td width="20%">
                                 <div class="w-100 btn-group" role="group">
                                     <!-- Edit button -->
