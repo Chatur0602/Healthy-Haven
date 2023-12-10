@@ -237,6 +237,10 @@
             color: silver !important;
         }
 
+        .card:hover .tile-icon{
+            filter: invert(1); 
+        }
+
 
     .card-title {
         color: darkgoldenrod;
@@ -436,11 +440,11 @@
                     </a>
                     <p id="description">@quiz.Description</p>
                     <div class="quiz-details">
-                        <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
-                        <p>@timeAgo</p>
-                        <div class="spacer"></div> <!-- Add a spacer div for separation -->
                         <img src="/icons8-questions-100-white.png" class="tile-icon" />
                         <p style="margin-right: 10px !important;">@questionCount Questions</p>
+                        <div class="spacer"></div> <!-- Add a spacer div for separation -->
+                        <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
+                        <p>@timeAgo</p>
                     </div>
                     <!-- Additional quiz information or link can be added here -->
 
@@ -539,7 +543,7 @@
                                     }
 
                                     <div class="d-flex justify-content-between align-items-center">
-                                            <p style="font-size:14px;" class="mb-0 forum-posted-by"><strong>Posted By</strong> @firstName2 @lastName2</p>
+                                        <p style="font-size:14px;" class="mb-0 forum-posted-by"><img src="/icons8-user-male-100.png" class="tile-icon" style="height: 25px; width: 25px;" /> @firstName2 @lastName2</p>
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-heart text-danger mr-1"></i>
                                             &nbsp;
@@ -604,8 +608,13 @@
                             timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
                         }
                     }
-
-                    <p style="text-align: center; font-size: 14px; padding-top:20px;" class="card-text"><strong>Posted by</strong> @firstName @lastName | @timeAgo</p>
+                        <div class="quiz-details" style="padding-top:8px;">
+                            <img src="/icons8-user-male-100.png" class="tile-icon" />
+                            <p style="font-size: 16px;" class="card-text">@firstName @lastName</p>
+                            <div class="spacer"></div> <!-- Add a spacer div for separation -->
+                            <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
+                            <p class="card-text" style="font-size: 16px;">@timeAgo</p>
+                        </div>
                 </div>
             </div>
         </div>
