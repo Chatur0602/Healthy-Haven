@@ -12,6 +12,9 @@
     ViewData["Title"] = "QuizManagement";
 
 }
+<!-- SweetAlert CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
     .table th, .table td {
@@ -80,7 +83,7 @@
                                     <!-- EditQuiz action -->
                                     <a asp-controller="Quiz" asp-action="EditQuiz" asp-route-quizId="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
                                     <!-- Delete button -->
-                                    <a asp-controller="Quiz" asp-action="DeleteQuiz" asp-route-quizId="@quiz.Id" class="btn btn-danger">Delete</a>
+                                    <button type="button" class="btn btn-danger delete-button" data-quiz-id="@quiz.Id">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -128,7 +131,7 @@
                                     <!-- EditQuiz action -->
                                     <a asp-controller="Quiz" asp-action="EditQuiz" asp-route-quizId="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
                                     <!-- Delete button -->
-                                    <a asp-controller="Quiz" asp-action="DeleteQuiz" asp-route-quizId="@quiz.Id" class="btn btn-danger">Delete</a>
+                                    <button type="button" class="btn btn-danger delete-button" data-quiz-id="@quiz.Id">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -147,14 +150,38 @@
     
 
 <script>
-    // Attach a click event to all rows
-    document.querySelectorAll('tbody tr').forEach(function (row) {
-        row.addEventListener('click', function () {
-            // Retrieve the quizId from the data attribute
-            var quizId = row.getAttribute('data-quiz-id');
+        // click redirect event for all rows
+        document.querySelectorAll('tbody tr').forEach(function (row) {
+            row.addEventListener('click', function () {
 
-            // Redirect to the QuestionManagement controller with the quizId
-            window.location.href = '/Quiz/QuestionManagement?quizId=' + quizId;
+                var quizId = row.getAttribute('data-quiz-id');
+                window.location.href = '/Quiz/QuestionManagement?quizId=' + quizId;
+            });
         });
-    });
+
+        // click event for delete button
+        document.querySelectorAll('.delete-button').forEach(function (deleteButton) {
+            deleteButton.addEventListener('click', function (event) {
+                event.stopPropagation(); // Stop the click event from propagating to the row
+                var quizId = deleteButton.getAttribute('data-quiz-id');
+                confirmDelete(quizId);
+            });
+        });
+
+        function confirmDelete(quizId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // redirect to the delete action
+                    window.location.href = '/Quiz/DeleteQuiz?quizId=' + quizId;
+                }
+            });
+        }
 </script>
