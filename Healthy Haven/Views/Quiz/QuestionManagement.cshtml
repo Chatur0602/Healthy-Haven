@@ -13,6 +13,9 @@
     var adminOrMod = User.IsInRole("Admin") || User.IsInRole("Moderator");
 }
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
     .table th, .table td {
         white-space: nowrap;
@@ -62,7 +65,7 @@
                             <!-- Edit button -->
                             <a asp-controller="Quiz" asp-action="EditQuestion" asp-route-quizId="@question.Id" class="btn btn-primary mx-1">Edit</a>
                             <!-- Delete button -->
-                            <a asp-controller="Quiz" asp-action="DeleteQuestion" asp-route-questionId="@question.Id" class="btn btn-danger">Delete</a>
+                            <button type="button" class="btn btn-danger delete-button" onclick="confirmDelete('@question.Id', false)">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -95,11 +98,36 @@ else
 <script>
     // click event to all rows
     document.querySelectorAll('tbody tr').forEach(function (row) {
-        row.addEventListener('click', function () {
-            var questionId = row.getAttribute('data-question-id');
+        row.addEventListener('click', function (event) {
+            // Find the parent 'td' of the clicked element
+            var td = event.target;
+            while (td && td.nodeName !== 'TD') {
+                td = td.parentNode;
+            }
+            // If the clicked cell is the last one in its row, do nothing
+            if (td && td.cellIndex === row.cells.length - 1) return;
 
+            var questionId = row.getAttribute('data-question-id');
             window.location.href = '/Quiz/OptionManagement?questionId=' + questionId;
         });
     });
+
+    function confirmDelete(questionId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/Quiz/DeleteQuestion?questionId=' + questionId;
+            } else {
+                console.log('Delete without redirection');
+            }
+        });
+    }
 </script>
 
