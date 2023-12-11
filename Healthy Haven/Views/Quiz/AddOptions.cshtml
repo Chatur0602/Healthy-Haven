@@ -9,7 +9,11 @@
 <br />
 <h3>Add Options</h3>
 
+<!-- Include SweetAlert CSS in your HTML -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
 
+<!-- Include SweetAlert JS in your HTML -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 <div>
@@ -88,8 +92,17 @@
                             contentType: 'application/json; charset=utf-8',
                             data: JSON.stringify(options),
                             success: function () {
-                                alert("Quiz Saved Successfully!");
-                                window.location.href = '/Quiz/InstructorModeratorQuizManagement';
+                                Swal.fire({
+                                    title: 'Quiz Saved Successfully!',
+                                    icon: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'OK'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Redirect to the desired page after user clicks OK
+                                        window.location.href = '/Quiz/InstructorModeratorQuizManagement';
+                                    }
+                                });
                             },
                             error: function () {
                                 alert("An error occurred while saving options.");
