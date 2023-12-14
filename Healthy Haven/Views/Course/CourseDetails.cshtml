@@ -1,1 +1,182 @@
-﻿
+﻿@using Healthy_Haven.Data;
+@{
+    ViewData["Title"] = "Course Details";
+}
+
+@inject ApplicationDbContext _db;
+@model CoursesModel
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+</head>
+
+<style>
+    .image-carousel {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .image-carousel img {
+            height: 400px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+    .slick-prev,
+    .slick-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+        opacity: 0.8;
+        color: black;
+        height: 40px;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 24px;
+        cursor: pointer;
+        line-height: 1px;
+        padding-bottom: 5px;
+    }
+
+    .slick-prev {
+        left: 10px;
+        background-color: darkred;
+        padding-left: 3px;
+    }
+
+    .slick-next {
+        right: 10px;
+        background-color: darkgreen;
+        padding-right: 2px;
+    }
+
+    #description {
+        font-size: 20px;
+        color: silver;
+    }
+
+    #posted-item {
+        color: silver;
+    }
+
+    .btn-like {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-like i {
+            font-size: 1.5rem;
+        }
+
+        .btn-like .liked {
+            color: red;
+        }
+
+    .heart-outline {
+        color: goldenrod;
+    }
+
+    #description,
+    h2 {
+        word-wrap: break-word;
+    }
+
+    .comment-text.collapsed {
+        overflow: hidden;
+    }
+
+    .read-more-link {
+        display: block;
+        margin-top: 5px;
+        color: #007bff;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+
+            <div class="image-carousel">
+                @{
+                    @using Amazon.S3;
+                    @using Amazon.S3.Model;
+                    @using Amazon.S3.Util;
+                    @using Microsoft.Extensions.Configuration;
+
+                    var user = _db.Users.Find(Model.instructor_id);
+                    var firstName = user.FirstName;
+                    var lastName = user.LastName;
+
+                    var courseImages = _db.CourseImages.Where(x => x.course_id == Model.id).ToList();
+                    var imagePaths = courseImages.Select(img => img.image_path).ToList();
+
+                    IConfiguration configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+                    var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+                    var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+                    var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+                    foreach (var path in imagePaths)
+                    {
+
+                        // Create an S3 client
+                        var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1);
+                        string bucketName = "healthyheaven";
+                        string folderName = "CourseImages";
+                        string imagePath = $"{folderName}/{path}";
+
+                        GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                {
+                    BucketName = bucketName,
+                    Key = imagePath,
+                    Expires = DateTime.Now.AddMinutes(60)
+                };
+
+                        string preSignedURL = s3Client.GetPreSignedURL(request);
+
+                        <div>
+                            <img src="@preSignedURL" alt="Image">
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <h2>@Model.name</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <p id="description">@Model.description</p>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    // Initialize the Slick Carousel
+    $('.image-carousel').slick({
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        prevArrow: '<button class="slick-prev"><-</button>',
+        nextArrow: '<button class="slick-next">-></button>'
+    });
+</script>

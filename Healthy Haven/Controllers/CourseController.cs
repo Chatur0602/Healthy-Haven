@@ -36,14 +36,14 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            var coursedetails = _db.Courses.Find(id);
+            var courseDetails = _db.Courses.Find(id);
 
-            if (coursedetails == null)
+            if (courseDetails == null)
             {
                 return NotFound();
             }
 
-            return View("CourseDetails", new List<CoursesModel> { coursedetails });
+            return View(courseDetails);
         }
 
         public IActionResult Course()
