@@ -6,6 +6,8 @@ using Amazon.S3;
 using Microsoft.AspNetCore.Builder;
 using Amazon.Extensions.NETCore.Setup;
 using Microsoft.OpenApi.Models;
+using Amazon.SimpleNotificationService;
+using Amazon.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,22 +25,33 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
 
-
 builder.Services.Configure<IdentityOptions>(opts =>
-{ 
+{
     opts.SignIn.RequireConfirmedEmail = true;
 });
 
 builder.Services.AddDefaultIdentity<ApplicationUser>().AddDefaultTokenProviders().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Get the AWS profile information from configuration providers
-AWSOptions awsOptions = builder.Configuration.GetAWSOptions();
+var awsOptions = builder.Configuration.GetAWSOptions();
 
-// Configure AWS service clients to use these credentials
-builder.Services.AddDefaultAWSOptions(awsOptions);
+// Extract necessary values from AWSOptions
+var profile = awsOptions.Profile;
+var region = awsOptions.Region;
 
-// These AWS service clients will be singleton by default
-builder.Services.AddAWSService<IAmazonS3>();
+// You may need to adjust the following based on how your credentials are stored in the configuration
+var accessKeyId = builder.Configuration["AWS:Credentials:AccessKeyId"];
+var secretKey = builder.Configuration["AWS:Credentials:SecretKey"];
+var sessionToken = builder.Configuration["AWS:Credentials:SessionToken"];
+
+var awsCredentials = new SessionAWSCredentials(accessKeyId, secretKey, sessionToken);
+
+builder.Services.AddSingleton<IAmazonSimpleNotificationService>(sp =>
+{
+    return new AmazonSimpleNotificationServiceClient(
+        awsCredentials,
+        new AmazonSimpleNotificationServiceConfig { RegionEndpoint = region });
+});
+
 
 var app = builder.Build();
 
@@ -46,7 +59,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
