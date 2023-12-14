@@ -159,7 +159,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 {
                     Text = i,
                     Value = i
-                }).Where(r => r.Text != "Admin")
+                }).Where(r => r.Text != "Admin" && r.Text != "Moderator")
             };
         }
 
@@ -240,7 +240,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                 {
                     Text = i,
                     Value = i
-                }).Where(r => r.Text != "Admin");
+                }).Where(r => r.Text != "Admin" && r.Text != "Moderator");
             }
 
             return Page();

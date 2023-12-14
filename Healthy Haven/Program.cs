@@ -22,7 +22,10 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), mySqlOptions =>
+    {
+        mySqlOptions.EnableRetryOnFailure();
+    });
 });
 
 builder.Services.Configure<IdentityOptions>(opts =>
@@ -61,6 +64,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

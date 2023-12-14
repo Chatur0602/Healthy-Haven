@@ -1,0 +1,132 @@
+﻿@using Healthy_Haven.Data;
+@inject ApplicationDbContext _db;
+@model IEnumerable<CoursesModel>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+</head>
+
+
+<style>
+
+    .image-carousel {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        position: relative;
+    }
+
+        .image-carousel img {
+            height: 200px;
+            width: 100%;
+            object-fit: contain;
+        }
+
+    .card {
+        width: 100%;
+        border: 2px solid goldenrod;
+        background-color: lightgrey;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .card-title {
+        color: darkgoldenrod;
+    }
+
+    .slick-dots {
+        display: flex !important;
+        justify-content: center !important;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+        .slick-dots li {
+            margin: 0 5px !important;
+            cursor: pointer;
+            color: darkgreen !important;
+        }
+
+            .slick-dots li:hover {
+                color: darkgoldenrod !important;
+            }
+
+            .slick-dots li button {
+                display: none !important;
+            }
+</style>
+<div>
+    <div class="row pt-4">
+        <div class="col-9">
+            <h2>Healthy Courses</h2>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            var course = _db.Courses.Find(item.id);
+
+            var courseImages = _db.CourseImages.Where(x => x.course_id == item.id).ToList();
+            var imagePaths = courseImages.Select(img => img.image_path).ToList();
+
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="image-carousel">
+                            @foreach (var path in imagePaths)
+                            {
+                                @using Amazon.S3;
+                                @using Amazon.S3.Model;
+                                @using Amazon.S3.Util;
+
+                                var s3Client = new AmazonS3Client("ASIA55H4D3RUQGOO6EQB", "Jv9ebiMrVz2ZQ7ORXa8m2N4pTeD1hHtmq9IQ3Gym", "FwoGZXIvYXdzEG0aDHoXKHtl3q7HnsoQNSK8AUlMPWKfzwaw4jqfYITulPqOrhEKs0ZDdir7qW7yRXvXCESwUV5I4xAxM9BE7YmA+ZArdSvso1S9QE9MpIg0dDamEKmRdp2MwWP6/nu7ZrWprUwP/n64ykAfJq6K4u6yQsu8NO9af3ZGlwZrc5nkDR9puPAx9UXcSc+wlB2LBe/eac2j//Qpei4cNfPyg56/4iFI402dbABavnXFrCFvgrM8LGUyq5UGV/PR68+0tIHrZtdpdi6B5yotxscPKICk3aoGMi1vz0AbsFU2br2oWMimqtDdbs/2idJbXslx3/E0lsHw8cynO3SRnk59eg2SxRo=", Amazon.RegionEndpoint.USEast1);
+
+                                string bucketName = "healthyhavens3";
+                                string folderName = "CourseImages";
+                                string imagePath = $"{folderName}/{path}";
+
+                                System.Diagnostics.Debug.WriteLine("IMAGE PATH= " + imagePath);
+                                GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+                                {
+                                    BucketName = bucketName,
+                                    Key = imagePath,
+                                    Expires = DateTime.Now.AddMinutes(60)
+                                };
+                                string preSignedURL = s3Client.GetPreSignedURL(request);
+                                <div>
+                                    <img src="@preSignedURL" alt="Image">
+                                </div>
+                            }
+
+                        </div>
+                        <h5 class="card-title">@item.name</h5>
+                        <p style="padding-top: 10px;" class="card-text">@item.description</p>
+                        <a asp-controller="Course" asp-action="CourseDetails" asp-route-Id="@item.id" class="btn btn-primary mx-1">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    var forums = document.querySelectorAll('.card');
+    for (var i = 0; i < forums.length; i++) {
+        var carouselImages = forums[i].querySelectorAll('.image-carousel img');
+        if (carouselImages.length > 1) {
+            $(forums[i]).find('.image-carousel').slick({
+                infinite: true,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                dots: true, // Add dots
+                autoplay: true, // Enable autoplay
+                autoplaySpeed: 5000, // Set autoplay speed to 3 seconds
+                prevArrow: false, // Hide the previous arrow
+                nextArrow: false // Hide the next arrow
+            });
+        }
+    }
+</script>

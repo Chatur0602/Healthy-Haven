@@ -1,0 +1,78 @@
+﻿@model IEnumerable<CoursesModel>
+
+<style>
+    .image-carousel {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+        .image-carousel img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            margin: 0 auto; /* Center the image horizontally */
+        }
+
+    .card {
+        width: 80%; /* Adjust the width as needed */
+        margin: 0 auto; /* Center the card horizontally */
+        border: 2px solid goldenrod;
+        background-color: lightgrey;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: center; /* Center-align text within the card */
+    }
+
+    .card-title {
+        color: darkgoldenrod;
+    }
+
+    .slick-prev,
+    .slick-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+
+    .slick-prev {
+        left: 10px;
+        opacity: 0.5;
+    }
+
+    .slick-next {
+        right: 10px;
+        opacity: 0.5;
+    }
+</style>
+
+<div>
+    <div class="row pt-4">
+        <div class="col-9">
+            <h2>Course Details</h2>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="image-carousel">
+                            <div>
+                                <img src="" alt="Image">
+                            </div>
+                        </div>
+                        <h5 class="card-title">@item.name</h5>
+                        <p style="padding-top: 10px;" class="card-text">@item.description</p>
+                        <p style="padding-top: 10px;" class="card-text">@item.course_date</p>
+                        <p style="padding-top: 10px;" class="card-text">@item.credit_hours</p>
+                        <a asp-action="Course" asp-controller="UserCourse" class="btn btn-primary mx-1">Back to Course</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -29,19 +29,15 @@ Insert Into Users(FirstName, LastName, Email, Password, Gender, Age, Role) value
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Wee', 'Shi Min','shimin@hotmail.com', 'F', 22, 'Somewhere in WP');
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Assran', 'Mydeeen','assran@yahoo.com', 'M', 22, 'Sri Impian');
 
-DELETE FROM AspNetUsers WHERE id='00115c35-4afd-4fb0-b456-6b7956328c1a';
-DELETE FROM AspNetUsers WHERE id='5866cb8e-893e-4cdc-baa7-ad24cbd20b0a';
-DELETE FROM AspNetUsers WHERE id='3ff0f228-6ab9-4c61-84f9-2b1d9b52b1fa';
+DELETE FROM AspNetUsers;
+DELETE FROM Courses;
 
 SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
 
 describe AspNetUsers;
 
 select * from AspNetRoles;
-
 select * from AspNetUsers;
-
-select * from __EFMigrationsHistory;
 
 DROP Table AspNetUsers;
 

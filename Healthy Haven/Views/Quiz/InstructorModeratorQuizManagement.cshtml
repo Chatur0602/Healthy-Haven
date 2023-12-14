@@ -1,0 +1,66 @@
+﻿@model IEnumerable<QuizzesModel>
+@*
+    @model IEnumerable<QuestionsModel>
+*@
+
+@{
+    ViewData["Title"] = "QuizManagement";
+}
+
+<style>
+    .table th, .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 3em;
+        max-width: 200px; /* Set your desired maximum width */
+    }
+</style>
+
+<div>
+    <div class="row pt-4">
+        <h2 class="col-9">Quiz Management Menu</h2>
+    </div>
+    <div class="col-12 text-lg-end">
+        <!-- Add button for creating a new quiz -->
+        <a asp-controller="Quiz" asp-action="CreateQuiz" class="btn btn-success">Add New Quiz</a>
+    </div>
+</div>
+<br />
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered table-hover table-striped" width="100%">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var quiz in Model)
+            {
+                <tr>
+                    <td width="20%">@quiz.Title</td>
+                    <td width="40%">@quiz.Description</td>
+                    <td width="20">@quiz.Date</td>
+                    <td width="20%">
+                        <div class="w-100 btn-group" role="group">
+                            <!-- Edit button -->
+                            <a asp-controller="Quiz" asp-action="Edit" asp-route-id="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
+                            <!-- Delete button -->
+                            <a asp-controller="Quiz" asp-action="Delete" asp-route-id="@quiz.Id" class="btn btn-danger">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <br />
+    <p><b>No Quizzes Found</b></p>
+}

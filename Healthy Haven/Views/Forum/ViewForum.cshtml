@@ -76,15 +76,15 @@
     }
 
         .btn-like i {
-            font-size: 1.5rem; /* Adjust the size as needed */
+            font-size: 1.5rem;
         }
 
         .btn-like .liked {
-            color: red; /* Color for the liked state */
+            color: red;
         }
 
     .heart-outline {
-        color: goldenrod; /* Set the color to gold or your desired color */
+        color: goldenrod; 
     }
 </style>
 
@@ -107,10 +107,11 @@
 
                     foreach (var path in imagePaths)
                     {
-                        var s3Client = new AmazonS3Client("ASIA55H4D3RU5PVRPW4C", "2INDCqTHlj9I0Ps8X2zeZYm/l9l+RTUh3bG825YV", "FwoGZXIvYXdzELz//////////wEaDP93jwo8t0aem23RwyK8AVJ4brFIvJ3Wtp/5Derbf4U4WmkgQujFQlgljVemYiRo1OP7Nh6r0vle8JwrfXcPjFKxqUMphY+nUNQxlyl+WmRJjP9Cf0CLJL+eXvvFdDzzrGp/ykcPn6dD2L2l2vpoIEyB4RvzRkS/PMUj5OFSB/bOxtdupuQyBzIgmycOTyVXcWzjBicH/C+yaeRRWrlDK8rMD4qjKEIPXTVu+w6FyMFL/z3gzyAeou7WtpJ1NiLrE1j6NZ7q5U6rDy+cKKq4tqoGMi39vKCSxdWRH5GgdCEQpi0fEyx+jbX5ofKFyChV2TR5oWyh0MrXP0OhYeYn2oE=", Amazon.RegionEndpoint.USEast1);
+                        var s3Client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", Amazon.RegionEndpoint.USEast1);
 
                         string bucketName = "healthyhavens3";
-                        string imagePath = path;
+                        string folderName = "ForumImages";
+                        string imagePath = $"{folderName}/{path}";
 
                         GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
                         {
@@ -139,9 +140,48 @@
             <p id="description">@Model.Description</p>
         </div>
     </div>
+
+    @{
+        var currentTime = DateTime.Now;
+        var creationTime = Model.Created_At;
+        var timeDifference = currentTime - creationTime;
+
+        string timeAgo;
+
+        if (timeDifference.TotalMinutes < 1)
+        {
+            timeAgo = "just now";
+        }
+        else if (timeDifference.TotalHours < 1)
+        {
+            var minutes = (int)timeDifference.TotalMinutes;
+            timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+        }
+        else if (timeDifference.TotalDays < 1)
+        {
+            var hours = (int)timeDifference.TotalHours;
+            timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+        }
+        else if (timeDifference.TotalDays < 30)
+        {
+            var days = (int)timeDifference.TotalDays;
+            timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+        }
+        else if (timeDifference.TotalDays < 365)
+        {
+            var months = (int)(timeDifference.TotalDays / 30);
+            timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+        }
+        else
+        {
+            var years = (int)(timeDifference.TotalDays / 365);
+            timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+        }
+    }
+
     <div class="row">
         <div class="col-6">
-            <p id="posted-item"><strong>Posted By</strong> @firstName @lastName | <strong>Posted On</strong> @Model.Created_At</p>
+            <p id="posted-item"><strong>Posted By</strong> @firstName @lastName | @timeAgo</p>
         </div>
     </div>
     <div class="row">
@@ -179,6 +219,8 @@
             <h5 class="mb-0 ml-2"><span id="forumLikeCount_@Model.Id"><strong>@forumLikeCount</strong></span></h5>
         </div>
     </div>
+    <br />
+    <br />
     <div class="row">
         <div class="col-12">
             <h3>Comments</h3>
@@ -195,8 +237,46 @@
                     <div class="card-body">
                         <p style="font-size:18px;">@comment.CommentText</p>
                     </div>
+                        @{
+                            var currentTime2 = DateTime.Now;
+                            var creationTime2 = comment.CreatedAt;
+                            var timeDifference2 = currentTime2 - creationTime2;
+
+                            string timeAgo2;
+
+                            if (timeDifference2.TotalMinutes < 1)
+                            {
+                                timeAgo2 = "just now";
+                            }
+                            else if (timeDifference2.TotalHours < 1)
+                            {
+                                var minutes = (int)timeDifference2.TotalMinutes;
+                                timeAgo2 = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                            }
+                            else if (timeDifference2.TotalDays < 1)
+                            {
+                                var hours = (int)timeDifference2.TotalHours;
+                                timeAgo2 = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                            }
+                            else if (timeDifference2.TotalDays < 30)
+                            {
+                                var days = (int)timeDifference2.TotalDays;
+                                timeAgo2 = $"{days} {(days == 1 ? "day" : "days")} ago";
+                            }
+                            else if (timeDifference2.TotalDays < 365)
+                            {
+                                var months = (int)(timeDifference2.TotalDays / 30);
+                                timeAgo2 = $"{months} {(months == 1 ? "month" : "months")} ago";
+                            }
+                            else
+                            {
+                                var years = (int)(timeDifference2.TotalDays / 365);
+                                timeAgo2 = $"{years} {(years == 1 ? "year" : "years")} ago";
+                            }
+                        }
+
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <p class="mb-0 mr-3"><strong>Posted By</strong> @firstName2 @lastName2 | <strong>Posted On</strong> @comment.CreatedAt</p>
+                            <p class="mb-0 mr-3"><strong>Posted By</strong> @firstName2 @lastName2 | @timeAgo2</p>
                             <div class="d-flex align-items-center">
                             @{
                                 var userId2 = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -243,6 +323,7 @@
             }
         </div>
     </div>
+    <br />
     @if (User.IsInRole("Instructor") || User.IsInRole("Member") || User.IsInRole("Moderator"))
     {
         <div class="row">

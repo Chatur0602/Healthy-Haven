@@ -1,0 +1,23 @@
+﻿@model Healthy_Haven.Models.QuestionsModel
+
+@{
+    ViewData["Title"] = "Create Question";
+}
+
+<h2>Create a New Question</h2>
+
+<!--<h3>Question ID: @Model.QuizId</h3>-->
+
+<form asp-action="AddQuestion" method="post">
+    <input type="hidden" name="quizId" value="@Model.QuizId">
+
+    <div class="form-group">
+        <label for="QuestionText">Question:</label>
+        <textarea asp-for="QuestionText" class="form-control" required></textarea>
+        @Html.ValidationMessageFor(model => model.QuestionText)
+    </div>
+    <br />
+    <button type="submit" class="btn btn-success">Save Question</button>
+</form>
+
+
