@@ -9,23 +9,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\Modules\**" />
     <Compile Remove="Views\NewFolder1\**" />
+    <Compile Remove="Views\NewFolder2\**" />
     <Compile Remove="Views\NewFolder\**" />
     <Compile Remove="Views\User\**" />
+    <Content Remove="Views\Modules\**" />
     <Content Remove="Views\NewFolder1\**" />
+    <Content Remove="Views\NewFolder2\**" />
     <Content Remove="Views\NewFolder\**" />
     <Content Remove="Views\User\**" />
+    <EmbeddedResource Remove="Views\Modules\**" />
     <EmbeddedResource Remove="Views\NewFolder1\**" />
+    <EmbeddedResource Remove="Views\NewFolder2\**" />
     <EmbeddedResource Remove="Views\NewFolder\**" />
     <EmbeddedResource Remove="Views\User\**" />
+    <None Remove="Views\Modules\**" />
     <None Remove="Views\NewFolder1\**" />
+    <None Remove="Views\NewFolder2\**" />
     <None Remove="Views\NewFolder\**" />
     <None Remove="Views\User\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Remove="Views\Course\Modules.cshtml" />
-    <Content Remove="Views\Modules\EditModule.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,20 +59,6 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\Course\Modules.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Modules\EditModule.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\Modules\EditModule.cshtml" />
-    <None Include="Views\Modules\UserModules.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Modules\EditModule.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\NewFolder2\" />
   </ItemGroup>
 
 </Project>
