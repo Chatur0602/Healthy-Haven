@@ -3,6 +3,7 @@ using Healthy_Haven.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Healthy_Haven.Controllers
@@ -11,7 +12,7 @@ namespace Healthy_Haven.Controllers
     {
         private readonly ILogger<QuizController> _logger;
         private readonly ApplicationDbContext _db;
-        
+
 
         public QuizController(ILogger<QuizController> logger, ApplicationDbContext db)
         {
@@ -19,72 +20,166 @@ namespace Healthy_Haven.Controllers
             _logger = logger;
         }
 
-        [Authorize(Roles = "Moderator,Instructor")]
+        [Authorize(Roles = "Admin, Moderator,Instructor")]
         public IActionResult InstructorModeratorQuizManagement()
         {
             List<QuizzesModel> quizzes = new List<QuizzesModel>();
             quizzes = _db.Quizzes.ToList();
+            quizzes.Reverse();
             return View(quizzes);
         }
 
-        public IActionResult QuizBuilder(int quizId)
+        public IActionResult CreateQuiz()
         {
-            // Create a new empty question object
-            QuestionsModel question = new QuestionsModel();
+            var coursesList = _db.Courses.ToList();  // Replace _db.Courses with your actual DbSet for courses
 
-            // Set the quiz ID
-            question.QuizId = quizId;
+            var quizCoursesModel = new QuizCoursesModel
+            {
+                Quizzes = new QuizzesModel(), // we fill this in the view
+                CoursesList = coursesList
+            };
 
+            return View(quizCoursesModel);
+        }
+
+
+        [HttpPost]
+        public IActionResult CreateQuiz(QuizCoursesModel details)
+        {
+            var coursesList = _db.Courses.ToList();
+            var quizCoursesModel = new QuizCoursesModel
+            {
+                Quizzes = new QuizzesModel(), // in case it dont work we can reload this way
+                CoursesList = coursesList
+            };
+
+            
+            _db.Quizzes.Add(details.Quizzes);
+            _db.SaveChanges();
+
+            return RedirectToAction("CreateQuestion", new { quizId = details.Quizzes.Id });
+            
+        }
+
+
+        public IActionResult DeleteQuiz(int quizId)
+        {
+            var quiz = _db.Quizzes.Find(quizId);
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
+            var questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+
+            foreach (var question in questions)
+            {
+                var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+
+                _db.Options.RemoveRange(options);
+                _db.Questions.Remove(question);
+            }
+
+            // delete quiz and save
+            _db.Quizzes.Remove(quiz);
+            _db.SaveChanges();
+
+            return RedirectToAction("InstructorModeratorQuizManagement");
+        }
+
+
+        public IActionResult DeleteQuestion (int  questionId)
+        {
+            var question = _db.Questions.Find(questionId);
+
+            if(question == null)
+            {
+                return NotFound();
+            }
+
+            var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+            _db.Options.RemoveRange(options);
+            _db.Questions.Remove(question);
+            _db.SaveChanges();
+
+
+            return RedirectToAction("QuestionManagement", new { quizId = question.QuizId });
+        }
+
+
+        public IActionResult EditQuiz (int quizId)
+        {
+            var quizDetails = _db.Quizzes.Find(quizId);
+            var coursesList = _db.Courses.ToList();
+
+            var quizCoursesModel = new QuizCoursesModel
+            {
+                Quizzes = quizDetails,
+                CoursesList = coursesList
+            };
+
+            return View(quizCoursesModel);
+        }
+
+        [HttpPost]
+        public IActionResult EditQuizDetails(QuizCoursesModel quizCoursesModel)
+        {
+            
+                var existingQuiz = _db.Quizzes.Find(quizCoursesModel.Quizzes.Id);
+
+                if (existingQuiz == null)
+                {
+                    return NotFound();
+                }
+
+                existingQuiz.Title = quizCoursesModel.Quizzes.Title;
+                existingQuiz.Description = quizCoursesModel.Quizzes.Description;
+                existingQuiz.Date = quizCoursesModel.Quizzes.Date;
+                existingQuiz.CourseId = quizCoursesModel.Quizzes.CourseId;
+
+                _db.SaveChanges();
+
+                return RedirectToAction("InstructorModeratorQuizManagement");
+            
+        }
+
+
+        /*
+         So, i take them to the view to edit the question
+         post to method which then updates the model based on the questionId
+         post method redirects to questionManagement with quizID in the question Model
+         */
+        public IActionResult EditQuestion( int quizId)  //can imporve but later
+        {
+            var question = _db.Questions.Find(quizId);
             return View(question);
         }
 
-        
-
-        /* Video implementation. For reference
-        public IActionResult CreateQuiz() 
-        {
-            return View();
-        }
-
         [HttpPost]
-        public  IActionResult CreateQuiz(QuestionsModel questionDetails)
-        {
-            //modify later -- should link to the builder tab as it says tho
+        public IActionResult EditQuestion (QuestionsModel questionDetails )
+        {   
             if (ModelState.IsValid)
             {
-                _db.Questions.Add(questionDetails);
-                _db.SaveChanges();
-                return RedirectToAction("QuizBuilder");
-            }
-            return View();
-        }
-        */
-        public IActionResult CreateQuiz()
-        {
-            //ViewBag.Courses = new SelectList(_db.Courses, "Id", "Name"); // Assuming you have a DbSet<CoursesModel> in your DbContext
+                var existingQuestions = _db.Questions.Find(questionDetails.Id);
 
-            return View();
-        }
+                if (existingQuestions == null)
+                {
+                    return NotFound();
+                }
 
-        [HttpPost]
-        public IActionResult CreateQuiz(QuizzesModel quizDetails)
-        {
-            if (ModelState.IsValid)
-            {
-                _db.Quizzes.Add(quizDetails);
+                existingQuestions.QuestionText = questionDetails.QuestionText;
                 _db.SaveChanges();
 
-                // Redirect to the quiz builder page with the newly created quiz ID
-                return RedirectToAction("CreateQuestion", new { quizId = quizDetails.Id });
+                return RedirectToAction("QuestionManagement", new { quizId = questionDetails.QuizId });
             }
 
-            // If validation fails, return to the same view
             return View();
+
         }
 
         public IActionResult CreateQuestion(int quizId)
         {
-            // Retrieve the quiz based on quizId
             var quiz = _db.Quizzes.Find(quizId);
 
             if (quiz == null)
@@ -93,17 +188,14 @@ namespace Healthy_Haven.Controllers
                 return NotFound();
             }
 
-            // Create a new empty question object
             QuestionsModel question = new QuestionsModel();
-
-            // Set the quiz ID
             question.QuizId = quizId;
-
-            // Pass the quiz to the view
             ViewData["Quiz"] = quiz;
 
             return View(question);
         }
+
+        
 
 
         [HttpPost]
@@ -111,102 +203,138 @@ namespace Healthy_Haven.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Add the question to the database
+                question.QuestionText = question.QuestionText;
+
                 _db.Questions.Add(question);
                 _db.SaveChanges();
 
-                // Redirect to the page for adding options with the newly created question ID
                 return RedirectToAction("AddOptions", new { quizId = quizId, questionId = question.Id });
             }
 
-            // Validation failed, return to the create question page
             return RedirectToAction("CreateQuestion", new { quizId = quizId });
         }
 
         public IActionResult AddOptions(int quizId, int questionId)
         {
-            // Retrieve the question based on questionId
-            var question = new QuestionsModel
-            {
-                QuizId = quizId,
-                Id = questionId // Assuming you set the Id property for the question
-            };
+            // Retrieve the question based on questionId from the database
+            var question = _db.Questions
+                              .Where(q => q.Id == questionId && q.QuizId == quizId)
+                              .FirstOrDefault();
 
-            // Pass the question to the view
+            if (question == null)
+            {
+                return NotFound();
+            }
+
             return View(question);
         }
 
-        /*
-         * backtrack in case saveOptions doesn;t work
-        [HttpPost]
-        public IActionResult AddOptions(int quizId, int questionId, [FromBody] List<OptionsModel> options)
+        public IActionResult EditOptions(int questionId)
         {
-            try
+            var question = _db.Questions.Find(questionId);
+
+            if (question == null)
             {
-                if (options != null && options.Count >= 2 && options.Count <= 4)
-                {
-                    // Ensure that only one option is selected as correct
-                    if (options.Count(o => o.IsCorrect) != 1)
-                    {
-                        return BadRequest("Please select exactly one answer as correct.");
-                    }
-
-                    // Set the QuestionId for all options
-                    foreach (var option in options)
-                    {
-                        option.QuestionId = questionId;
-                    }
-
-                    // Add options to the database
-                    _db.Options.AddRange(options);
-                    _db.SaveChanges();
-
-                    // Return success
-                    return Ok("Options added successfully.");
-                }
-
-                // Handle the case where there are validation errors or an incorrect number of options
-                return BadRequest("Invalid number of options.");
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                // Log the exception, handle accordingly
-                return StatusCode(500, "An error occurred while processing the request.");
-            }
+
+            return View(question);
         }
-        */
+
         [HttpPost]
-        public IActionResult SaveOptions([FromBody] List<OptionsModel> options)
+        public IActionResult EditOptions([FromBody] List<OptionsModel> options)
         {
             if (options != null && options.Count >= 2 && options.Count <= 4)
             {
-                // Ensure that only one option is selected as correct
                 if (options.Count(o => o.IsCorrect) != 1)
                 {
                     // Handle the case where no correct option is selected
-                    return BadRequest("Please select exactly one answer as correct.");
+                    return BadRequest("Please select one answer as correct.");
                 }
 
-                // Set the QuestionId for all options
-                foreach (var option in options)
-                {
-                    //option.QuestionId = questionId;
-                }
 
-                // Add options to the database
+                var questionId = options[0].QuestionId;
+                var existingOptions = _db.Options.Where(o => o.QuestionId == options[0].QuestionId).ToList();
+                _db.Options.RemoveRange(existingOptions);
+                _db.SaveChanges();
+
                 _db.Options.AddRange(options);
                 _db.SaveChanges();
 
-                // Return a success status
-                return Ok();
+                return RedirectToAction("OptionManagement", new { questionId = questionId });
             }
 
-            // Handle the case where there are validation errors or an incorrect number of options
+            return BadRequest("Invalid number of options.");
+        }
+
+        
+        [HttpPost]
+        public IActionResult SaveOptions([FromBody] List<OptionsModel> options)  //saves options on submit in Add Options
+        {
+            if (options != null && options.Count >= 2 && options.Count <= 4)
+            {
+                if (options.Count(o => o.IsCorrect) != 1)
+                {
+                    // Handle the case where no correct option is selected
+                    return BadRequest("Please select one answer as correct.");
+                }
+
+                _db.Options.AddRange(options);
+                _db.SaveChanges();
+
+                return RedirectToAction("InstructorModeratorQuizManagement");
+            }
+
             return BadRequest("Invalid number of options.");
         }
 
 
+        public IActionResult QuestionManagement(int quizId)  
+        {
+            var questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+            return View(questions);
+        }
 
+        public IActionResult OptionManagement (int questionId)
+        {
+            var options = _db.Options.Where(q => q.QuestionId == questionId).ToList();
+            return View(options);
+        }
+
+        public IActionResult QuizRender(int quizId)
+        {
+            var quiz = _db.Quizzes.Find(quizId);
+            return View(quiz);
+        }
+
+        [HttpPost]
+        public IActionResult QuizResult(int quizId, Dictionary<int, int> questionResponses)
+        {
+            var questions = _db.Questions.Where(q => q.QuizId == quizId).ToList();
+            int correctAnswers = 0;
+
+            foreach (var question in questions)
+            {
+                var selectedOptionId = questionResponses.ContainsKey(question.Id) ? questionResponses[question.Id] : -1;
+
+                var correctOption = _db.Options.FirstOrDefault(o => o.QuestionId == question.Id && o.IsCorrect);
+
+                if (correctOption != null && correctOption.Id == selectedOptionId)
+                {
+                    correctAnswers++;
+                }
+            }
+
+            var viewModel = new QuizResultViewModel
+            {
+                QuizId = quizId,
+                CorrectAnswers = correctAnswers,
+                TotalQuestions = questions.Count,
+                QuestionResponses = questionResponses
+            };
+
+            return View("QuizResult", viewModel);
+        }
 
 
     }

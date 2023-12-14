@@ -86,6 +86,22 @@
     .heart-outline {
         color: goldenrod; 
     }
+
+    #description,
+    h2 {
+        word-wrap: break-word;
+    }
+
+    .comment-text.collapsed {
+        overflow: hidden;
+    }
+
+    .read-more-link {
+        display: block;
+        margin-top: 5px;
+        color: #007bff;
+        cursor: pointer;
+    }
 </style>
 
 <div class="container">
@@ -97,6 +113,7 @@
                     @using Amazon.S3;
                     @using Amazon.S3.Model;
                     @using Amazon.S3.Util;
+                    @using Microsoft.Extensions.Configuration;
 
                     var user = _db.Users.Find(Model.User_Id);
                     var firstName = user.FirstName;
@@ -105,11 +122,21 @@
                     var forumImages = _db.ForumImages.Where(x => x.Forum_Id == Model.Id).ToList();
                     var imagePaths = forumImages.Select(img => img.Image_Path).ToList();
 
+                    IConfiguration configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+                    var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+                    var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+                    var sessionToken = configuration["AWSCredentials:SessionToken"];
+
                     foreach (var path in imagePaths)
                     {
-                        var s3Client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", Amazon.RegionEndpoint.USEast1);
 
-                        string bucketName = "healthyhavens3";
+                        // Create an S3 client
+                        var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1);
+                        string bucketName = "healthyheaven";
                         string folderName = "ForumImages";
                         string imagePath = $"{folderName}/{path}";
 
@@ -225,18 +252,18 @@
         <div class="col-12">
             <h3>Comments</h3>
             @{
-            var forumComments = _db.Comments.Where(x => x.ForumId == Model.Id).ToList();
-            
-            foreach (var comment in forumComments){
+                var forumComments = _db.Comments.Where(x => x.ForumId == Model.Id).ToList();
 
-                var user2 = _db.Users.Find(comment.UserId);
-                var firstName2 = user2.FirstName;
-                var lastName2 = user2.LastName;
+                @foreach (var comment in forumComments)
+                {
+                    var user2 = _db.Users.Find(comment.UserId);
+                    var firstName2 = user2.FirstName;
+                    var lastName2 = user2.LastName;
 
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <p style="font-size:18px;">@comment.CommentText</p>
-                    </div>
+                    <div class="card mb-3">
+                        <div class="card-body comment-card">
+                            <p class="comment-text" style="font-size:18px;">@comment.CommentText</p>
+                        </div>
                         @{
                             var currentTime2 = DateTime.Now;
                             var creationTime2 = comment.CreatedAt;
@@ -278,10 +305,10 @@
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <p class="mb-0 mr-3"><strong>Posted By</strong> @firstName2 @lastName2 | @timeAgo2</p>
                             <div class="d-flex align-items-center">
-                            @{
-                                var userId2 = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                                var hasLikedComment = _db.CommentLikes.Any(x => x.CommentId == comment.Id && x.UserId == userId2);
-                                var likeCount = _db.CommentLikes.Count(x => x.CommentId == comment.Id);
+                                @{
+                                    var userId2 = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                                    var hasLikedComment = _db.CommentLikes.Any(x => x.CommentId == comment.Id && x.UserId == userId2);
+                                    var likeCount = _db.CommentLikes.Count(x => x.CommentId == comment.Id);
 
                                     if (comment.UserId == userId2 || User.IsInRole("Moderator") || User.IsInRole("Admin"))
                                     {
@@ -294,31 +321,33 @@
                                         </form>
                                     }
 
-                                if (hasLikedComment)
-                                {
-                                    <form asp-controller="Like" asp-action="UnlikeComment" method="post" class="mr-2">
-                                        <input type="hidden" name="commentId" value="@comment.Id" />
-                                        <input type="hidden" name="forumId" value="@Model.Id" />
-                                        <button type="submit" class="btn btn-like">
-                                            <i class="fas fa-heart text-danger"></i>
-                                        </button>
-                                    </form>
+                                    if (hasLikedComment)
+                                    {
+                                        <form asp-controller="Like" asp-action="UnlikeComment" method="post" class="mr-2">
+                                            <input type="hidden" name="commentId" value="@comment.Id" />
+                                            <input type="hidden" name="forumId" value="@Model.Id" />
+                                            <button type="submit" class="btn btn-like">
+                                                <i class="fas fa-heart text-danger"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-controller="Like" asp-action="LikeComment" method="post" class="mr-2">
+                                            <input type="hidden" name="commentId" value="@comment.Id" />
+                                            <input type="hidden" name="forumId" value="@Model.Id" />
+                                            <button type="submit" class="btn btn-like">
+                                                <i class="far fa-heart text-warning heart-outline"></i>
+                                            </button>
+                                        </form>
+                                    }
                                 }
-                                else
-                                {
-                                    <form asp-controller="Like" asp-action="LikeComment" method="post" class="mr-2">
-                                        <input type="hidden" name="commentId" value="@comment.Id" />
-                                        <input type="hidden" name="forumId" value="@Model.Id" />
-                                        <button type="submit" class="btn btn-like">
-                                            <i class="far fa-heart text-warning heart-outline"></i>
-                                        </button>
-                                    </form>
-                                }
-                            }
                                 <span><strong id="likeCount_@comment.Id">@likeCount</strong></span>
                             </div>
                         </div>
                     </div>
+
+           
                 }
             }
         </div>
@@ -350,6 +379,38 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var comments = document.querySelectorAll('.comment-text');
+
+        comments.forEach(function (comment) {
+            var lineHeight = parseFloat(window.getComputedStyle(comment).lineHeight);
+            var maxHeight = lineHeight * 3; // Show up to 3 lines
+
+            if (comment.clientHeight > maxHeight) {
+                comment.classList.add('collapsed');
+                comment.style.maxHeight = maxHeight + 'px';
+
+                var readMoreLink = document.createElement('a');
+                readMoreLink.href = 'javascript:void(0)';
+                readMoreLink.classList.add('read-more-link');
+                readMoreLink.textContent = 'Read more';
+                readMoreLink.onclick = function () {
+                    if (comment.classList.contains('collapsed')) {
+                        comment.classList.remove('collapsed');
+                        comment.style.maxHeight = 'none';
+                        readMoreLink.textContent = 'Show less';
+                    } else {
+                        comment.classList.add('collapsed');
+                        comment.style.maxHeight = maxHeight + 'px';
+                        readMoreLink.textContent = 'Read more';
+                    }
+                };
+
+                comment.parentNode.appendChild(readMoreLink);
+            }
+        });
+    });
+
     // Initialize the Slick Carousel
     $('.image-carousel').slick({
         infinite: true,

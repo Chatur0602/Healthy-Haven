@@ -1,43 +1,54 @@
-﻿@model Healthy_Haven.Models.QuizzesModel
+﻿@model Healthy_Haven.Models.QuizCoursesModel
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 @using System.Security.Claims;
+
 
 @{
     ViewData["Title"] = "Create Quiz";
 }
 
 <h2>Create a New Quiz</h2>
+<br />
 
 <form asp-action="CreateQuiz" method="post">
     @Html.ValidationSummary(true) <!-- Display summary of validation errors -->
 
     <div class="form-group">
         <label for="Title">Quiz Title:</label>
-        <input asp-for="Title" class="form-control" required>
-        @Html.ValidationMessageFor(model => model.Title) <!-- Display validation error for Title -->
+        <input asp-for="Quizzes.Title" class="form-control" required>
+        @Html.ValidationMessageFor(model => model.Quizzes.Title) <!-- Display validation error for Title -->
     </div>
 
+    <br />
     <div class="form-group">
         <label for="Description">Quiz Description:</label>
-        <textarea asp-for="Description" class="form-control" required></textarea>
-        @Html.ValidationMessageFor(model => model.Description) <!-- Display validation error for Description -->
+        <textarea asp-for="Quizzes.Description" class="form-control" required></textarea>
+        @Html.ValidationMessageFor(model => model.Quizzes.Description) <!-- Display validation error for Description -->
     </div>
 
-    @*
-        *implement course relation here later
+    <br />
     <!-- Add dropdown for selecting courses -->
     <div class="form-group">
         <label for="CourseId">Select Course:</label>
-        <select asp-for="CourseId" asp-items="@(new SelectList(ViewBag.Courses, "Id", "Name"))" class="form-control" required>
+        <select asp-for="Quizzes.CourseId" class="form-control" required>
             <option value="">Select Course</option>
+
+            @if (Model.CoursesList != null)
+            {
+                var userId = UserManager.GetUserId(User);
+                foreach (var course in Model.CoursesList.Where(c => c.instructor_id == userId.ToString()))
+                {
+                    <option value="@course.id">@course.name</option>
+                }
+            }
         </select>
-        @Html.ValidationMessageFor(model => model.CourseId) <!-- Display validation error for CourseId -->
+        @Html.ValidationMessageFor(model => model.Quizzes.CourseId)
     </div>
-    *@
 
     <!-- Hidden fields for additional details -->
-    <input type="hidden" asp-for="UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
-    <input type="hidden" asp-for="Date" value="@DateTime.Now" />
-    <input type="hidden" asp-for="CourseId" value=2 />
+    <input type="hidden" asp-for="Quizzes.UserId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+    <input type="hidden" asp-for="Quizzes.Date" value="@DateTime.Now" />
 
     <!-- Add more fields as needed -->
     <br />

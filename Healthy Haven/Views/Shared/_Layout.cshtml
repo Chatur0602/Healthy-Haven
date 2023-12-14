@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" style="color:darkgoldenrod" asp-area="" asp-controller="Home" asp-action="Index">Healthy Haven</a>
+                <a class="navbar-brand" style="color:darkgoldenrod" asp-area="" asp-controller="Home" asp-action="Index"><img src="/favicon.ico" style="width: 50px; height: 50px; margin-right:10px;">Healthy Haven</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -23,40 +23,13 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Forum" asp-action="ForumDashboard">Forums</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Course" asp-action="UserCourse">Courses</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement">Quizzes</a>
-                        </li>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            if (User.IsInRole("Admin"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="AppRoles" asp-action="RoleManagement">Role Mangement</a>
-                                </li>
-                            }
-                            if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Course" asp-action="Course">Courses Management</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Module" asp-action="ViewModules">Module Management</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="UserManagement">User Management</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Forum" asp-action="ForumManagement">Forum Management</a>
-                                </li>
-                            }
                             if (User.IsInRole("Admin") || User.IsInRole("Moderator") || User.IsInRole("Instructor") || User.IsInRole("Member"))
                             {
                                 <li class="nav-item">
@@ -64,7 +37,12 @@
                                 </li>
                             }
                         }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        
                     </ul>
+                    
                 </div>
             </div>
             <partial name="_LoginPartial" />

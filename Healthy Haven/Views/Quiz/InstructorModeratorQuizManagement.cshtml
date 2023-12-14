@@ -1,98 +1,187 @@
 ﻿@model IEnumerable<QuizzesModel>
+@inject ApplicationDbContext _db;
+@using Healthy_Haven.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext _db;
 @*
     @model IEnumerable<QuestionsModel>
 *@
 
 @{
     ViewData["Title"] = "QuizManagement";
-}
-@*
-<div>
-    <div class="row pt-4">
-        <h2 class="text-success">View All Quizzes</h2>
-    </div>
-    <div class="col-12 text-lg-end">
-        <a asp-controller="Quiz" asp-action="QuizBuilder" class="btn btn-primary">Add Question Details</a>
-    </div>
-</div>
-<br />
-@if (Model != null && Model.Count() > 0){
-    <table class="table table-bordered table-hover table-striped" width="100%">
-        <thead>
-            <tr>
-                <th>Question Name</th>
-                <th>Active</th>
-                <th>Multiple Options</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td width="20%">@item.question_name</td>
-                    <td width="20%">@item.isActive</td>
-                    <td width="20%">@item.isMultiple</td>
-                    <td width="30%">
-                        <div class="w-100 btn-group" role="group">
-                            <a asp-controller="Quiz" asp-action="Edit" asp-route-Id="@item.question_id"
-                            class="btn btn-primary mx-1">Edit</a>
-                            <a asp-controller="Quiz" asp-action="Delete" asp-route-Id="@item.question_id"
-                               class="btn btn-primary">Delete</a>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
 
-} else{
-    <br />
-    <p><b>No Records Found</b></p>
 }
-*@
+<!-- SweetAlert CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .table th, .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 3em;
+        max-width: 200px; /* Set your desired maximum width */
+    }
+
+    tbody tr:hover td:not(:last-child) {
+        cursor: pointer;
+        background-color: #DAA520;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        transform: scale3d(1.05, 1.05, 1) origin(right, bottom);
+        overflow: hidden;
+        font-weight: bold;
+        color: #000000;
+    }
+</style>
+
+@{
+    //get user id
+    var userId = UserManager.GetUserId(User);
+    //var user = await UserManager.FindByIdAsync(userId);
+    //var userRoles = await UserManager.GetRolesAsync(user);
+    var adminOrMod = User.IsInRole("Admin") || User.IsInRole("Moderator");
+}
 
 <div>
     <div class="row pt-4">
-        <h2 class="text-success">View All Quizzes</h2>
+        <h2 class="col-9">Quiz Management Menu</h2>
     </div>
-    <div class="col-12 text-lg-end">
-        <!-- Add button for creating a new quiz -->
-        <a asp-controller="Quiz" asp-action="CreateQuiz" class="btn btn-primary">Add New Quiz</a>
-    </div>
-</div>
-<br />
 
-@if (Model != null && Model.Any())
-{
-    <table class="table table-bordered table-hover table-striped" width="100%">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var quiz in Model)
-            {
-                <tr>
-                    <td width="30%">@quiz.Title</td>
-                    <td width="50%">@quiz.Description</td>
-                    <td width="20%">
-                        <div class="w-100 btn-group" role="group">
-                            <!-- Edit button -->
-                            <a asp-controller="Quiz" asp-action="Edit" asp-route-id="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
-                            <!-- Delete button -->
-                            <a asp-controller="Quiz" asp-action="Delete" asp-route-id="@quiz.Id" class="btn btn-primary">Delete</a>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <br />
-    <p><b>No Quizzes Found</b></p>
-}
+    @if (adminOrMod)    //no add quiz button & shows all quizes irrespective of user
+    {
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-bordered table-hover table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Course</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var quiz in Model)
+                    {
+                        <tr data-quiz-id="@quiz.Id">
+                            <td width="20%">@quiz.Title</td>
+                            <td width="37%">@quiz.Description</td>
+                            <td width="13%">
+                                @{
+                                    var course = _db.Courses.FirstOrDefault(c => c.id == quiz.CourseId);
+                                    var courseName = (course != null) ? course.name : "Course Not Found";
+                                }
+                                @courseName
+                            </td>
+                            <td width="10%">@quiz.Date</td>
+                            <td width="20%">
+                                <div class="w-100 btn-group" role="group">
+                                    <!-- Edit button -->
+                                    <!-- EditQuiz action -->
+                                    <a asp-controller="Quiz" asp-action="EditQuiz" asp-route-quizId="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
+                                    <!-- Delete button -->
+                                    <button type="button" class="btn btn-danger delete-button" data-quiz-id="@quiz.Id">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <br />
+            <p><b>No Quizzes Found</b></p>
+        }
+
+    }
+    else
+    {
+        <div class="col-12 text-lg-end">
+            <!-- Add button for creating a new quiz -->
+            <a asp-controller="Quiz" asp-action="CreateQuiz" class="btn btn-success">Add New Quiz</a>
+        </div>
+        <br />
+
+        @if (Model != null && Model.Any())
+        {
+            <table class="table table-bordered table-hover table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var quiz in Model.Where(u => u.UserId == userId))
+                    {
+                        <tr data-quiz-id="@quiz.Id">
+                            <td width="20%">@quiz.Title</td>
+                            <td width="40%">@quiz.Description</td>
+                            <td width="20">@quiz.Date</td>
+                            <td width="20%">
+                                <div class="w-100 btn-group" role="group">
+                                    <!-- Edit button -->
+
+                                    <!-- EditQuiz action -->
+                                    <a asp-controller="Quiz" asp-action="EditQuiz" asp-route-quizId="@quiz.Id" class="btn btn-primary mx-1">Edit</a>
+                                    <!-- Delete button -->
+                                    <button type="button" class="btn btn-danger delete-button" data-quiz-id="@quiz.Id">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <br />
+            <p><b>No Quizzes Found</b></p>
+        }
+    }
+
+    
+    
+
+<script>
+        // click redirect event for all rows
+        document.querySelectorAll('tbody tr').forEach(function (row) {
+            row.addEventListener('click', function () {
+
+                var quizId = row.getAttribute('data-quiz-id');
+                window.location.href = '/Quiz/QuestionManagement?quizId=' + quizId;
+            });
+        });
+
+        // click event for delete button
+        document.querySelectorAll('.delete-button').forEach(function (deleteButton) {
+            deleteButton.addEventListener('click', function (event) {
+                event.stopPropagation(); // Stop the click event from propagating to the row
+                var quizId = deleteButton.getAttribute('data-quiz-id');
+                confirmDelete(quizId);
+            });
+        });
+
+        function confirmDelete(quizId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // redirect to the delete action
+                    window.location.href = '/Quiz/DeleteQuiz?quizId=' + quizId;
+                }
+            });
+        }
+</script>

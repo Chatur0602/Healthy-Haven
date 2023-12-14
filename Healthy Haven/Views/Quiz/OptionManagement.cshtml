@@ -1,0 +1,66 @@
+﻿@model IEnumerable<OptionsModel>
+@using Healthy_Haven.Data;
+@inject ApplicationDbContext _db;
+@{
+    ViewData["Title"] = "OptionManagement";
+}
+
+
+<style>
+    .table th, .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 3em;
+        max-width: 200px; /* Set your desired maximum width */
+    }
+
+</style>
+
+<div>
+    <div class="row pt-4">
+        <h2 class="col-9">Options Management Menu</h2>
+    </div>
+    <div class="col-12 text-lg-end">
+        <!-- Add button for creating a new quiz -->
+        <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-success">Return to Dashboard</a>
+    </div>
+</div>
+
+<br />
+
+@if (Model != null && Model.Any())
+{
+    // get quizId for back button logic
+    var questionId = Model.First().QuestionId;
+    var quizId = _db.Questions.Where(q => q.Id == questionId).Select(q => q.QuizId).FirstOrDefault();
+
+    <table class="table table-bordered table-hover table-striped" width="100%">
+        <thead>
+            <tr>
+                <th>Option</th>
+                <th>Answer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var options in Model)
+            {
+                <tr data-question-id="@options.Id">
+                    <td width="40%">@options.OptionText</td>
+                    <td width="40%">@options.IsCorrect</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+    <div class="text-start">
+        <a asp-controller="Quiz" asp-action="EditOptions" asp-route-questionId="@Model.First().QuestionId" class="btn btn-success">Edit Options</a>
+        <a asp-controller="Quiz" asp-action="QuestionManagement" asp-route-quizId="@quizId" class="btn btn-danger">Return</a>
+    </div>
+}
+else
+{
+    <br />
+    <p class="text-lg-center"><b>No Options Found</b></p>
+}
+

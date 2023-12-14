@@ -1,0 +1,168 @@
+﻿@using Healthy_Haven.Data;
+@inject ApplicationDbContext _db;
+@model QuizResultViewModel
+
+@{
+    ViewData["Title"] = "QuizResult";
+}
+
+<style>
+    body {
+        color: goldenrod;
+        font-family: 'Arial', sans-serif;
+        margin: 20px;
+    }
+
+    .details-section, .result-bar {
+        background-color: #ffc107;
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .details-column {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 48%;
+    }
+
+    .question-section {
+        background-color: #fff6c9;
+    color: #132B25;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .is-selected {
+        color: red;
+        font-weight: bold;
+    }
+
+    .correct-answer {
+        color: green;
+        font-weight: bold;
+    }
+
+    
+
+
+    h1, h3 {
+        margin: 0;
+        color: #132B25;
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+        color: #323834;
+    }
+
+    form, .btn {
+        margin-top: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.9em;
+    }
+
+    p {
+        text-indent: 30px;
+        color: #000000;
+    }
+
+    input[type="radio"] {
+        margin-right: 10px;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #132B25;
+        border-radius: 50%;
+        background-color: #fff;
+        cursor: pointer;
+        outline: none;
+        box-shadow: 0 0 5px #999;
+        transition: box-shadow 0.3s ease;
+    }
+
+        input[type="radio"]:checked {
+            background-color: goldenrod;
+        }
+
+        input[type="radio"]:hover {
+            border-color: #132B25;
+        }
+
+    .answer-icon {
+        margin-left: 5px;
+        height: 16px;
+        width: 16px;
+    }
+
+</style>
+
+<div class="result-bar">
+    <h1>Quiz Result</h1>
+    @{
+        var correctAnswers = @Model.CorrectAnswers;
+        var totalQuestions = @Model.TotalQuestions;
+        var percentScore = (correctAnswers * 100) / totalQuestions;
+        <h2 >Score: @Model.CorrectAnswers / @Model.TotalQuestions (@percentScore %)</h2>
+    }
+    
+    
+</div>
+
+@{
+    var questionCounter = 1; // Initialize the question counter
+}
+
+@foreach (var question in _db.Questions.Where(q => q.QuizId == Model.QuizId).ToList())
+{
+    <div class="question-section">
+        <label class="lead">@($"{questionCounter}. {question.QuestionText}")</label>
+
+        @{
+            var options = _db.Options.Where(o => o.QuestionId == question.Id).ToList();
+            var selectedOptionId = Model.QuestionResponses.ContainsKey(question.Id) ? Model.QuestionResponses[question.Id] : -1;
+            var correctOptionId = options.FirstOrDefault(o => o.IsCorrect)?.Id ?? -1;
+        }
+
+        @foreach (var option in options)
+        {
+            var optionClass = option.IsCorrect
+            ? "correct-answer"
+            : (Model.QuestionResponses.ContainsKey(question.Id) && Model.QuestionResponses[question.Id] == option.Id
+            ? "is-selected"
+            : "incorrect-answer");
+
+            <p class="@optionClass normal-answer">
+                <input type="radio" name="QuestionResponses[@question.Id]" value="@option.Id" disabled @((option.Id == selectedOptionId) ? "checked" : "") />
+                @option.OptionText
+                @if (option.IsCorrect)
+                {
+                    <img src="/icons8-tick-24.png" alt="Correct" class="answer-icon" />
+                }
+                else if (Model.QuestionResponses.ContainsKey(question.Id) && Model.QuestionResponses[question.Id] == option.Id)
+                {
+                    <img src="/icons8-cross-16.png" alt="Incorrect" class="answer-icon" />
+                }
+            </p>
+        }
+
+        @{
+            questionCounter++;
+        }
+        
+    </div>
+}
+
+
+
+
+<button class="btn btn-warning btn-lg" type="button" onclick="location.href='@Url.Action("QuizRender", "Quiz", new { quizId = Model.QuizId })'">Retry Quiz</button>
