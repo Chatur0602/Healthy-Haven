@@ -101,6 +101,49 @@
         color: #007bff;
         cursor: pointer;
     }
+
+    .ui.container {
+        text-align: center;
+        background-color: #FFF; /* White */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2.ui.header.green {
+        color: #008000; /* Dark Green */
+    }
+
+    .ui.dropdown.button {
+        background-color: #FFD700; /* Goldenrod */
+        color: #333; /* Dark Gray */
+        border-radius: 5px; /* Rounded corners */
+        font-size: 20px; /* Adjust font size */
+        padding: 20px; /* Adjust padding */
+        width: 90%; /* Adjust width */
+        max-width: 600px; /* Set a maximum width if needed */
+    }
+
+        .ui.dropdown.button:hover {
+            background-color: #FFC125; /* Darker Goldenrod on hover */
+        }
+
+        .ui.dropdown.button .menu {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #FFF; /* White */
+            border: 1px solid #DDD; /* Light Gray */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            width: 90%; /* Adjust width to match button width */
+            max-width: 600px; /* Set a maximum width if needed */
+        }
+
+            .ui.dropdown.button .menu .item {
+                color: #333; /* Dark Gray */
+                margin: 5px 0; /* Adjust margin (vertical margin horizontal margin) */
+            }
+
+
 </style>
 
 <div class="container">
@@ -166,6 +209,94 @@
             <p id="description">@Model.description</p>
         </div>
     </div>
+    
+
+
+    <div>
+        <div class="row pt=4">
+            <div class="col-9">
+                <h2>View All Healthy Modules</h2>
+            </div>
+            <div class="col-12">
+                <a asp-controller="Module" asp-action="CreateModule" class="btn btn-primary">Add New Module</a>
+            </div>
+        </div>
+        <br />
+        @if (Model != null )
+        {
+
+
+            var courseModules = _db.Modules.Where(x => x.course_id == Model.id).ToList();
+
+            <div class="ui container">
+                <br /><br />
+                <h2 class="ui header green">Modules</h2>
+                <b>
+                    <p>Here are the available chapters and modules</p>
+                </b>
+                <hr /><br />
+
+                @if (Model != null)
+                {
+                    <div>
+                        @foreach (var module in courseModules)
+                        {
+                            <div class="ui dropdown button">
+                                <span class="text">@module.chapter</span>
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <div class="item">@module.module</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <script>
+                $(".ui.dropdown").dropdown();
+
+                function updateDropdownText(dropdown, newText) {
+                    $(dropdown).find('.text').text(newText);
+                }
+            </script>
+
+
+            <!--
+
+            <table class="table table-bordered table-hover table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Chapter Name</th>
+                        <th>Module</th>
+                        <th>Course ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var modules in courseModules)
+                    {
+                        <tr>
+                            <td width="20%">@modules.chapter</td>
+                            <td width="20%">@modules.module</td>
+                            <td width="20%">@modules.course_id</td>
+                            <td width="30%">
+                                <div class="w-100 btn-group" role="group">
+                                    <a asp-controller="Module" asp-action="Edit" asp-route-id="@modules.id" class="btn btn-primary mx-1">Edit</a>
+                                    <a asp-controller="Module" asp-action="Delete" asp-route-id="@modules.id" class="btn btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table> -->
+        }
+        else
+        {
+            <br />
+            <p><b>No Records Found</b></p>
+        }
+    </div>
+
 </div>
 
 
