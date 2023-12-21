@@ -48,7 +48,7 @@ namespace Healthy_Haven.Controllers
         {
             try
             {
-                Debug.WriteLine("CHAPTER= " + moduledetails.chapter + "MODULE= " + moduledetails.module);
+                Debug.WriteLine("CHAPTER= " + "MODULE= " + moduledetails.module);
                 _db.Modules.Add(moduledetails);
                 _db.SaveChanges();
 
