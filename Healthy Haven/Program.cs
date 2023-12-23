@@ -8,6 +8,10 @@ using Amazon.Extensions.NETCore.Setup;
 using Microsoft.OpenApi.Models;
 using Amazon.SimpleNotificationService;
 using Amazon.Runtime;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Amazon.XRay.Recorder.Handlers.EntityFramework;
+
+AWSSDKHandler.RegisterXRayForAllServices();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,11 +41,9 @@ builder.Services.AddDefaultIdentity<ApplicationUser>().AddDefaultTokenProviders(
 
 var awsOptions = builder.Configuration.GetAWSOptions();
 
-// Extract necessary values from AWSOptions
 var profile = awsOptions.Profile;
 var region = awsOptions.Region;
 
-// You may need to adjust the following based on how your credentials are stored in the configuration
 var accessKeyId = builder.Configuration["AWS:Credentials:AccessKeyId"];
 var secretKey = builder.Configuration["AWS:Credentials:SecretKey"];
 var sessionToken = builder.Configuration["AWS:Credentials:SessionToken"];
@@ -57,6 +59,7 @@ builder.Services.AddSingleton<IAmazonSimpleNotificationService>(sp =>
 
 
 var app = builder.Build();
+app.UseXRay("Healthy-Haven");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

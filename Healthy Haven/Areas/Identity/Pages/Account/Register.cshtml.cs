@@ -39,7 +39,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IAmazonSimpleNotificationService _snsClient; // Add this line
+        private readonly IAmazonSimpleNotificationService _snsClient;
 
 
         public RegisterModel(
@@ -49,7 +49,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
             RoleManager<IdentityRole> roleManager,
-            IAmazonSimpleNotificationService snsClient) // Add this parameter
+            IAmazonSimpleNotificationService snsClient)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -58,7 +58,7 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
-            _snsClient = snsClient;  // Assign the injected instance
+            _snsClient = snsClient; 
 
         }
 
@@ -245,9 +245,6 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
 
             return Page();
         }
-
-
-
 
         private async Task<bool> SendEmailAsync(string email, string subject, string confirmLink)
         {
