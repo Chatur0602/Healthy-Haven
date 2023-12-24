@@ -26,9 +26,18 @@ CREATE TABLE Modules (
 );
 
 drop table Modules;
-
-insert into Modules (chapter,module,course_id) values ("Chapter 1: Build bicep section","Module 1.1: Front Lift", 58);
 ALTER TABLE Modules
-ADD COLUMN chapters varchar(255);
+drop COLUMN chapter; 
+select * from Modules;
 
-select * from Modules
+
+CREATE TABLE Chapters (
+  id INT NOT NULL AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+content text Not Null,
+module_id INT NOT NULL,
+  FOREIGN KEY (module_id) REFERENCES Modules(id),
+  PRIMARY KEY (id)
+);
+insert into Chapters (name,content,module_id) values ("Chapter 1: Build Chest","For Building Biceps perform arm XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 1);
+select * from Chapters;

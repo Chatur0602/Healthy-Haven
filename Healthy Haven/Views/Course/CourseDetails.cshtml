@@ -53,6 +53,10 @@
         padding-left: 3px;
     }
 
+    .tile-icon {
+        width: 33px; /* Adjust the width as needed */
+        height: 33px; /* Adjust the height as needed */
+    }
     .slick-next {
         right: 10px;
         background-color: darkgreen;
@@ -206,6 +210,43 @@
         </div>
     </div>
     
+    <div class="row">
+        <div class="col-6 d-flex align-items-center">
+            <button class="btn btn-info mx-1" onclick="shareCourse('@Model.id')">
+                Share <i class="fas fa-share-alt"></i>
+            </button>
+            &nbsp;
+            @{
+                @using System.Security.Claims;
+
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var hasEnrolled = _db.CoursesEnrolled.Any(x => x.course_id == Model.id && x.user_id == userId);
+                var enrolledCount = _db.CoursesEnrolled.Count(x => x.course_id == Model.id);
+
+                if (hasEnrolled)
+                {
+                    <form asp-controller="Enrollment" asp-action="UnEnrollCourse" method="post" class="mr-2">
+                        <input type="hidden" name="courseId" value="@Model.id" />
+                        <button type="submit" class="btn btn-danger">
+                            Unenroll
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Enrollment" asp-action="EnrollCourse" method="post" class="mr-2">
+                        <input type="hidden" name="courseId" value="@Model.id" />
+                        <button type="submit" class="btn btn-success">
+                            Enroll
+                        </button>
+                        
+                    </form>
+                }
+            }
+            &nbsp;
+            <h5 class="mb-0 ml-2"><span id="enrolledCount_@Model.id"><img src="/icons8-user-male-100.png" class="tile-icon" /><strong>@enrolledCount</strong></span></h5>
+        </div>
+    </div>
 
 
     <div>
@@ -297,5 +338,25 @@
     function updateDropdownText(dropdown, newText) {
         $(dropdown).find('.text').text(newText);
     }   
+
+    function shareCourse(courseId) {
+        var baseUrl = 'http://healthy-haven.us-east-1.elasticbeanstalk.com';
+
+        var forumUrl = baseUrl + '/Course/CourseDetails/' + courseId;
+
+        var dummyInput = document.createElement('input');
+        document.body.appendChild(dummyInput);
+        dummyInput.value = forumUrl;
+        dummyInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyInput);
+
+        showMessage('Course Link Copied To Clipboard!');
+    }
+
+    function showMessage(message) {
+
+        alert(message);
+    }
 
 </script>
