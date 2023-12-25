@@ -37,6 +37,8 @@ namespace Healthy_Haven.Data
         public DbSet<OptionsModel> Options { get; set; }
        
         public DbSet<ConsultationsEntity> Consultations { get; set; }
+        public DbSet<ChapterModel> Chapters { get; set; }
 
+        public DbSet<CoursesEnrolled> CoursesEnrolled { get; set; }
     }
 }

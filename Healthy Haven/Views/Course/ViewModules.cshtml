@@ -1,0 +1,115 @@
+﻿@model IEnumerable<ModulesModel>
+
+@{
+}
+<head>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Float four columns side by side */
+        .column {
+            float: left;
+            width: 25%;
+            padding: 0 10px;
+        }
+
+        /* Remove extra left and right margins, due to padding */
+        .row {
+            margin: 0 -5px;
+        }
+
+            /* Clear floats after the columns */
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+        h2 {
+            color: yellow;
+        }
+
+
+
+        /* Style the counter cards */
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            text-align: center;
+            background-color: #f1f1f1;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+            /* Apply the font size specifically for the column with numbers */
+            td.numeric-column {
+                font-size: 12px;
+            }
+    </style>
+</head>
+<body>
+
+
+
+    <div>
+        <div class="row pt=4">
+            <div class="col-9">
+                <h2>View All Healthy Modules</h2>
+            </div>
+            <div class="col-12">
+                <a asp-controller="Module" asp-action="CreateModule" class="btn btn-primary">Add New Module</a>
+            </div>
+        </div>
+        <br />
+        @if (Model != null && Model.Count() > 0)
+        {
+            <table class="table table-bordered table-hover table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Chapter Name</th>
+                        <th>Module</th>
+                        <th>Course ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td width="20%"></td>
+                            <td width="20%">@item.module</td>
+                            <td width="20%">@item.course_id</td>
+                            <td width="30%">
+                                <div class="w-100 btn-group" role="group">
+                                    <a asp-controller="Module" asp-action="Edit" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>
+                                    <a asp-controller="Module" asp-action="Delete" asp-route-id="@item.id" class="btn btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <br />
+            <p><b>No Records Found</b></p>
+        }
+    </div>
+
+</body>
