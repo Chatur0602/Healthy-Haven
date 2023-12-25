@@ -293,7 +293,7 @@ namespace Healthy_Haven.Controllers
             _db.Forums.Remove(forumDetails);
             _db.SaveChanges();
 
-            string message = $"Forum was deleted either due to the copyright or censorship issues";
+            string message = $"Your Forum was deleted either due to the copyright or censorship issues";
 
             string subject = "Forum Deletion Notification";
 
