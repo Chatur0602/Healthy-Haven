@@ -9,11 +9,16 @@
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 </head>
 
 <style>
+    body{
+        background-color: #122 !important;
+    }
+
     .image-carousel {
         width: 100%;
         height: auto;
@@ -108,41 +113,160 @@
 
     .ui.container {
         text-align: center;
-        background-color: #FFF; /* White */
+        background-color: #122;
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .ui.dropdown.button {
-        background-color: #FFD700; /* Goldenrod */
-        color: #333; /* Dark Gray */
-        border-radius: 5px; /* Rounded corners */
-        font-size: 20px; /* Adjust font size */
-        padding: 20px; /* Adjust padding */
-        width: 90%; /* Adjust width */
-        max-width: 600px; /* Set a maximum width if needed */
+        background-color: #FFD700;
+        color: #333;
+        border-radius: 5px;
+        font-size: 20px;
+        padding: 20px;
+        width: 90%;
+        max-width: 600px;
     }
 
         .ui.dropdown.button:hover {
-            background-color: #FFC125; /* Darker Goldenrod on hover */
+            background-color: #FFC125;
         }
 
         .ui.dropdown.button .menu {
             max-height: 300px;
             overflow-y: auto;
-            background-color: #FFF; /* White */
-            border: 1px solid #DDD; /* Light Gray */
+            background-color: #FFF;
+            border: 1px solid #DDD;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            width: 90%; /* Adjust width to match button width */
-            max-width: 600px; /* Set a maximum width if needed */
+            width: 90%;
+            max-width: 600px;
         }
 
             .ui.dropdown.button .menu .item {
-                color: #333; /* Dark Gray */
-                margin: 5px 0; /* Adjust margin (vertical margin horizontal margin) */
+                color: #333;
+                margin: 5px 0;
             }
 
+    .interactive-container {
+        display: flex;
+        flex-direction: column;
+        align-items: start /* Center items along the cross axis */
+    }
+
+    .interactive-tiles {
+        display: flex;
+        flex-direction: column; /* Stack items vertically */
+        justify-content: flex-start; /* Align items at the start of the cross axis */
+        margin: 10px 0;
+    }
+
+    .tile-icon {
+        width: 33px; /* Adjust the width as needed */
+        height: 33px; /* Adjust the height as needed */
+    }
+
+    .quiz-tile p {
+        margin: 0; /* Remove default margin to avoid spacing issues */
+    }
+
+    .quiz-details {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 0; /* Remove bottom margin */
+    }
+
+        .quiz-details img {
+            margin-right: 5px; /* Adjust the margin as needed */
+            margin-left: 5px; /* Remove left margin */
+        }
+
+        .quiz-details p {
+            margin: 0; /* Remove default margin to avoid spacing issues */
+        }
+
+    .title {
+        font-size: 32px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    /* Add this style to your existing CSS */
+    .spacer {
+        flex-grow: 1;
+    }
+
+    #description {
+        font-size: 20px !important;
+    }
+
+    .quiz-tile {
+        width: 333px;
+        padding: 10px;
+        margin: 10px;
+        border: 2px solid silver;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+        .quiz-tile p{
+            color:silver;
+        }
+            .quiz-tile:hover p {
+                color: black;
+            }
+
+        .quiz-tile:hover #description {
+            color: black !important;
+        }
+
+        .quiz-tile:hover {
+            background-color: darkgoldenrod; /* Change background color on hover */
+            color: black !important;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1); /* Add box shadow on hover for elevation effect */
+            border: 4px solid silver;
+            border-radius: 8px;
+            transform: scale(1.1);
+        }
+            .quiz-tile:hover .tile-icon {
+                filter: invert(1); /* Invert the color on hover */
+            }
+
+
+    .course-tile:hover .tile-icon {
+        filter: invert(1); /* Invert the color on hover */
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Style for the modal content */
+    .modal-content {
+        background: white;
+        color: black;
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 800px; /* Adjust the max-width as needed */
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
 
 </style>
 
@@ -210,119 +334,169 @@
         </div>
     </div>
     
-    <div class="row">
+    <div class="row" style="padding-top:10px;">
         <div class="col-6 d-flex align-items-center">
             <button class="btn btn-info mx-1" onclick="shareCourse('@Model.id')">
                 Share <i class="fas fa-share-alt"></i>
             </button>
             &nbsp;
             @{
+                if(User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                {
+                    
+                }
+
+                else{
                 @using System.Security.Claims;
 
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var hasEnrolled = _db.CoursesEnrolled.Any(x => x.course_id == Model.id && x.user_id == userId);
                 var enrolledCount = _db.CoursesEnrolled.Count(x => x.course_id == Model.id);
 
-                if (hasEnrolled)
-                {
-                    <form asp-controller="Enrollment" asp-action="UnEnrollCourse" method="post" class="mr-2">
-                        <input type="hidden" name="courseId" value="@Model.id" />
-                        <button type="submit" class="btn btn-danger">
-                            Unenroll
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <form asp-controller="Enrollment" asp-action="EnrollCourse" method="post" class="mr-2">
-                        <input type="hidden" name="courseId" value="@Model.id" />
-                        <button type="submit" class="btn btn-success">
-                            Enroll
-                        </button>
+                    if (hasEnrolled)
+                    {
+                        <form asp-controller="Enrollment" asp-action="UnEnrollCourse" method="post" class="mr-2">
+                            <input type="hidden" name="courseId" value="@Model.id" />
+                            <button type="submit" class="btn btn-danger">
+                                Unenroll
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Enrollment" asp-action="EnrollCourse" method="post" class="mr-2">
+                            <input type="hidden" name="courseId" value="@Model.id" />
+                            <button type="submit" class="btn btn-success">
+                                Enroll
+                            </button>
                         
-                    </form>
+                        </form>
+                    }
+
+                    <div class="d-flex align-items-center">
+                         <h5><span id="enrolledCount_@Model.id"><img src="/icons8-user-male-100.png" class="tile-icon" /><strong>@enrolledCount</strong></span></h5>
+                    </div>
                 }
             }
-            &nbsp;
-            <h5 class="mb-0 ml-2"><span id="enrolledCount_@Model.id"><img src="/icons8-user-male-100.png" class="tile-icon" /><strong>@enrolledCount</strong></span></h5>
         </div>
     </div>
 
+    <!-- The modal overlay and content -->
+    <div class="modal-overlay" id="chapterModalOverlay">
+        <div class="modal-content" id="chapterModalContent">
+            <!-- Content goes here -->
+        </div>
+    </div>
 
-    <div>
-               @if (Model != null )
+    <h2 style="margin-bottom:5px;">Modules</h2>
+    <div class="ui container">
+        @if (Model != null)
         {
-
-
             var courseModules = _db.Modules.Where(x => x.course_id == Model.id).ToList();
-           
 
-            <div class="ui container">
-                        
-
-                    <div>
-                        @foreach (var module in courseModules)
-                        { 
-                            var moduleChapters = _db.Chapters.Where(x => x.module_id == module.id).ToList();
-                            <div class="ui dropdown button">
-                            <span class="text">@module.module</span>
-                                <i class="dropdown icon"></i>
-                                <div class="menu">
-                                @foreach (var chapter in moduleChapters)
-                                {
-                                    <div class="text">@chapter.name</div>
-
-  
-                                }
-                                </div>
-                            </div>
-                        }
+            <div class="ui stacked segments d-flex flex-column">
+                @foreach (var module in courseModules)
+                {
+                    var moduleChapters = _db.Chapters.Where(x => x.module_id == module.id).ToList();
+                    <div class="ui selection dropdown" style="margin-bottom: 15px;">
+                        <input type="hidden" name="module">
+                        <i class="dropdown icon"></i>
+                        <div class="default text" style="font-size: 20px; color: darkgoldenrod;">@module.module</div>
+                        <div class="menu">
+                            @foreach (var chapter in moduleChapters)
+                            {
+                                <div class="item" data-value="@chapter.id" onclick="openChapterModal('@chapter.id', '@chapter.name', '@chapter.content')"> @chapter.name </div>
+                            }
+                        </div>
                     </div>
-           
+                }
             </div>
-
-                <!--
-
-            <table class="table table-bordered table-hover table-striped" width="100%">
-                <thead>
-                    <tr>
-                        <th>Chapter Name</th>
-                        <th>Module</th>
-                        <th>Course ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var modules in courseModules)
-                    {
-                        <tr>
-                            <td width="20%"></td>
-                            <td width="20%">@modules.module</td>
-                            <td width="20%">@modules.course_id</td>
-                            <td width="30%">
-                                <div class="w-100 btn-group" role="group">
-                                    <a asp-controller="Module" asp-action="Edit" asp-route-id="@modules.id" class="btn btn-primary mx-1">Edit</a>
-                                    <a asp-controller="Module" asp-action="Delete" asp-route-id="@modules.id" class="btn btn-danger">Delete</a>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table> -->
         }
         else
         {
             <br />
-            <p><b>No Records Found</b></p>
+            <p><b>This Course Currently Has No Modules, Contact The Instructor!</b></p>
         }
     </div>
 
+    <h2>Quizzes</h2>
+    <div class="interactive-container">
+        <div class="interactive-tiles">
+            @{
+                // Retrieve the latest quizzes
+                var latestQuizzes = _db.Quizzes.Where(x => x.CourseId == Model.id).ToList();
+
+            }
+
+            @foreach (var quiz in latestQuizzes)
+            {
+
+                var currentTime = DateTime.Now;
+                var creationTime = quiz.Date;
+                var timeDifference = currentTime - creationTime;
+
+                string timeAgo;
+
+                if (timeDifference.TotalMinutes < 1)
+                {
+                    timeAgo = "just now";
+                }
+                else if (timeDifference.TotalHours < 1)
+                {
+                    var minutes = (int)timeDifference.TotalMinutes;
+                    timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+                }
+                else if (timeDifference.TotalDays < 1)
+                {
+                    var hours = (int)timeDifference.TotalHours;
+                    timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+                }
+                else if (timeDifference.TotalDays < 30)
+                {
+                    var days = (int)timeDifference.TotalDays;
+                    timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+                }
+                else if (timeDifference.TotalDays < 365)
+                {
+                    var months = (int)(timeDifference.TotalDays / 30);
+                    timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+                }
+                else
+                {
+                    var years = (int)(timeDifference.TotalDays / 365);
+                    timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+                }
+
+
+                var questionCount = _db.Questions.Count(x => x.QuizId == quiz.Id);
+
+                <div class="quiz-tile">
+                    <a href="/Quiz/QuizRender?quizId=@quiz.Id">
+                        <h3>@quiz.Title</h3>
+                    </a>
+                    <p id="description">@quiz.Description</p>
+                    <div class="quiz-details">
+                        <img src="/icons8-questions-100-white.png" class="tile-icon" />
+                        <p style="margin-right: 10px !important;">@questionCount Questions</p>
+                        <div class="spacer"></div> <!-- Add a spacer div for separation -->
+                        <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
+                        <p>@timeAgo</p>
+                    </div>
+                    <!-- Additional quiz information or link can be added here -->
+
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+
 <script>
-
-
     // Initialize the Slick Carousel
     $('.image-carousel').slick({
         infinite: true,
@@ -332,12 +506,23 @@
         nextArrow: '<button class="slick-next">-></button>'
     });
 
-        
-    $(".ui.dropdown").dropdown();
+    // Initialize the Semantic UI dropdown with a custom class
+    $('.ui.dropdown').dropdown({
+        onChange: function (value, text, $selectedItem) {
+            // Handle dropdown change if needed
+            console.log(value, text);
+        },
+        // Add a custom class to prevent dropdown from closing
+        action: function (text, value, element) {
+            // Prevent default behavior (closing the dropdown)
+            element.removeClass('menu');
+        }
+    });
 
-    function updateDropdownText(dropdown, newText) {
-        $(dropdown).find('.text').text(newText);
-    }   
+    // Stop click event propagation to prevent it from affecting other dropdowns
+    $('.ui.dropdown .item').on('click', function (event) {
+        event.stopPropagation();
+    });
 
     function shareCourse(courseId) {
         var baseUrl = 'http://healthy-haven.us-east-1.elasticbeanstalk.com';
@@ -357,6 +542,37 @@
     function showMessage(message) {
 
         alert(message);
+    }
+
+    function openChapterModal(chapterId, chapterName, chapterContent) {
+        var modalOverlay = document.getElementById('chapterModalOverlay');
+        var modalContent = document.getElementById('chapterModalContent');
+
+        // Set the content of the modal
+        modalContent.innerHTML = `
+                <div style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 20px;" onclick="closeChapterModal()">&#10006;</div>
+                <h2>${chapterName}</h2>
+                <p>${chapterContent}</p>
+                <!-- You can customize the content as needed -->
+            `;
+
+        // Show the modal
+        modalOverlay.style.opacity = 1;
+        modalOverlay.style.pointerEvents = 'auto';
+        modalContent.style.opacity = 1;
+        modalContent.style.transform = 'translateY(0)';
+    }
+
+    // Function to close the chapter modal
+    function closeChapterModal() {
+        var modalOverlay = document.getElementById('chapterModalOverlay');
+        var modalContent = document.getElementById('chapterModalContent');
+
+        // Hide the modal
+        modalOverlay.style.opacity = 0;
+        modalOverlay.style.pointerEvents = 'none';
+        modalContent.style.opacity = 0;
+        modalContent.style.transform = 'translateY(-20px)';
     }
 
 </script>

@@ -30,6 +30,7 @@ ALTER TABLE Modules
 drop COLUMN chapter; 
 select * from Modules;
 
+insert into Modules (module, course_id) values ("Module Build Chest 3", 74);
 
 CREATE TABLE Chapters (
   id INT NOT NULL AUTO_INCREMENT,
@@ -39,5 +40,19 @@ module_id INT NOT NULL,
   FOREIGN KEY (module_id) REFERENCES Modules(id),
   PRIMARY KEY (id)
 );
-insert into Chapters (name,content,module_id) values ("Chapter 1: Build Chest","For Building Biceps perform arm XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 1);
+
+insert into Chapters (name,content,module_id) values ("Chapter 3: Build Chest","For Building Biceps perform arm XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 13);
+insert into Chapters (name,content,module_id) values ("Chapter 3: Build Chest","For Building Biceps perform arm XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", 14);
+insert into Chapters (name,content,module_id) values ("Chapter 4: Build Chest","For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm For Building Biceps perform arm ", 15);
 select * from Chapters;
+
+CREATE TABLE CoursesEnrolled (
+  id INT NOT NULL AUTO_INCREMENT,
+  course_id INT NOT NULL,
+  user_id VARCHAR(255) NOT NULL,
+  FOREIGN KEY (course_id) REFERENCES Courses(id),
+  FOREIGN KEY (user_id) REFERENCES AspNetUsers(Id),
+  PRIMARY KEY (id)
+);
+
+

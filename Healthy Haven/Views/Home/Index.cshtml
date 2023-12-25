@@ -343,20 +343,21 @@
                     timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
                 }
 
+                var moduleCount = _db.Modules.Count(x => x.course_id == course.id);
+
                 <div class="course-tile">
                     <a href="/Course/CourseDetails/@course.id">
                         <h3>@course.name</h3>
                     </a>
                     <p id="description">@course.description</p>
                     <div class="quiz-details">
-                    <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
-                    <p>@timeAgo</p>
-                    <div class="spacer"></div> <!-- Add a spacer div for separation -->
-                    <img hidden src="/icons8-questions-100-white.png" class="tile-icon" />
-                    <p hidden style="margin-right: 10px !important;"> Modules</p>
+                        <img src="/icons8-book-reading-100.png" class="tile-icon" />
+                        <p style="margin-right: 10px !important;">@moduleCount Modules</p>
+                        <div class="spacer"></div> <!-- Add a spacer div for separation -->
+                        <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
+                        <p>@timeAgo</p>
+                    </div>
                 </div>
-                </div>
-              
             }
         </div>
     </div>
