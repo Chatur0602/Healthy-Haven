@@ -8,6 +8,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Identity;
+using System.Globalization;
 
 namespace Healthy_Haven.Controllers
 {
@@ -22,11 +23,37 @@ namespace Healthy_Haven.Controllers
             _logger = logger;
         }
 
-        public IActionResult UserCourse()
+        public IActionResult UserCourse(string searchTerm, string sortBy)
         {
-            List<CoursesModel> Courses = new List<CoursesModel>();
-            Courses = _db.Courses.ToList();
-            return View(Courses);
+            var courses = _db.Courses.ToList();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                courses = courses.Where(f => f.name.Contains(searchTerm) || f.description.Contains(searchTerm)).ToList();
+            }
+
+            switch (sortBy)
+            {
+                case "newToOld":
+                    courses = courses.OrderByDescending(f => f.course_date).ToList();
+                    break;
+                case "oldToNew":
+                    courses = courses.OrderBy(f => f.course_date).ToList();
+                    break;
+                case "likesLeastToMost":
+                    courses = courses.OrderBy(f => _db.ForumLikes.Count(x => x.ForumId == f.id)).ToList();
+                    break;
+                case "likesMostToLeast":
+                    courses = courses.OrderByDescending(f => _db.ForumLikes.Count(x => x.ForumId == f.id)).ToList();
+                    break;
+
+                default:
+                    courses = courses.OrderByDescending(f => f.course_date).ToList();
+                    break;
+            }
+
+            // Pass the sorted and filtered courses to the view
+            return View(courses);
         }
 
         public IActionResult CourseDetails(int? id)
