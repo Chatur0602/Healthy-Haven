@@ -163,6 +163,12 @@
 }
 
 
+@{
+    var courseId = _db.Quizzes
+                .Where(q => q.Id == Model.QuizId)
+                .Select(q => q.CourseId)
+                .FirstOrDefault();
 
-
-<button class="btn btn-warning btn-lg" type="button" onclick="location.href='@Url.Action("QuizRender", "Quiz", new { quizId = Model.QuizId })'">Retry Quiz</button>
+    <button class="btn btn-warning btn-lg" type="button" onclick="location.href='@Url.Action("QuizRender", "Quiz", new { quizId = Model.QuizId })'">Retry Quiz</button>
+    <button class="btn btn-primary mx-1 btn-lg" type="button" onclick="location.href='@Url.Action("CourseDetails", "Course", new { id = courseId })'">Back To Course</button>
+}
