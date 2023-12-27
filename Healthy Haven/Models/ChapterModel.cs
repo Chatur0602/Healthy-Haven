@@ -6,8 +6,8 @@ namespace Healthy_Haven.Models
     {
 
         public int id { get; set; }
-        public required string name { get; set; }
-        public required string content { get; set; }
+        public string name { get; set; }
+        public string content { get; set; }
         public int module_id { get; set; }
 
 

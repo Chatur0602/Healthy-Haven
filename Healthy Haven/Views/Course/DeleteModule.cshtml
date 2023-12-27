@@ -1,32 +1,44 @@
 ﻿@model ModulesModel
 
-<form method="post" asp-action="DeleteModule">
-    <input asp-for="id" hiden />
+<form method="post" asp-action="DeleteMod">
+    <input asp-for="id" hidden />
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
-            <h2 class="text-black">Delete Module Details</h2>
+            <h2>Delete Module Details</h2>
         </div>
         <br />
-        
+
         <div class="row">
             <div class="col-4">
                 <label asp-for="module"></label>
                 <input asp-for="module" readonly class="form-control" />
             </div>
         </div>
-        <br />
-        <div class="row">
+       <div class="row" hidden>
             <div class="col-4">
                 <label asp-for="course_id"></label>
-                <input asp-for="course_id" readonly class="form-control" />
+                <input asp-for="course_id"/>
+                <span asp-validation-for="course_id" class="text-danger"></span>
             </div>
         </div>
         <br />
         <div class="w-12 btn-group" role="group">
             <input type="submit" class="btn btn-danger" value="Delete" />
-            <a asp-action="ViewModules" class="btn btn-primary mx-1">Back to Module</a>
+            <button class=" btn btn-primary mx-1" type="button" onclick="backToList()">Back To Modules</button>
         </div>
     </div>
 </form>
+
+<script>
+    function backToList() {
+        // Get the value of the hidden course_id field
+        var courseId = document.getElementById('course_id').value;
+
+        // Redirect to the "ViewModules" action with the course_id
+        location.href = '@Url.Action("ViewModules", "Course")' + '?courseId=' + courseId;
+
+        return false;
+    }
+</script>
 

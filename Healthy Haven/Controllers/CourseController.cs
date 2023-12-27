@@ -149,7 +149,7 @@ namespace Healthy_Haven.Controllers
                     }
                 }
 
-                return RedirectToAction("Course");
+                return RedirectToAction("CreateModule", new { courseId = coursedetails.id });
             }
             catch (Exception ex)
             {
@@ -248,7 +248,153 @@ namespace Healthy_Haven.Controllers
 
             return RedirectToAction("Course");
         }
-    }
 
+        public IActionResult ViewModules(int courseId)
+        {
+            var Modules = _db.Modules.Where(q => q.course_id == courseId).ToList();
+            return View(Modules);
+        }
+
+        public IActionResult CreateModule(int courseId)
+        {
+            var course = _db.Courses.Find(courseId);
+
+            if (course == null)
+            {
+                // Handle the case where the quiz is not found
+                return NotFound();
+            }
+
+            ModulesModel module = new ModulesModel();
+            module.course_id = courseId;
+            ViewData["Module"] = module;
+
+            return View(module);
+        }
+
+
+        [HttpPost]
+        public IActionResult CreateMod(ModulesModel moduledetails)
+        {
+
+                _db.Modules.Add(moduledetails);
+                _db.SaveChanges();
+
+                return RedirectToAction("CreateChapter", new { moduleId = moduledetails.id });
+
+        }
+
+        public IActionResult EditModule(int? id)
+        {
+            var moduledetails = _db.Modules.Find(id);
+            if (moduledetails == null)
+            {
+                return NotFound();
+            }
+            return View("EditModule", moduledetails);
+        }
+
+        [HttpPost]
+        public IActionResult EditMod(ModulesModel moduledetails)
+        {
+            _db.Modules.Update(moduledetails);
+            _db.SaveChanges();
+            return RedirectToAction("ViewModules", new { courseid = moduledetails.course_id });
+        }
+
+        public IActionResult DeleteModule(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var moduledetails = _db.Modules.Find(id);
+            if (moduledetails == null)
+            {
+                return NotFound();
+            }
+
+            return View("DeleteModule", moduledetails);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteMod(int? id)
+        {
+            var moduledetails = _db.Modules.Find(id);
+            var moduleChapters = _db.Chapters.Where(x => x.module_id == id).ToList();
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (moduledetails == null)
+            {
+                return NotFound();
+            }
+
+            _db.Chapters.RemoveRange(moduleChapters);
+            _db.Modules.Remove(moduledetails);
+
+            _db.SaveChanges();
+
+            return RedirectToAction("ViewModules", new { courseid = moduledetails.course_id });
+        }
+
+        public IActionResult ViewChapters(int moduleId)
+        {
+            var Modules = _db.Chapters.Where(q => q.module_id == moduleId).ToList();
+            return View(Modules);
+        }
+
+        public IActionResult CreateChapter(int moduleId)
+        {
+            var module = _db.Modules.Find(moduleId);
+
+            if (module == null)
+            {
+                // Handle the case where the quiz is not found
+                return NotFound();
+            }
+
+            ChapterModel chapter = new ChapterModel();
+            chapter.module_id = moduleId;
+            ViewData["Chapter"] = chapter;
+
+            return View(chapter);
+        }
+
+
+        [HttpPost]
+        public IActionResult CreateChap(ChapterModel chapterDetails)
+        {
+
+            _db.Chapters.Add(chapterDetails);
+            _db.SaveChanges();
+
+            return RedirectToAction("ViewChapters", new { moduleId = chapterDetails.module_id });
+
+        }
+
+        public IActionResult EditChapter(int? id)
+        {
+            var chapterdetails = _db.Chapters.Find(id);
+            if (chapterdetails == null)
+            {
+                return NotFound();
+            }
+            return View("EditChapter", chapterdetails);
+        }
+
+        [HttpPost]
+        public IActionResult EditChap(ModulesModel moduledetails)
+        {
+            _db.Modules.Update(moduledetails);
+            _db.SaveChanges();
+            return RedirectToAction("ViewModules", new { courseid = moduledetails.course_id });
+        }
+
+    }
 }
 

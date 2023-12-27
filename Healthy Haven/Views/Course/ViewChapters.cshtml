@@ -1,7 +1,7 @@
-﻿@model IEnumerable<ModulesModel>
+﻿@model IEnumerable<ChapterModel>
 
 @{
-    ViewData["Title"] = "Module Management";
+    ViewData["Title"] = "Chapter Management";
 }
 <head>
     <style>
@@ -68,51 +68,42 @@
             max-height: 3em;
             max-width: 200px; /* Set your desired maximum width */
         }
-
-        tbody tr:hover td:not(:last-child) {
-            cursor: pointer;
-            background-color: #DAA520;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-            transform: scale3d(1.05, 1.05, 1) origin(right, bottom);
-            overflow: hidden;
-            font-weight: bold;
-            color: #000000;
-        }
     </style>
 </head>
 <body>
-                                
+
 
 
     <div>
-        <div class="row pt-4">
+        <div class="row pt=4">
             <div class="col-9">
-                <h2>Module Management Dashboard</h2>
+                <h2>Chapter Management Dashboard</h2>
+            </div>
+            <div class="col-12 text-lg-end">
+                <a asp-controller="Course" asp-action="CreateChapter" asp-route-moduleId="@Model.First().module_id" class="btn btn-success">Add New Chapter</a>
             </div>
         </div>
         <br />
         @if (Model != null && Model.Count() > 0)
         {
-            <div class="col-12 text-lg-end">
-                <a asp-controller="Course" asp-action="CreateModule" asp-route-courseId="@Model.First().course_id" class="btn btn-success">Add New Module</a>
-            </div>
-            <br />
             <table class="table table-bordered table-hover table-striped" width="100%">
                 <thead>
                     <tr>
-                        <th>Module Title</th>
+                        <th>Chapter Title</th>
+                        <th>Chapter Content</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr data-module-id="@item.id">
-                            <td width="70%">@item.module</td>
-                            <td width="30%">
+                        <tr >
+                            <td width="30%">@item.name</td>
+                            <td width="50%">@item.content</td>
+                            <td width="20%">
                                 <div class="w-100 btn-group" role="group">
-                                    <a asp-controller="Course" asp-action="EditModule" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>
-                                    <a asp-controller="Course" asp-action="DeleteModule" asp-route-id="@item.id" class="btn btn-danger">Delete</a>
+                                    <a asp-controller="Course" asp-action="EditChapter" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>
+                                    <a asp-controller="Course" asp-action="DeleteChapter" asp-route-id="@item.id" class="btn btn-danger">Delete</a>
                                 </div>
                             </td>
                         </tr>
@@ -126,14 +117,4 @@
             <p><b>No Records Found</b></p>
         }
     </div>
-
-    <script>
-        document.querySelectorAll('tbody tr').forEach(function (row) {
-            row.addEventListener('click', function () {
-
-                var moduleId = row.getAttribute('data-module-id');
-                window.location.href = '/Course/ViewChapters?moduleId=' + moduleId;
-            });
-        });
-    </script>
 </body>
