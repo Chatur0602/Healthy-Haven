@@ -35,8 +35,8 @@
                     <th>Description</th>
                     <th>Member</th>
                     <th>Instructor</th>
-                    <th>DateTime</th>
-                    <th></th>
+                    <th>Timestamp</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,7 +84,8 @@
                 <tr>
                     <th>Description</th>
                     <th>Student</th>
-                    <th>DateTime</th>
+                    <th>Timestamp</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -96,7 +97,7 @@
 
                     <tr>
                         <td width="20%">@item.description</td>
-                        <td width="20%">@item.student_id (@memberFirstName @memberLastName)</td>
+                        <td width="20%">@($"{memberFirstName} {memberLastName}")</td>
                         <td width="20%">@item.date</td>
                         <td width="30%">
                             <div class="w-100 btn-group" role="group">
@@ -143,7 +144,7 @@
 
                     <tr>
                         <td width="20%">@item.description</td>
-                        <td width="20%">@item.instructor_id (@instructorFirstName @instructorLastName)</td>
+                        <td width="20%">@($"{instructorFirstName} {instructorLastName}")</td>
                         <td width="20%">@item.date</td>
                         <td width="30%">
                             <div class="w-100 btn-group" role="group">

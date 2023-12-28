@@ -34,6 +34,11 @@
 
     .card-title {
         color: darkgoldenrod;
+        font-size: 28px;
+    }
+
+    .card-text {
+        font-size: 20px;
     }
 
     .slick-dots {
@@ -56,11 +61,64 @@
             .slick-dots li button {
                 display: none !important;
             }
+
+
+    .tile-icon {
+        width: 33px; /* Adjust the width as needed */
+        height: 33px; /* Adjust the height as needed */
+        filter: invert(1);
+        padding-right: 3px;
+    }
+
+
+    .course-details {
+        display: flex;
+        margin-top: 12px;
+        margin-bottom: 0; /* Remove bottom margin */
+    }
+
+    .spacer {
+        flex-grow: 1;
+    }
 </style>
 <div>
     <div class="row pt-4">
         <div class="col-9">
-            <h2>Healthy Courses</h2>
+            <h2>Browse Courses</h2>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-2">
+            <form asp-action="UserCourse" method="get">
+                <div class="input-group mb-3">
+                    <select class="form-select" name="sortBy" onchange="this.form.submit()">
+                        <option value="" selected disabled>Sort By</option>
+                        <option value="newToOld">New to Old</option>
+                        <option value="oldToNew">Old to New</option>
+                        <option value="likesLeastToMost">Likes: Least to Most</option>
+                        <option value="likesMostToLeast">Likes: Most to Least</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 offset-md-1">
+            <form asp-action="UserCourse" method="get">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search" name="searchTerm" value="@ViewBag.SearchTerm">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3 text-lg-end">
+            @if (User.IsInRole("Instructor") || User.IsInRole("Member"))
+            {
+                <a asp-controller="Course" asp-action="Course" class="btn btn-success">Manage Your Courses</a>
+            }
+            else if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
+            {
+                <a asp-controller="Course" asp-action="Course" class="btn btn-success">Manage Courses</a>
+            }
         </div>
     </div>
     <br />
@@ -71,10 +129,50 @@
 
             var courseImages = _db.CourseImages.Where(x => x.course_id == item.id).ToList();
             var imagePaths = courseImages.Select(img => img.image_path).ToList();
+            var usersEnrolledCount = _db.CoursesEnrolled.Count(x => x.course_id == item.id);
+
+            var currentTime = DateTime.Now;
+            var creationTime = item.course_date;
+            var timeDifference = currentTime - creationTime;
+
+            string timeAgo;
+
+            if (timeDifference.TotalMinutes < 1)
+            {
+                timeAgo = "just now";
+            }
+            else if (timeDifference.TotalHours < 1)
+            {
+                var minutes = (int)timeDifference.TotalMinutes;
+                timeAgo = $"{minutes} {(minutes == 1 ? "minute" : "minutes")} ago";
+            }
+            else if (timeDifference.TotalDays < 1)
+            {
+                var hours = (int)timeDifference.TotalHours;
+                timeAgo = $"{hours} {(hours == 1 ? "hour" : "hours")} ago";
+            }
+            else if (timeDifference.TotalDays < 30)
+            {
+                var days = (int)timeDifference.TotalDays;
+                timeAgo = $"{days} {(days == 1 ? "day" : "days")} ago";
+            }
+            else if (timeDifference.TotalDays < 365)
+            {
+                var months = (int)(timeDifference.TotalDays / 30);
+                timeAgo = $"{months} {(months == 1 ? "month" : "months")} ago";
+            }
+            else
+            {
+                var years = (int)(timeDifference.TotalDays / 365);
+                timeAgo = $"{years} {(years == 1 ? "year" : "years")} ago";
+            }
+
+            var moduleCount = _db.Modules.Count(x => x.course_id == course.id);
 
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
+                        <h5 class="card-title">@item.name</h5>
                         <div class="image-carousel">
                             @foreach (var path in imagePaths)
                             {
@@ -82,9 +180,9 @@
                                 @using Amazon.S3.Model;
                                 @using Amazon.S3.Util;
 
-                                var s3Client = new AmazonS3Client("ASIA55H4D3RUQGOO6EQB", "Jv9ebiMrVz2ZQ7ORXa8m2N4pTeD1hHtmq9IQ3Gym", "FwoGZXIvYXdzEG0aDHoXKHtl3q7HnsoQNSK8AUlMPWKfzwaw4jqfYITulPqOrhEKs0ZDdir7qW7yRXvXCESwUV5I4xAxM9BE7YmA+ZArdSvso1S9QE9MpIg0dDamEKmRdp2MwWP6/nu7ZrWprUwP/n64ykAfJq6K4u6yQsu8NO9af3ZGlwZrc5nkDR9puPAx9UXcSc+wlB2LBe/eac2j//Qpei4cNfPyg56/4iFI402dbABavnXFrCFvgrM8LGUyq5UGV/PR68+0tIHrZtdpdi6B5yotxscPKICk3aoGMi1vz0AbsFU2br2oWMimqtDdbs/2idJbXslx3/E0lsHw8cynO3SRnk59eg2SxRo=", Amazon.RegionEndpoint.USEast1);
+                                var s3Client = new AmazonS3Client("ASIA2LWVJXALCKZ4I2XT", "e4q/4ucGnNcXCo5RVvcI70jgoYEgAyQ7AluGBX8P", "FwoGZXIvYXdzEMD//////////wEaDLVuDTeygiOrqtFk7yK8ASwzqS3Xt+aZ8eoFjxKy+H3j9gRiClE8E6F2GLtEc0a8vdZtF5y/vl5dhfq5yLOSOzdOvlYBDmWOE9HF3L0zp8nW8Wu9AHhTKFfigUmyA5f+F0UGFA8qBILOQJmRpIC9euiAyT038ojcxT/eGmDThzKJ6OYAO774CoWRilZDfC3hWLh6e5iBGY9u794eHLAG0uOZCF2Hc9ii53FLXX0AP8Yta2+UTt0ofIeW0wfYVD2VXxhsCgoxTL4AfUkTKKfqp6sGMi2gpKb6EJrvklVavc3n3J/Gzz/ufGjq1kDziVOl7S6nz1SXXocolXnv4SzRxII=", Amazon.RegionEndpoint.USEast1);
 
-                                string bucketName = "healthyhavens3";
+                                string bucketName = "healthyheaven";
                                 string folderName = "CourseImages";
                                 string imagePath = $"{folderName}/{path}";
 
@@ -102,9 +200,28 @@
                             }
 
                         </div>
-                        <h5 class="card-title">@item.name</h5>
+  
                         <p style="padding-top: 10px;" class="card-text">@item.description</p>
-                        <a asp-controller="Course" asp-action="CourseDetails" asp-route-Id="@item.id" class="btn btn-primary mx-1">View Details</a>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-controller="Course" asp-action="CourseDetails" asp-route-Id="@item.id" class="btn btn-primary mx-1">View Details</a>
+
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-info mx-1" onclick="shareForum('@item.id')">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                &nbsp;&nbsp;
+                                <img src="/icons8-user-male-100.png" class="tile-icon" />
+                                <h5 class="mb-0 ml-2"><span id="forumLikeCount_@item.id"><strong>@usersEnrolledCount</strong></span></h5>
+                            </div>
+                        </div>
+
+                        <div class="course-details">
+                            <img src="/icons8-book-reading-100.png" class="tile-icon" />
+                            <p style="margin-right: 10px !important; padding-top:5px; margin-bottom: 0;">@moduleCount Modules</p>
+                            <div class="spacer"></div> <!-- Add a spacer div for separation -->
+                            <img src="/icons8-time-machine-100-white.png" class="tile-icon" />
+                            <p class="card-text" style="font-size: 16px; padding-top:5px; margin-bottom: 0;">@timeAgo</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -128,5 +245,25 @@
                 nextArrow: false // Hide the next arrow
             });
         }
+    }
+
+    function shareForum(courseId) {
+        var baseUrl = 'http://healthy-haven.us-east-1.elasticbeanstalk.com';
+
+        var courseUrl = baseUrl + '/Course/CourseDetails/' + courseId;
+
+        var dummyInput = document.createElement('input');
+        document.body.appendChild(dummyInput);
+        dummyInput.value = courseUrl;
+        dummyInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummyInput);
+
+        showMessage('Forum Link Copied To Clipboard!');
+    }
+
+    function showMessage(message) {
+
+        alert(message);
     }
 </script>

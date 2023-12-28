@@ -1,0 +1,50 @@
+﻿@model ChapterModel
+
+<form asp-action="CreateChap" method="post">
+    <div class="border p-5">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <h2>Add Chapter Details</h2>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="name"></label>
+                <input asp-for="name" class="form-control" />
+                <span asp-validation-for="name" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="content"></label>
+                <input asp-for="content" class="form-control" />
+                <span asp-validation-for="content" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row" hidden>
+            <div class="col-4">
+                <label asp-for="module_id"></label>
+                <input asp-for="module_id" class="form-control" id="module_id" value="@Model.module_id" />
+                <span asp-validation-for="module_id" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="w-12 btn-group" role="group">
+            <input type="submit" class="btn btn-success" value="Add Chapter" />
+
+            <button class="btn btn-primary mx-1" type="button" onclick="backToList()">Back To Chapters </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function backToList() {
+        // Get the value of the hidden course_id field
+        var moduleId = document.getElementById('module_id').value;
+
+        // Redirect to the "ViewModules" action with the course_id
+        location.href = '@Url.Action("ViewChapters", "Course")' + '?moduleId=' + moduleId;
+    }
+</script>
+
+

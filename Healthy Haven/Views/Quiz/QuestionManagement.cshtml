@@ -1,0 +1,134 @@
+﻿@model IEnumerable<QuestionsModel>
+@using Healthy_Haven.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "QuestionManagement";
+}
+
+@{
+    //get user id
+    var userId = UserManager.GetUserId(User);
+    var adminOrMod = User.IsInRole("Admin") || User.IsInRole("Moderator");
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .table th, .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 3em;
+        max-width: 200px; /* Set your desired maximum width */
+    }
+
+    tbody tr:hover td:not(:last-child) {
+        cursor: pointer;
+        background-color: #DAA520;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        transform: scale3d(1.05, 1.05, 1) origin(right, bottom);
+        overflow: hidden;
+        font-weight: bold;
+        color: #000000;
+    }
+</style>
+
+<div>
+    <div class="row pt-4">
+        <h2 class="col-9">Question Management Menu</h2>
+    </div>
+    <div class="col-12 text-lg-end">
+        <!-- Return to dashboard -->
+        <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-success">Return to Dashboard</a>
+    </div>
+</div>
+<br />
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered table-hover table-striped" width="100%">
+        <thead>
+            <tr>
+                <th>Questions</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var question in Model)
+            {
+                <tr data-question-id="@question.Id">
+                    <td width="80%">@question.QuestionText</td>
+                    <td width="20%">
+                        <div class="w-100 btn-group" role="group">
+                            <!-- Edit button -->
+                            <a asp-controller="Quiz" asp-action="EditQuestion" asp-route-quizId="@question.Id" class="btn btn-primary mx-1">Edit</a>
+                            <!-- Delete button -->
+                            <button type="button" class="btn btn-danger delete-button" onclick="confirmDelete('@question.Id', false)">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+
+    @if(!adminOrMod)
+    {
+        <div class="text-lg-start">
+            <a asp-controller="Quiz" asp-action="CreateQuestion" asp-route-quizId="@Model.First().QuizId" class="btn btn-success">Add New Questions</a>
+            <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-danger">Return</a>
+        </div>
+    }
+    else
+    {
+        <div class="text-lg-start">
+            <a asp-controller="Quiz" asp-action="InstructorModeratorQuizManagement" class="btn btn-primary mx-1">Back To Courses</a>
+        </div>
+    }
+
+}
+else
+{
+    <br />
+    <p><b>No Questions Found</b></p>
+}
+
+<script>
+    // click event to all rows
+    document.querySelectorAll('tbody tr').forEach(function (row) {
+        row.addEventListener('click', function (event) {
+            // Find the parent 'td' of the clicked element
+            var td = event.target;
+            while (td && td.nodeName !== 'TD') {
+                td = td.parentNode;
+            }
+            // If the clicked cell is the last one in its row, do nothing
+            if (td && td.cellIndex === row.cells.length - 1) return;
+
+            var questionId = row.getAttribute('data-question-id');
+            window.location.href = '/Quiz/OptionManagement?questionId=' + questionId;
+        });
+    });
+
+    function confirmDelete(questionId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/Quiz/DeleteQuestion?questionId=' + questionId;
+            } else {
+                console.log('Delete without redirection');
+            }
+        });
+    }
+</script>
+

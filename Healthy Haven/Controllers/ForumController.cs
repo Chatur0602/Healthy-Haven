@@ -12,6 +12,8 @@ using Microsoft.CodeAnalysis.Elfie.PDB;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 using Amazon.SimpleNotificationService.Util;
+using System.Net.NetworkInformation;
+using Microsoft.Extensions.Configuration;
 
 namespace Healthy_Haven.Controllers
 {
@@ -100,8 +102,16 @@ namespace Healthy_Haven.Controllers
                     int totalSize = 1;
                     int fileCount = 1;
 
+                    IConfiguration configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
 
-                    using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", RegionEndpoint.USEast1))
+                    var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+                    var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+                    var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+                    using (var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1))
                     {
                         foreach (var file in files)
                         {
@@ -144,11 +154,11 @@ namespace Healthy_Haven.Controllers
                                         {
                                             InputStream = memorystream,
                                             Key = key,
-                                            BucketName = "healthyhavens3",
+                                            BucketName = "healthyheaven",
                                             ContentType = file.ContentType,
                                         };
 
-                                        var transferUtility = new TransferUtility(amazonS3client);
+                                        var transferUtility = new TransferUtility(s3Client);
                                         await transferUtility.UploadAsync(request);
 
                                         ForumImages forumImages = new ForumImages();
@@ -257,8 +267,16 @@ namespace Healthy_Haven.Controllers
             var user = await _userManager.GetUserAsync(User);
             bool isModerator = await _userManager.IsInRoleAsync(user, "Moderator");
 
+            IConfiguration configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
 
-            using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", RegionEndpoint.USEast1))
+            var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+            var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+            var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+            using (var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1))
             {
                 foreach (var fileName in selectedFileNames)
                 {
@@ -268,9 +286,9 @@ namespace Healthy_Haven.Controllers
                     var folderPath = "ForumImages/";
                     var key = folderPath + fileName;
 
-                    await amazonS3client.DeleteObjectAsync(new DeleteObjectRequest()
+                    await s3Client.DeleteObjectAsync(new DeleteObjectRequest()
                     {
-                        BucketName = "healthyhavens3",
+                        BucketName = "healthyheaven",
                         Key = key
                     });
 
