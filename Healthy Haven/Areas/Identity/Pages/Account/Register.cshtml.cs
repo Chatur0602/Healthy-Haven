@@ -25,6 +25,8 @@ using System.Net.Mail;
 using System.Net;
 using System.Diagnostics;
 using System.Security.Policy;
+using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
 
 namespace Healthy_Haven.Areas.Identity.Pages.Account
 {
@@ -37,6 +39,8 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IAmazonSimpleNotificationService _snsClient;
+
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -44,7 +48,8 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IAmazonSimpleNotificationService snsClient)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -52,7 +57,9 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _roleManager = roleManager; 
+            _roleManager = roleManager;
+            _snsClient = snsClient; 
+
         }
 
         /// <summary>
@@ -194,6 +201,22 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
                     await SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
+                    var subscribeRequestByEmail = new SubscribeRequest
+                    {
+                        Protocol = "email",
+                        Endpoint = Input.Email,
+                        TopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample"
+                    };
+                    await _snsClient.SubscribeAsync(subscribeRequestByEmail);
+
+                    var subscribeRequestBySMS = new SubscribeRequest
+                    {
+                        Protocol = "sms",
+                        Endpoint = Input.PhoneNumber,
+                        TopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample"
+                    };
+                    await _snsClient.SubscribeAsync(subscribeRequestBySMS);
+
                     if (_userManager.Options.SignIn.RequireConfirmedEmail)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
@@ -222,9 +245,6 @@ namespace Healthy_Haven.Areas.Identity.Pages.Account
 
             return Page();
         }
-
-
-
 
         private async Task<bool> SendEmailAsync(string email, string subject, string confirmLink)
         {

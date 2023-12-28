@@ -9,6 +9,9 @@ using Amazon;
 using Microsoft.Identity.Client;
 using Amazon.S3.Model;
 using Microsoft.CodeAnalysis.Elfie.PDB;
+using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
+using Amazon.SimpleNotificationService.Util;
 using System.Net.NetworkInformation;
 using Microsoft.Extensions.Configuration;
 
@@ -18,13 +21,15 @@ namespace Healthy_Haven.Controllers
     {
         private readonly ILogger<ForumController> _logger;
         private readonly ApplicationDbContext _db;
+        private readonly IAmazonSimpleNotificationService _snsClient;
         UserManager<ApplicationUser> _userManager;
 
-        public ForumController(ILogger<ForumController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
+        public ForumController(ILogger<ForumController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager, IAmazonSimpleNotificationService snsClient)
         {
             _logger = logger;
             _db = db;
-            _userManager = userManager; 
+            _userManager = userManager;
+            _snsClient = snsClient;
         }
 
         public IActionResult ForumDashboard(string searchTerm, string sortBy)
@@ -68,7 +73,7 @@ namespace Healthy_Haven.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateForum()
         {
-       
+
             return View();
         }
 
@@ -80,9 +85,9 @@ namespace Healthy_Haven.Controllers
 
             if (user != null)
             {
-               
-                forumDetails.User_Id = user.Id; 
-                forumDetails.Created_At = DateTime.Now; 
+
+                forumDetails.User_Id = user.Id;
+                forumDetails.Created_At = DateTime.Now;
                 _db.Forums.Add(forumDetails);
                 _db.SaveChanges();
 
@@ -163,21 +168,21 @@ namespace Healthy_Haven.Controllers
                                         _db.ForumImages.Add(forumImages);
                                         _db.SaveChanges();
                                     }
-                                    }
                                 }
+                            }
                             fileCount++;
                             totalSize += totalSize;
-                            }
                         }
-                  
+                    }
+
                     if (!string.IsNullOrEmpty(ViewBag.Error))
                     {
-                        
+
                         return View(forumDetails);
                     }
                 }
             }
-            
+
             return RedirectToAction("ForumManagement");
         }
 
@@ -219,7 +224,8 @@ namespace Healthy_Haven.Controllers
         }
 
         [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
-        public IActionResult DeleteForum(int? Id) {
+        public IActionResult DeleteForum(int? Id)
+        {
 
             var forumDetails = _db.Forums.Find(Id);
             if (forumDetails == null)
@@ -251,13 +257,15 @@ namespace Healthy_Haven.Controllers
             var forumDetails = _db.Forums.Find(Id);
             var forumComments = _db.Comments.Where(x => x.ForumId == Id).ToList();
             var forumLikes = _db.ForumLikes.Where(x => x.ForumId == Id).ToList();
-            
+
 
             if (forumDetails == null)
             {
                 return NotFound();
             }
 
+            var user = await _userManager.GetUserAsync(User);
+            bool isModerator = await _userManager.IsInRoleAsync(user, "Moderator");
 
             IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -293,33 +301,46 @@ namespace Healthy_Haven.Controllers
 
             _db.Comments.RemoveRange(forumComments);
             _db.ForumLikes.RemoveRange(forumLikes);
-            foreach(var comment in forumComments)
+            foreach (var comment in forumComments)
             {
                 var commentLikes = _db.CommentLikes.Where(x => x.CommentId == comment.Id).ToList();
                 _db.CommentLikes.RemoveRange(commentLikes);
             }
-            
+
 
             _db.Forums.Remove(forumDetails);
             _db.SaveChanges();
 
-            return RedirectToAction("ForumManagement");
-        }
+            string message = $"Your Forum was deleted either due to the copyright or censorship issues";
 
+            string subject = "Forum Deletion Notification";
 
-        public IActionResult ViewForum(int? Id)
-        {
-            var forumDetails = _db.Forums.Find(Id);
+            string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
 
-            if (forumDetails == null)
+            if (isModerator)
             {
-                return NotFound();
+                await _snsClient.PublishAsync(new PublishRequest
+                {
+                    Message = message,
+                    Subject = subject,
+                    TopicArn = snsTopicArn
+                });
             }
 
-            return View(forumDetails);
+                return RedirectToAction("ForumManagement");
+            }
+
+
+            public IActionResult ViewForum(int? Id)
+            {
+                var forumDetails = _db.Forums.Find(Id);
+
+                if (forumDetails == null)
+                {
+                    return NotFound();
+                }
+
+                return View(forumDetails);
+            }
         }
-
-
-
     }
-}
