@@ -1,4 +1,6 @@
-﻿using Healthy_Haven.Data;
+﻿using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
+using Healthy_Haven.Data;
 using Healthy_Haven.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +14,15 @@ namespace Healthy_Haven.Controllers
     {
         private readonly ILogger<QuizController> _logger;
         private readonly ApplicationDbContext _db;
+        private readonly IAmazonSimpleNotificationService _snsClient;
 
 
-        public QuizController(ILogger<QuizController> logger, ApplicationDbContext db)
+        public QuizController(ILogger<QuizController> logger, ApplicationDbContext db, IAmazonSimpleNotificationService snsClient)
         {
             _db = db;
             _logger = logger;
+            _snsClient = snsClient;
+
         }
 
         [Authorize(Roles = "Admin, Moderator,Instructor")]
@@ -56,6 +61,18 @@ namespace Healthy_Haven.Controllers
             
             _db.Quizzes.Add(details.Quizzes);
             _db.SaveChanges();
+
+            string message = $"A new Quiz has been created, check it out and Stay Updated";
+            string subject = "Quiz Creation";
+            string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+
+            _snsClient.PublishAsync(new PublishRequest
+            {
+                Message = message,
+                Subject = subject,
+                TopicArn = snsTopicArn
+            });
+
 
             return RedirectToAction("CreateQuestion", new { quizId = details.Quizzes.Id });
             

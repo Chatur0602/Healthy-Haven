@@ -9,6 +9,8 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
+using Amazon.SimpleNotificationService.Model;
+using Amazon.SimpleNotificationService;
 
 namespace Healthy_Haven.Controllers
 {
@@ -16,11 +18,14 @@ namespace Healthy_Haven.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private readonly ApplicationDbContext _db;
+        private readonly IAmazonSimpleNotificationService _snsClient;
 
-        public CourseController(ILogger<CourseController> logger, ApplicationDbContext db)
+
+        public CourseController(ILogger<CourseController> logger, ApplicationDbContext db, IAmazonSimpleNotificationService snsClient)
         {
             _db = db;
             _logger = logger;
+            _snsClient = snsClient;
         }
 
         public IActionResult UserCourse(string searchTerm, string sortBy)
@@ -148,6 +153,19 @@ namespace Healthy_Haven.Controllers
                         fileCount++;
                     }
                 }
+
+                string message = $"A new course has been created, check it out and Stay Updated";
+                string subject = "Course Creation";
+                string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+
+                await _snsClient.PublishAsync(new PublishRequest
+                {
+                    Message = message,
+                    Subject = subject,
+                    TopicArn = snsTopicArn
+                });
+
+
 
                 return RedirectToAction("CreateModule", new { courseId = coursedetails.id });
             }

@@ -175,6 +175,19 @@ namespace Healthy_Haven.Controllers
                         }
                     }
 
+                    string message = $"A new Forum has been created, check it out and Stay Updated";
+                    string subject = "Forum Creation";
+                    string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+
+                    await _snsClient.PublishAsync(new PublishRequest
+                    {
+                        Message = message,
+                        Subject = subject,
+                        TopicArn = snsTopicArn
+                    });
+
+
+
                     if (!string.IsNullOrEmpty(ViewBag.Error))
                     {
 
