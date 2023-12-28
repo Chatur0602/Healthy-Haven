@@ -1,4 +1,6 @@
-﻿@model IEnumerable<ChapterModel>
+﻿@using Healthy_Haven.Data
+@model IEnumerable<ChapterModel>
+@inject ApplicationDbContext _db;
 
 @{
     ViewData["Title"] = "Chapter Management";
@@ -79,6 +81,17 @@
             <div class="col-9">
                 <h2>Chapter Management Dashboard</h2>
             </div>
+            @{
+             
+                var module = _db.Modules.FirstOrDefault(q => q.id == Model.First().module_id);
+               
+                var courseId = module.course_id;
+                
+           }
+            <div class="col-1 text-lg-start">
+                <a asp-controller="Course" asp-action="ViewModules" asp-route-courseId="@courseId" class="btn btn-danger">Back to Modules</a>
+            </div>
+            
             <div class="col-12 text-lg-end">
                 <a asp-controller="Course" asp-action="CreateChapter" asp-route-moduleId="@Model.First().module_id" class="btn btn-success">Add New Chapter</a>
             </div>
