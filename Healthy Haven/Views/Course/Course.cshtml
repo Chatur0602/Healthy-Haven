@@ -1,78 +1,119 @@
-﻿@model IEnumerable<CoursesModel>
+﻿@using Healthy_Haven.Data;
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext _db;
+@model IEnumerable<CoursesModel>
 
 
 @{
+    ViewData["Title"] = "Course Management";
+
+    var userId = UserManager.GetUserId(User); // Use the appropriate way to get the current user's identity
+    System.Diagnostics.Debug.WriteLine(userId);
+    var isMemberOrInstructor = User.IsInRole("Instructor") || User.IsInRole("Member");
+
+    IEnumerable
+    <CoursesModel> filteredCourses;
+
+    if (isMemberOrInstructor)
+    {
+        filteredCourses = Model.Where(f => f.instructor_id == userId.ToString());
+    }
+    else
+    {
+        // Filter forums based on the current user's identity
+        filteredCourses = Model;
+    }
 }
 <head>
+
+</head>
+
 <style>
-* {
-  box-sizing: border-box;
-}
+    * {
+        box-sizing: border-box;
+    }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
 
-/* Float four columns side by side */
-.column {
-  float: left;
-  width: 25%;
-  padding: 0 10px;
-}
+    /* Float four columns side by side */
+    .column {
+        float: left;
+        width: 25%;
+        padding: 0 10px;
+    }
 
-/* Remove extra left and right margins, due to padding */
-.row {margin: 0 -5px;}
+    /* Remove extra left and right margins, due to padding */
+    .row {
+        margin: 0 -5px;
+    }
 
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
 
-h2 {
-    color: yellow;
-}
+    h2 {
+        color: darkgoldenrod;
+    }
 
+    /* Style the counter cards */
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        text-align: center;
+        background-color: #f1f1f1;
+    }
 
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
 
-/* Style the counter cards */
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  padding: 16px;
-  text-align: center;
-  background-color: #f1f1f1;
-}
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
 
-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-}
+        /* Apply the font size specifically for the column with numbers */
+        td.numeric-column {
+            font-size: 12px;
+        }
 
-td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
+    .table th, .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 3em;
+        max-width: 200px; /* Set your desired maximum width */
+    }
 
-    /* Apply the font size specifically for the column with numbers */
-    td.numeric-column {
-        font-size: 12px;
+    tbody tr:hover td:not(:last-child) {
+        cursor: pointer;
+        background-color: #DAA520;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        transform: scale3d(1.05, 1.05, 1) origin(right, bottom);
+        overflow: hidden;
+        font-weight: bold;
+        color: #000000;
     }
 </style>
-</head>
+
 <body>
 
 
-
+    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+    {
 <div>
-    <div class="row pt=4">
+    <div class="row pt-4">
         <div class="col-9">
-                <h2>View All Healthy Courses</h2>
-        </div>
-        <div class="col-12">
-            <a asp-controller="Course" asp-action="CreateCourse" class="btn btn-primary">Add New Course</a>
+                <h2>Admin | Mod Course Dashboard</h2>
         </div>
     </div>
     <br />
@@ -91,12 +132,16 @@ td, th {
                 <tbody>
                     @foreach(var item in Model)
                     {
+                        var user = _db.Users.Find(item.instructor_id);
+                        var firstName = user.FirstName;
+                        var lastName = user.LastName;
+
                         <tr>
                             <td width="20%">@item.name</td>
                             <td width="20%">@item.description</td>
                             <td width="20%">@item.course_date</td>
                             <td width="20%">@item.credit_hours</td>
-                            <td width="20%">@item.instructor_id</td>
+                            <td width="20%">@item.instructor_id (@firstName @lastName)</td>
                             <td width="30%">
                                 <div class="w-100 btn-group" role="group">
                                     <a asp-controller="Course" asp-action="Edit" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>
@@ -113,6 +158,65 @@ td, th {
             <br />
             <p><b>No Records Found</b></p>
         }
-    </div>
+        </div>
+    }else if(User.IsInRole("Instructor") || User.IsInRole("Member")){
+        <div>
+            <div class="row pt-4">
+                <div class="col-9">
+                    <h2>Personal Course Management Dashboard</h2>
+                </div>
+                <div class="col-12 text-lg-end">
+                    <a asp-controller="Course" asp-action="CreateCourse" class="btn btn-success">Add New Course</a>
+                </div>
+            </div>
+            <br />
+            @if (Model != null && Model.Count() > 0)
+            {
+                <table class="table table-bordered table-hover table-striped" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Course Description</th>
+                            <th>Course Date</th>
+                            <th>Credit Hours</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in filteredCourses)
+                        {
+                            <tr data-course-id="@item.id">
+                                <td width="20%">@item.name</td>
+                                <td width="20%">@item.description</td>
+                                <td width="20%">@item.course_date</td>
+                                <td width="20%">@item.credit_hours</td>
+                                <td width="30%">
+                                    <div class="w-100 btn-group" role="group">
+                                        <a asp-controller="Course" asp-action="Edit" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>
+                                        <a asp-controller="Course" asp-action="Delete" asp-route-id="@item.id" class="btn btn-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <br />
+                <p><b>No Records Found</b></p>
+            }
+        </div>
+    }
 
+    <script>
+        document.querySelectorAll('tbody tr').forEach(function (row) {
+            row.addEventListener('click', function () {
+
+                var courseId = row.getAttribute('data-course-id');
+                window.location.href = '/Course/ViewModules?courseId=' + courseId;
+            });
+        });
+    </script>
 </body>
+

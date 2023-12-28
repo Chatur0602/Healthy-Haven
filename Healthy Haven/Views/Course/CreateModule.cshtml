@@ -1,0 +1,45 @@
+﻿@model ModulesModel
+
+<form asp-action="CreateMod" method="post">
+    <div class="border p-5">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <h2>Add Module Details</h2>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="module"></label>
+                <input asp-for="module" class="form-control" />
+                <span asp-validation-for="module" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row" hidden>
+            <div class="col-4">
+                <label asp-for="course_id"></label>
+                <input asp-for="course_id" class="form-control" id="course_id" value="@Model.course_id" />
+                <span asp-validation-for="course_id" class="text-danger"></span>
+            </div>
+        </div>
+        <br/>
+        <div class="w-12 btn-group" role="group">
+            <input type="submit" class="btn btn-success" value="Add Module" />
+
+            <button class=" btn btn-primary mx-1" type="button" onclick="backToList()">Back To Modules</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function backToList() {
+        // Get the value of the hidden course_id field
+        var courseId = document.getElementById('course_id').value;
+
+        // Redirect to the "ViewModules" action with the course_id
+        location.href = '@Url.Action("ViewModules", "Course")' + '?courseId=' + courseId;
+
+        return false;
+    }
+</script>
+
+

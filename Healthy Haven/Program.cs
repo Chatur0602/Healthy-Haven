@@ -44,11 +44,11 @@ var awsOptions = builder.Configuration.GetAWSOptions();
 var profile = awsOptions.Profile;
 var region = awsOptions.Region;
 
-var accessKeyId = builder.Configuration["AWS:Credentials:AccessKeyId"];
-var secretKey = builder.Configuration["AWS:Credentials:SecretKey"];
-var sessionToken = builder.Configuration["AWS:Credentials:SessionToken"];
+var accessKeyId = builder.Configuration["AWSCredentials:AccessKeyId"];
+var secretAccessKey = builder.Configuration["AWSCredentials:SecretAccessKey"];
+var sessionToken = builder.Configuration["AWSCredentials:SessionToken"];
 
-var awsCredentials = new SessionAWSCredentials(accessKeyId, secretKey, sessionToken);
+var awsCredentials = new SessionAWSCredentials(accessKeyId, secretAccessKey, sessionToken);
 
 builder.Services.AddSingleton<IAmazonSimpleNotificationService>(sp =>
 {
