@@ -16,11 +16,13 @@ namespace Healthy_Haven.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private readonly ApplicationDbContext _db;
+        UserManager<ApplicationUser> _userManager;
 
-        public CourseController(ILogger<CourseController> logger, ApplicationDbContext db)
+        public CourseController(ILogger<CourseController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
             _db = db;
             _logger = logger;
+            _userManager = userManager;
         }
 
         public IActionResult UserCourse(string searchTerm, string sortBy)
@@ -91,9 +93,13 @@ namespace Healthy_Haven.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CoursesModel coursedetails, List<IFormFile> files)
         {
+            var user = await _userManager.GetUserAsync(User);
+
             try
             {
                 Debug.WriteLine("COURSE NAME= " + coursedetails.name + "COURSE DATE= " + coursedetails.course_date);
+                coursedetails.instructor_id = user.Id;
+                coursedetails.course_date = DateTime.Now;
                 _db.Courses.Add(coursedetails);
                 _db.SaveChanges();
 
