@@ -394,13 +394,49 @@ namespace Healthy_Haven.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditChap(ModulesModel moduledetails)
+        public IActionResult EditChap(ChapterModel chapterdetails)
         {
-            _db.Modules.Update(moduledetails);
+            _db.Chapters.Update(chapterdetails);
             _db.SaveChanges();
-            return RedirectToAction("ViewModules", new { courseid = moduledetails.course_id });
+            return RedirectToAction("ViewChapters", new { moduleId = chapterdetails.module_id });
         }
 
+        public IActionResult DeleteChapter(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var chapterdetails = _db.Chapters.Find(id);
+            if (chapterdetails == null)
+            {
+                return NotFound();
+            }
+
+            return View("DeleteChapter", chapterdetails);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteChap(int? id)
+        {
+            var chapterdetails = _db.Chapters.Find(id);
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (chapterdetails == null)
+            {
+                return NotFound();
+            }
+            _db.Chapters.Remove(chapterdetails);
+
+            _db.SaveChanges();
+
+            return RedirectToAction("ViewChapters", new { moduleId = chapterdetails.module_id });
+        }
     }
 }
 

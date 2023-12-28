@@ -1,6 +1,6 @@
 ﻿@model ChapterModel
 
-<form method="post" asp-action="EditMod">
+<form method="post" asp-action="EditChap">
     <input asp-for="id" hidden />
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -25,14 +25,26 @@
         <div class="row" hidden>
             <div class="col-4">
                 <label asp-for="module_id"></label>
-                <input asp-for="module_id" class="form-control" id="module_id" value="@Model.module_id" />
+                <input asp-for="module_id" class="form-control"/>
                 <span asp-validation-for="module_id" class="text-danger"></span>
             </div>
         </div>
         <br />
         <div class="w-12 btn-group" role="group">
             <input type="submit" class="btn btn-success" value="Edit Module" />
-            <a asp-action="ViewChapters" class="btn btn-primary mx-1">Back to Chapters</a>
+            <button class=" btn btn-primary mx-1" type="button" onclick="backToList()">Back To Chapters</button>
         </div>
     </div>
 </form>
+
+<script>
+    function backToList() {
+        // Get the value of the hidden course_id field
+        var moduleId = document.getElementById('module_id').value;
+
+        // Redirect to the "ViewModules" action with the course_id
+        location.href = '@Url.Action("ViewChapters", "Course")' + '?moduleId=' + moduleId;
+
+        return false;
+    }
+</script>
