@@ -76,105 +76,6 @@ namespace Healthy_Haven.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> CreateForum(ForumModel forumDetails, List<IFormFile> files)
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user != null)
-            {
-
-                forumDetails.User_Id = user.Id;
-                forumDetails.Created_At = DateTime.Now;
-                _db.Forums.Add(forumDetails);
-                _db.SaveChanges();
-
-                int forumId = forumDetails.Id;
-
-                if (files != null && files.Count > 0)
-                {
-                    int totalSizeLimit = 5 * 1024 * 1024; // 5MB
-                    int maxFileCount = 5;
-                    string[] allowedImageTypes = { "image/jpeg", "image/jpg", "image/png", "image/gif" };
-
-                    int totalSize = 1;
-                    int fileCount = 1;
-
-
-                    using (var amazonS3client = new AmazonS3Client("ASIA55H4D3RU3YGBSRC2", "b9NK4j9Q1Yr06QA6pGtwSM3o27h4JqOXoby+mbV+", "FwoGZXIvYXdzEGgaDBkMuLt8g08U5gPcmCK8AVVCxej8nXNSwFsaB07hFdFhgb2B+b+bXB2hKP7i5VSlUrnOS/IrdwSMmLXuLsW/LZKUc1r/dViFnptCHvL0orWYtKi7w/GPF6Ik6fWu5SsJTErRuFiuAqBdYry/0vdcvbYidn0xz0Xatl1aaLn0BeUzvaxORNIRUNDmTtwNAhvUaqjn29VmCJ4MiYKIL9W3ZqilUdXjMq9K32xaTDiF9rF/SGRtvPBDxAybhvcCSAkVDRKrpfI4if//OQMPKJ2a3KoGMi34qE6qpuveWUmolNzGHL6RCp7cGa61r/99fFE12NIbnVTlqLWLIjaXESbM5yU=", RegionEndpoint.USEast1))
-                    {
-                        foreach (var file in files)
-                        {
-                            if (file != null && file.Length > 0)
-                            {
-                                if (file.Length > 5 * 1024 * 1024) // 5MB
-                                {
-                                    ViewBag.Error = "File size exceeds the limit (5MB).";
-                                    DelFunction(forumId);
-                                    break;
-                                }
-                                else if (totalSize > totalSizeLimit)
-                                {
-                                    ViewBag.Error = "Total file size exceeds the limit (5MB).";
-                                    DelFunction(forumId);
-                                    break;
-                                }
-                                else if (fileCount > maxFileCount)
-                                {
-                                    ViewBag.Error = "Exceeded the maximum allowed files (5).";
-                                    DelFunction(forumId);
-                                    break;
-                                }
-                                else if (!allowedImageTypes.Contains(file.ContentType))
-                                {
-                                    ViewBag.Error = "Invalid file type. Only image files (JPEG, JPG, PNG, GIF) are allowed.";
-                                    DelFunction(forumId);
-                                    break;
-                                }
-                                else
-                                {
-                                    using (var memorystream = new MemoryStream())
-                                    {
-                                        file.CopyTo(memorystream);
-
-                                        var folderPath = "ForumImages/";
-                                        var key = folderPath + file.FileName;
-
-                                        var request = new TransferUtilityUploadRequest
-                                        {
-                                            InputStream = memorystream,
-                                            Key = key,
-                                            BucketName = "healthyhavens3",
-                                            ContentType = file.ContentType,
-                                        };
-
-                                        var transferUtility = new TransferUtility(amazonS3client);
-                                        await transferUtility.UploadAsync(request);
-
-                                        ForumImages forumImages = new ForumImages();
-                                        forumImages.Image_Path = file.FileName;
-                                        forumImages.Forum_Id = forumId;
-
-                                        _db.ForumImages.Add(forumImages);
-                                        _db.SaveChanges();
-                                    }
-                                }
-                            }
-                            fileCount++;
-                            totalSize += totalSize;
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(ViewBag.Error))
-                    {
-
-                        return View(forumDetails);
-                    }
-                }
-            }
-
-            return RedirectToAction("ForumManagement");
-        }
 
         [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
         public IActionResult ForumManagement()
@@ -309,20 +210,20 @@ namespace Healthy_Haven.Controllers
                 });
             }
 
-                return RedirectToAction("ForumManagement");
-            }
+            return RedirectToAction("ForumManagement");
+        }
 
 
-            public IActionResult ViewForum(int? Id)
+        public IActionResult ViewForum(int? Id)
+        {
+            var forumDetails = _db.Forums.Find(Id);
+
+            if (forumDetails == null)
             {
-                var forumDetails = _db.Forums.Find(Id);
-
-                if (forumDetails == null)
-                {
-                    return NotFound();
-                }
-
-                return View(forumDetails);
+                return NotFound();
             }
+
+            return View(forumDetails);
         }
     }
+}

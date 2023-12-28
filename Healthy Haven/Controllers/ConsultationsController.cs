@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.SimpleNotificationService;
+using System;
+using Amazon.SimpleNotificationService.Model;
 
 namespace Healthy_Haven.Controllers
 {
@@ -15,12 +18,14 @@ namespace Healthy_Haven.Controllers
         private readonly ILogger<ConsultationsController> _logger;
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAmazonSimpleNotificationService _snsClient;
 
-        public ConsultationsController(ILogger<ConsultationsController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
+        public ConsultationsController(ILogger<ConsultationsController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager, IAmazonSimpleNotificationService snsClient)
         {
             _logger = logger;
             _db = db;
             _userManager = userManager;
+            _snsClient = snsClient;
         }
 
         // ... (other actions)
@@ -83,7 +88,7 @@ namespace Healthy_Haven.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Moderator,Instructor,Member")]
-        public IActionResult CreateConsultations(ConsultationsEntity consultationsDetails)
+        public async Task<IActionResult> CreateConsultations(ConsultationsEntity consultationsDetails)
         {
             if (ModelState.IsValid)
             {
@@ -93,6 +98,18 @@ namespace Healthy_Haven.Controllers
 
                 _db.Consultations.Add(consultationsDetails);
                 _db.SaveChanges();
+
+                string message = "Successfully Booked Consultation";
+                string subject = $"Consultation Booking";
+                string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+
+                await _snsClient.PublishAsync(new PublishRequest
+                {
+                    Message = message,
+                    Subject = subject,
+                    TopicArn = snsTopicArn
+                });
+
                 return RedirectToAction("ConsultationsManagement");
             }
 
