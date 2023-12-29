@@ -67,14 +67,6 @@
         display: none !important;
     }
 
-        /* Add a CSS class for the fading effect */
-    .fade-out {
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 5; /* Limit to 5 lines */
-        -webkit-box-orient: vertical;
-    }
-
     .fade-out-title{
         overflow: hidden;
         display: -webkit-box;
@@ -97,6 +89,11 @@
 
     .spacer {
         flex-grow: 1;
+    }
+
+    #description {
+        max-height: 200px;
+        overflow-y: auto; /* Add a scrollbar if content exceeds */
     }
 </style>
 
@@ -193,8 +190,12 @@
                                     <img src="@preSignedURL" alt="Image">
                                 </div>
                             }
+                        </div>                                      
+                        <div id="description">
+                        <p class="card-text" >
+                            @Html.Raw(item.Description)
+                        </p>
                         </div>
-                        <p style="padding-bottom: 5px;" class="card-text fade-out">@item.Description</p>
 
                         @{
                             // Retrieve the top comment for the current forum

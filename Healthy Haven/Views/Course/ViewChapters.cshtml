@@ -70,6 +70,11 @@
             max-height: 3em;
             max-width: 200px; /* Set your desired maximum width */
         }
+
+        .tile-icon {
+            width: 50px; /* Adjust the width as needed */
+            height: 50px; /* Adjust the height as needed */
+        }
     </style>
 </head>
 <body>
@@ -77,10 +82,11 @@
 
 
     <div>
-        <div class="row pt=4">
+        <div class="row pt-4">
             <div class="col-9">
                 <h2>Chapter Management Dashboard</h2>
             </div>
+        </div>
             @{
              
                 var module = _db.Modules.FirstOrDefault(q => q.id == Model.First().module_id);
@@ -88,14 +94,19 @@
                 var courseId = module.course_id;
                 
            }
-            <div class="col-1 text-lg-start">
-                <a asp-controller="Course" asp-action="ViewModules" asp-route-courseId="@courseId" class="btn btn-danger">Back to Modules</a>
+           <div class="row">
+            <div class="col-2">
+                <a asp-controller="Course" asp-action="ViewModules" asp-route-courseId="@courseId">
+                    <img src="/icons8-back-100.png" alt="Back" class="tile-icon" />
+                </a>
             </div>
-            
-            <div class="col-12 text-lg-end">
+
+            <div class="col-10 text-lg-end">
                 <a asp-controller="Course" asp-action="CreateChapter" asp-route-moduleId="@Model.First().module_id" class="btn btn-success">Add New Chapter</a>
             </div>
-        </div>
+           </div>
+            
+        
         <br />
         @if (Model != null && Model.Count() > 0)
         {

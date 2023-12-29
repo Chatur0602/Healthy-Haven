@@ -313,7 +313,7 @@ namespace Healthy_Haven.Controllers
 
             string message = $"Your Forum was deleted either due to the copyright or censorship issues";
 
-            string subject = "Forum Deletion Notification";
+            string subject = "Forum Deletion                                                                                                                Notification";
 
             string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
 

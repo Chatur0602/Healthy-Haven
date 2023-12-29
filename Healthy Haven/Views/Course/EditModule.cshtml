@@ -1,5 +1,9 @@
 ﻿@model ModulesModel
 
+@{
+    ViewData["Title"] = "Edit Module";
+}
+
 <form method="post" asp-action="EditMod">
     <input asp-for="id" hidden />
     <div class="border p-5">

@@ -1,5 +1,9 @@
 ﻿@model ModulesModel
 
+@{
+    ViewData["Title"] = "Delete Module";
+}
+
 <form method="post" asp-action="DeleteMod">
     <input asp-for="id" hidden />
     <div class="border p-5">

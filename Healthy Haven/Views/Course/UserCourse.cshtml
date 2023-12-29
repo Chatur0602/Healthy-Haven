@@ -1,6 +1,11 @@
 ﻿@using Healthy_Haven.Data;
 @inject ApplicationDbContext _db;
 @model IEnumerable<CoursesModel>
+
+@{
+    ViewData["Title"] = "Course Dashboard";
+}
+
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -96,8 +101,8 @@
                         <option value="" selected disabled>Sort By</option>
                         <option value="newToOld">New to Old</option>
                         <option value="oldToNew">Old to New</option>
-                        <option value="likesLeastToMost">Likes: Least to Most</option>
-                        <option value="likesMostToLeast">Likes: Most to Least</option>
+                        <option value="likesLeastToMost">Users Enrolled: Least to Most</option>
+                        <option value="likesMostToLeast">Users Enrolled: Most to Least</option>
                     </select>
                 </div>
             </form>

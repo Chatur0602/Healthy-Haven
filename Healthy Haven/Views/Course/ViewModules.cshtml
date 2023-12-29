@@ -78,6 +78,11 @@
             font-weight: bold;
             color: #000000;
         }
+
+        .tile-icon {
+            width: 50px; /* Adjust the width as needed */
+            height: 50px; /* Adjust the height as needed */
+        }
     </style>
 </head>
 <body>
@@ -90,12 +95,22 @@
                 <h2>Module Management Dashboard</h2>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-2">
+                <a asp-controller="Course" asp-action="UserCourse">
+                    <img src="/icons8-back-100.png" alt="Back" class="tile-icon" />
+                </a>
+            </div>
+            <div class="col-10 text-lg-end">
+                <a asp-controller="Course" asp-action="CreateModule" asp-route-courseId="@Model.First().course_id" class="btn btn-success">Add New Module</a>
+            </div>
+            </div>
+
         <br />
         @if (Model != null && Model.Count() > 0)
         {
-            <div class="col-12 text-lg-end">
-                <a asp-controller="Course" asp-action="CreateModule" asp-route-courseId="@Model.First().course_id" class="btn btn-success">Add New Module</a>
-            </div>
+
             <br />
             <table class="table table-bordered table-hover table-striped" width="100%">
                 <thead>
