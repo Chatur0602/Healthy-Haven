@@ -29,7 +29,7 @@ Insert Into Users(FirstName, LastName, Email, Password, Gender, Age, Role) value
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Wee', 'Shi Min','shimin@hotmail.com', 'F', 22, 'Somewhere in WP');
 Insert Into Users(FirstName, LastName, Email, Gender, Age, Address) values('Assran', 'Mydeeen','assran@yahoo.com', 'M', 22, 'Sri Impian');
 
-DELETE FROM AspNetUsers where Id = "67ca3f3e-68c6-48c8-97b9-901a10b9c6cb";
+DELETE FROM AspNetUsers where Username = "idontlikeusingemail@isbad.com";
 DELETE FROM Courses;
 
 SHOW KEYS FROM Users WHERE Key_name = 'PRIMARY';
