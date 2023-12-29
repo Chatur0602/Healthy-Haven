@@ -9,6 +9,7 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Healthy_Haven.Controllers
 {
@@ -75,6 +76,7 @@ namespace Healthy_Haven.Controllers
             return View(courseDetails);
         }
 
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult Course()
         {
             List<CoursesModel> Courses = new List<CoursesModel>();
@@ -82,6 +84,7 @@ namespace Healthy_Haven.Controllers
             return View(Courses);
         }
 
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult CreateCourse()
         {
             var coursedetails = new CoursesModel();
@@ -89,7 +92,7 @@ namespace Healthy_Haven.Controllers
         }
 
 
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         [HttpPost]
         public async Task<IActionResult> Create(CoursesModel coursedetails, List<IFormFile> files)
         {
@@ -107,7 +110,16 @@ namespace Healthy_Haven.Controllers
                 int fileCount = 1;
                 int course_Id = coursedetails.id;
 
-                using (var amazonS3client = new AmazonS3Client("ASIA2LWVJXALHUDRZVDO", "p3nm02aDr+4SLIH4jkel61bCJCrmoOlk82vZls5I", "FwoGZXIvYXdzEI///////////wEaDOX0v6WYbOuOQ+hgbiK8AVMynKu6MJSVhrV5ZgsOMv1dtK9GZVjQOYFLdmFanAfou3y62GHkxwSUYFqhbQ7eSEU2jMgoGLnatsDdU9XpzGr2q1K6wP24H2E73snbEjicgQeskI7wAZrMDVXfT6bY/T9OjntH8TST49+uLErUDZ188iZHIaQ8QO21/p8rQBGflqRbPc9gJq1oC5+Nn+eD6er3mZdopju70+rqa6uvyDHYqP95uiY+j+Q7lUD7uSeOY40BAfFGzcBlHOT0KPT8nKsGMi2Mhsv2xonmj+7bidiaBmgEGUfv2o0ehJ0vzSnM+d1+udgDwLUuuVgeruxeubM=", RegionEndpoint.USEast1))
+                IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+                var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+                var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+                var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+                using (var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1))
                 {
                     foreach (var file in files)
                     {
@@ -132,7 +144,7 @@ namespace Healthy_Haven.Controllers
                                     ContentType = file.ContentType,
                                 };
 
-                                var transferUtility = new TransferUtility(amazonS3client);
+                                var transferUtility = new TransferUtility(s3Client);
 
                                 Debug.WriteLine($"Uploading image to S3. Key: {key}");
 
@@ -164,7 +176,7 @@ namespace Healthy_Haven.Controllers
                 return RedirectToAction("ErrorPage"); // Redirect to an error page or handle appropriately
             }
         }
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult DelFunction(int? id)
         {
             var courseDel = _db.Courses.Find(id);
@@ -176,7 +188,7 @@ namespace Healthy_Haven.Controllers
 
             return View();
         }
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult Edit(int? id)
         {
             var coursedetails = _db.Courses.Find(id);
@@ -186,7 +198,7 @@ namespace Healthy_Haven.Controllers
             }
             return View("EditCourse", coursedetails);
         }
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         [HttpPost]
         public IActionResult Edit(CoursesModel coursedetails)
         {
@@ -194,7 +206,7 @@ namespace Healthy_Haven.Controllers
             _db.SaveChanges();
             return RedirectToAction("Course");
         }
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -212,7 +224,7 @@ namespace Healthy_Haven.Controllers
 
             return View("DeleteCourse", coursedetails);
         }
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         [HttpPost]
         public async Task<IActionResult> DeleteCourse(int? id, List<string> selectedFileNames)
         {
@@ -227,8 +239,16 @@ namespace Healthy_Haven.Controllers
             {
                 return NotFound();
             }
+            IConfiguration configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
 
-            using (var amazons3client = new AmazonS3Client("ASIA2LWVJXALJ24ABY7U", "S0fef4bzmZwwJEkEmNeE6tLvefZueL2Pa2kOHrdv", "FwoGZXIvYXdzEIr//////////wEaDM7cef35Y8pGytHEjyK8ATTeAChswZ9YoVsiYne9JD4IqS7ZOfQ/9cWGG2rxH5DsnEPp1tKw54mRR+1IrXFct4Vj44mZwiPGMhqX2rVU7Fv8KmXYg+EXeSiXofXmhfTDQDhlCRuxxL7uGUSjCAEP2mQw8s5vk10Vyga/cLhSyTAVOUbYUNm9gbmScvRd47K5z69zDH7ONdyWrFT5HTAt1HjMfRUl4PobIY+B5ESvOqkVUY688apRN9D9HlnqOvCqGTOnYvFmg/dZAP7KKM72m6sGMi01erfYCJBRlVfIbET4HFYezAGwkZmCQFAK0s+KV362m0HQRiUTJWkR6Qc/DG8=", RegionEndpoint.USEast1))
+            var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+            var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+            var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+            using (var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1))
             {
                 foreach(var fileName in selectedFileNames)
                 {
@@ -237,7 +257,7 @@ namespace Healthy_Haven.Controllers
                     var folderPath = "CourseImages/";
                     var key = folderPath + fileName;
 
-                    await amazons3client.DeleteObjectAsync(new DeleteObjectRequest()
+                    await s3Client.DeleteObjectAsync(new DeleteObjectRequest()
                     {
                         BucketName = "healthyheaven",
                         Key = key,
@@ -254,13 +274,13 @@ namespace Healthy_Haven.Controllers
 
             return RedirectToAction("Course");
         }
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult ViewModules(int courseId)
         {
             var Modules = _db.Modules.Where(q => q.course_id == courseId).ToList();
             return View(Modules);
         }
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult CreateModule(int courseId)
         {
             var course = _db.Courses.Find(courseId);
@@ -278,7 +298,7 @@ namespace Healthy_Haven.Controllers
             return View(module);
         }
 
-
+        [Authorize(Roles = "Admin,Moderator,Instructor")]
         [HttpPost]
         public IActionResult CreateMod(ModulesModel moduledetails)
         {

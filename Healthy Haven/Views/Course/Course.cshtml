@@ -165,9 +165,11 @@
                 <div class="col-9">
                     <h2>Personal Course Management Dashboard</h2>
                 </div>
+               @if(User.IsInRole("Instructor")){
                 <div class="col-12 text-lg-end">
                     <a asp-controller="Course" asp-action="CreateCourse" class="btn btn-success">Add New Course</a>
                 </div>
+               }
             </div>
             <br />
             @if (Model != null && Model.Count() > 0)
