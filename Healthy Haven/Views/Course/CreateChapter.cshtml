@@ -1,4 +1,10 @@
-﻿@model ChapterModel
+﻿@using Healthy_Haven.Data
+@model ChapterModel
+@inject ApplicationDbContext _db;
+
+@{
+    ViewData["Title"] = "Create Chapter";
+}
 
 <form asp-action="CreateChap" method="post">
     <div class="border p-5">
@@ -32,7 +38,20 @@
         <div class="w-12 btn-group" role="group">
             <input type="submit" class="btn btn-success" value="Add Chapter" />
 
-            <button class="btn btn-primary mx-1" type="button" onclick="backToList()">Back To Chapters</button>
+            @{
+                var moduleCount = _db.Chapters.Where(q => q.module_id == Model.module_id).Count();
+
+                if (moduleCount == 0)
+                {
+
+                }
+                else
+                {
+                    <button class="btn btn-primary mx-1" type="button" onclick="backToList()">Back To Chapters</button>
+                }
+            }
+
+            
         </div>
     </div>
 </form>

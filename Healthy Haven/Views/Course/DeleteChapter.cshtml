@@ -1,5 +1,9 @@
 ﻿@model ChapterModel
 
+@{
+    ViewData["Title"] = "Delete Chapter";
+}
+
 <form method="post" asp-action="DeleteChap">
     <input asp-for="id" hidden />
     <div class="border p-5">

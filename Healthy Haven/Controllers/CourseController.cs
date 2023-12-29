@@ -43,10 +43,10 @@ namespace Healthy_Haven.Controllers
                     courses = courses.OrderBy(f => f.course_date).ToList();
                     break;
                 case "likesLeastToMost":
-                    courses = courses.OrderBy(f => _db.ForumLikes.Count(x => x.ForumId == f.id)).ToList();
+                    courses = courses.OrderBy(f => _db.CoursesEnrolled.Count(x => x.course_id == f.id)).ToList();
                     break;
                 case "likesMostToLeast":
-                    courses = courses.OrderByDescending(f => _db.ForumLikes.Count(x => x.ForumId == f.id)).ToList();
+                    courses = courses.OrderByDescending(f => _db.CoursesEnrolled.Count(x => x.course_id == f.id)).ToList();
                     break;
 
                 default:

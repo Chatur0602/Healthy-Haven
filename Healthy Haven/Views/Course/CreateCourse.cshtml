@@ -1,5 +1,9 @@
 ﻿@model CoursesModel
 
+@{
+    ViewData["Title"] = "Create Course";
+}
+
 <form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
