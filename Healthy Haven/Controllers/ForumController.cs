@@ -14,6 +14,7 @@ using Amazon.SimpleNotificationService.Model;
 using Amazon.SimpleNotificationService.Util;
 using System.Net.NetworkInformation;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Healthy_Haven.Controllers
 {
@@ -85,7 +86,6 @@ namespace Healthy_Haven.Controllers
 
             if (user != null)
             {
-
                 forumDetails.User_Id = user.Id;
                 forumDetails.Created_At = DateTime.Now;
                 _db.Forums.Add(forumDetails);
@@ -324,11 +324,11 @@ namespace Healthy_Haven.Controllers
             _db.Forums.Remove(forumDetails);
             _db.SaveChanges();
 
-            string message = $"Dear {user.Email},\n\nWe regret to inform you that your forum with ID {Id} has been deleted due to copyright or censorship issues. If you have any questions or need further clarification, please don't hesitate to contact us.\n\nSincerely,\nThe Forum Management Team";
+            string message = $"{{ \"message\": \"User {user.Email}, please be informed that your Forum with ID {Id} was deleted either due to copyright or censorship issues.\" }}";
 
             string subject = "Forum Deletion Notification";
 
-            string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+            string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
 
             if (isModerator)
             {

@@ -107,9 +107,12 @@ namespace Healthy_Haven.Controllers
                 _db.Consultations.Add(consultationsDetails);
                 _db.SaveChanges();
 
-                string message = "Successfully Booked Consultation";
+                var user = await _userManager.GetUserAsync(User);
+
+                string message = $"{{ \"message\": \" {user.Email} You have successfully booked consultation. Consultation ID: {consultationsDetails.id}\" }}";
+
                 string subject = $"Consultation Booking";
-                string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+                string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
 
                 await _snsClient.PublishAsync(new PublishRequest
                 {
