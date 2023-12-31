@@ -109,8 +109,7 @@ namespace Healthy_Haven.Controllers
 
                 var user = await _userManager.GetUserAsync(User);
 
-                string message = $"{{ \"message\": \" {user.Email} You have successfully booked consultation. Consultation ID: {consultationsDetails.id}\" }}";
-
+                string message = $"{{ \"message\": \"{user.Email}, you have successfully booked a consultation on {consultationsDetails.date}.\" }}";
                 string subject = $"Consultation Booking";
                 string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
 
@@ -227,6 +226,19 @@ namespace Healthy_Haven.Controllers
 
                 _db.Consultations.Update(consultationsDetails);
                 _db.SaveChanges();
+
+                var user = _userManager.GetUserAsync(User).Result;
+                string message = $"{{ \"message\": \"{user.Email}, Your consultation details have been successfully updated, New Date: {consultationsDetails.date}.\" }}";
+                string subject = "Consultation Update";
+                string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
+
+                 _snsClient.PublishAsync(new PublishRequest
+                {
+                    Message = message,
+                    Subject = subject,
+                    TopicArn = snsTopicArn
+                });
+
                 return RedirectToAction("ConsultationsManagement");
             }
 
