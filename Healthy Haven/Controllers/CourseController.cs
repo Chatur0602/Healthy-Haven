@@ -92,7 +92,6 @@ namespace Healthy_Haven.Controllers
         }
 
 
-
         [HttpPost]
         public async Task<IActionResult> Create(CoursesModel coursedetails, List<IFormFile> files)
         {

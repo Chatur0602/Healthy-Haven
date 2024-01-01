@@ -31,8 +31,6 @@ namespace Healthy_Haven.Controllers
         public IActionResult EnrollCourse(int courseId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-
             var courseEnrolled = _db.CoursesEnrolled.FirstOrDefault(l => l.course_id == courseId && l.user_id == userId);
 
             if (courseEnrolled == null)
@@ -46,8 +44,10 @@ namespace Healthy_Haven.Controllers
                 _db.CoursesEnrolled.Add(newCourseEnrolled);
                 _db.SaveChanges();
 
+                var course = _db.Consultations.Find(courseId);
+
                 var user = _userManager.GetUserAsync(User).Result;
-                string message = $"{{ \"message\": \"{user.Email}, you have successfully Enrolled into the following courseID: {courseId}.\" }}";
+                string message = $"{{ \"message\": \"{user.Email}, you have successfully Enrolled into the following Course: {course}.\" }}";
                 string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
 
                 _snsClient.PublishAsync(new PublishRequest
