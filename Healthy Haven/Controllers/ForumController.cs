@@ -90,7 +90,6 @@ namespace Healthy_Haven.Controllers
                 forumDetails.Created_At = DateTime.Now;
                 _db.Forums.Add(forumDetails);
                 _db.SaveChanges();
-
                 int forumId = forumDetails.Id;
 
                 if (files != null && files.Count > 0)
@@ -174,20 +173,7 @@ namespace Healthy_Haven.Controllers
                             totalSize += totalSize;
                         }
                     }
-
-                    string message = $"A new Forum has been created, check it out and Stay Updated";
-                    string subject = "Forum Creation";
-                    string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
-
-                    await _snsClient.PublishAsync(new PublishRequest
-                    {
-                        Message = message,
-                        Subject = subject,
-                        TopicArn = snsTopicArn
-                    });
-
-
-
+                    
                     if (!string.IsNullOrEmpty(ViewBag.Error))
                     {
 
@@ -195,6 +181,20 @@ namespace Healthy_Haven.Controllers
                     }
                 }
             }
+
+            var baseUrl = "http://healthy-haven.us-east-1.elasticbeanstalk.com";
+            var forumUrl = $"{baseUrl}/Forum/ViewForum/{forumDetails.Id}";
+
+            string message = $"A new Forum titled as ({forumDetails.Title}) has been created. Check it out at: {forumUrl}";
+            string subject = "Forum Creation";
+            string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+
+            await _snsClient.PublishAsync(new PublishRequest
+            {
+                Message = message,
+                Subject = subject,
+                TopicArn = snsTopicArn
+            });
 
             return RedirectToAction("ForumManagement");
         }
@@ -324,7 +324,10 @@ namespace Healthy_Haven.Controllers
             _db.Forums.Remove(forumDetails);
             _db.SaveChanges();
 
-            string message = $"{{ \"message\": \"User {user.Email}, please be informed that your Forum with ID {Id} was deleted either due to copyright or censorship issues.\" }}";
+            var forumUser = await _userManager.FindByIdAsync(forumDetails.User_Id);
+            var forumUserEmail = forumUser.Email;
+
+            string message = $"{{ \"message\": \"User {forumUserEmail}, please be informed that your Forum with  {Id} was deleted either due to copyright or censorship issues.\" }}";
 
             string subject = "Forum Deletion Notification";
 

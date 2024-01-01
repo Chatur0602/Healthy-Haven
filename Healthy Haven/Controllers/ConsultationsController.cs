@@ -96,12 +96,16 @@ namespace Healthy_Haven.Controllers
                 if (User.IsInRole("Instructor"))
                 {
                     consultationsDetails.instructor_id = _userManager.GetUserId(User);
+                    var instructor = await _userManager.FindByIdAsync(consultationsDetails.instructor_id);
+                    var instructorEmail = instructor.Email;
                 }
 
                 // Set student_id based on the current user's role
                 if (User.IsInRole("Member"))
                 {
                     consultationsDetails.student_id = _userManager.GetUserId(User);
+                    var member = await _userManager.FindByIdAsync(consultationsDetails.student_id);
+                    var memberEmail = member.Email;
                 }
 
                 _db.Consultations.Add(consultationsDetails);

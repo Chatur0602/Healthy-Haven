@@ -44,10 +44,14 @@ namespace Healthy_Haven.Controllers
                 _db.CoursesEnrolled.Add(newCourseEnrolled);
                 _db.SaveChanges();
 
-                var course = _db.Consultations.Find(courseId);
+                var courseName = _db.Courses
+                    .Where(c => c.id == courseId)
+                    .Select(c => c.name)
+                    .FirstOrDefault();
+
 
                 var user = _userManager.GetUserAsync(User).Result;
-                string message = $"{{ \"message\": \"{user.Email}, you have successfully Enrolled into the following Course: {course}.\" }}";
+                string message = $"{{ \"message\": \"{user.Email}, you have successfully Enrolled into the following Course: {courseName}\" }}";
                 string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
 
                 _snsClient.PublishAsync(new PublishRequest
@@ -75,6 +79,26 @@ namespace Healthy_Haven.Controllers
             {
                 _db.CoursesEnrolled.Remove(courseEnrolled);
                 _db.SaveChanges();
+
+                var courseName = _db.Courses
+                    .Where(c => c.id == courseId)
+                    .Select(c => c.name)
+                    .FirstOrDefault();
+
+                if (courseName != null)
+                {
+                    var user = _userManager.GetUserAsync(User).Result;
+
+                    string message = $"{{ \"message\": \"{user.Email}, you have successfully unenrolled from the following Course: {courseName}\" }}";
+                    string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
+
+                    _snsClient.PublishAsync(new PublishRequest
+                    {
+                        Message = message,
+                        TopicArn = snsTopicArn
+                    });
+                }
+
             }
             else
             {

@@ -153,7 +153,10 @@ namespace Healthy_Haven.Controllers
                     }
                 }
 
-                string message = $"A new course has been created, check it out and Stay Updated";
+                var baseUrl = "http://healthy-haven.us-east-1.elasticbeanstalk.com";
+                var forumUrl = $"{baseUrl}/Course/CourseDetails/{coursedetails.id}";
+
+                string message = $"A new course {coursedetails.name} has been created, check it out at {forumUrl}";
                 string subject = "Course Creation";
                 string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
 
