@@ -114,7 +114,6 @@
                 <thead>
                     <tr>
                         <th>Chapter Title</th>
-                        <th>Chapter Content</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -122,9 +121,8 @@
                     @foreach (var item in Model)
                     {
                         <tr >
-                            <td width="30%">@item.name</td>
-                            <td width="50%">@item.content</td>
-                            <td width="20%">
+                            <td width="70%">@item.name</td>
+                            <td width="30%">
                                 <div class="w-100 btn-group" role="group">
                                     <a asp-controller="Course" asp-action="EditChapter" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>
                                     <a asp-controller="Course" asp-action="DeleteChapter" asp-route-id="@item.id" class="btn btn-danger">Delete</a>

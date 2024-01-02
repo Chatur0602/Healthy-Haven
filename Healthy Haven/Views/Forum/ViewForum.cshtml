@@ -87,7 +87,6 @@
         color: goldenrod; 
     }
 
-    #description,
     h2 {
         word-wrap: break-word;
     }
@@ -101,6 +100,18 @@
         margin-top: 5px;
         color: #007bff;
         cursor: pointer;
+    }
+
+    .forum-lists{
+        color:silver !important;
+    }
+
+    .forum-lists h1,h2,h3,h4,h5{
+        color: goldenrod !important;
+    }
+
+    .forum-lists p{
+            color: silver !important;
     }
 </style>
 
@@ -164,7 +175,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <p id="description">@Html.Raw(Model.Description)</p>
+            <div class="forum-lists">@Html.Raw(Model.Description)</div>
         </div>
     </div>
 

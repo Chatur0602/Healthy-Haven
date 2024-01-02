@@ -59,8 +59,10 @@ Select * From Comments;
 Select * From CommentLikes;
 Select * From ForumLikes;
 
-DELETE FROM Forums WHERE Id>0 ;
-DELETE FROM ForumImages WHERE Id>0;
+DELETE FROM Forums;
+DELETE FROM ForumImages;
+DELETE FROM CommentLikes ;
+DELETE FROM ForumLikes ;
 
 drop table Forums;
 drop table Likes;
