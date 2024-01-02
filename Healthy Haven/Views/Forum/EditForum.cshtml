@@ -4,27 +4,45 @@
 
 @model ForumModel
 
+<head>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+
+<style>
+    .ql-snow .ql-editor ul,
+    .ql-snow .ql-editor ol {
+        color: black;
+    }
+
+        .ql-snow .ql-editor ul li::before,
+        .ql-snow .ql-editor ol li::before {
+            color: black;
+        }
+</style>
+
 <form method="post" asp-action="EditForumPost" id="editForumForm" class="mt-5">
     <input asp-for="Id" hidden />
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
-            <h2 class="col-12 text-center mb-4">Edit Forum</h2>
+            <h2 class="col-12 text-center mb-4">Edit Forum Details</h2>
         </div>
         <br />
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <label asp-for="Title"></label>
                 <input asp-for="Title" class="form-control" id="Title" />
-                <span id="titleError" class="text-danger"></span>
+                <span id="titleError" class="text-danger">@ViewBag.TitleError</span>
             </div>
         </div>
         <br />
         <div class="row mt-3">
             <div class="col-md-6 offset-md-3">
-                <label asp-for="Description"></label>
-                <textarea asp-for="Description" class="form-control" style="height: 150px;"></textarea>
-                <span id="descriptionError" class="text-danger"></span>
+                <label asp-for="Description">Description</label>
+                <div id="editor" style="height: 300px;">@Html.Raw(Model.Description)</div>
+                <input asp-for="Description" name="Description" class="form-control" id="description" hidden />
+                <span id="descriptionError" class="text-danger">@ViewBag.DescriptionError</span>
             </div>
         </div>
         <div class="row" style="display: none;">
@@ -45,7 +63,7 @@
         <div class="row mt-3">
             <div class="col-md-6 offset-md-3">
                 <div class="w-12 btn-group" role="group">
-                    <input type="button" class="btn btn-success" value="Update Details" onclick="validateForumForm()" />
+                    <input type="button" class="btn btn-success" value="Update Forum" onclick="validateForumForm()" />
                     <a asp-controller="Forum" asp-action="ForumManagement" class="btn btn-primary mx-1">Back To List</a>
                 </div>
             </div>
@@ -54,29 +72,42 @@
 </form>
 
 <script>
+    var quill = new Quill('#editor', {
+        theme: 'snow' // Specify the theme, you can change it to 'bubble' for a different appearance
+    });
+
+    document.querySelector('.ql-editor').style.backgroundColor = 'white';
+    document.querySelector('.ql-toolbar').style.backgroundColor = 'white';
+
+    quill.getModule('toolbar').addHandler('link', function (value) {
+        if (value) {
+            var href = prompt('Enter the URL');
+            if (href) {
+                // Ensure the href starts with a protocol (http:// or https://)
+                if (!href.startsWith('http://') && !href.startsWith('https://')) {
+                    href = 'http://' + href; // Add http:// if missing
+                }
+                quill.format('link', href);
+            }
+        } else {
+            quill.format('link', false);
+        }
+    });
+
     function validateForumForm() {
         var title = document.getElementById("Title").value;
-        var description = document.getElementById("Description").value;
-
-        var titleError = document.getElementById("titleError");
-        var descriptionError = document.getElementById("descriptionError");
-
-        titleError.innerHTML = "";
-        descriptionError.innerHTML = "";
 
         var isValid = true;
 
         if (title.trim() === "") {
-            titleError.innerHTML = "Title cannot be empty.";
+            document.getElementById("titleError").innerHTML = "Title cannot be empty.";
             isValid = false;
-        }
-
-        if (description.trim() === "") {
-            descriptionError.innerHTML = "Description cannot be empty.";
-            isValid = false;
+        } else {
+            document.getElementById("titleError").innerHTML = "";
         }
 
         if (isValid) {
+            document.getElementById('description').value = quill.root.innerHTML;
             document.getElementById("editForumForm").submit();
         }
     }

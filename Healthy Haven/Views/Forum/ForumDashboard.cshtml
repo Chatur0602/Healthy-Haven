@@ -96,6 +96,10 @@
         overflow-y: hidden; /* Add a scrollbar if content exceeds */
         margin-bottom:15px;
     }
+
+    #description li{
+        color: black !important;
+    }
 </style>
 
 <div>
@@ -193,9 +197,9 @@
                             }
                         </div>                                      
                         <div id="description">
-                        <p class="card-text" >
-                            @Html.Raw(item.Description)
-                        </p>
+                            <p class="card-text" >
+                                @Html.Raw(item.Description)
+                            </p>
                         </div>
 
                         @{

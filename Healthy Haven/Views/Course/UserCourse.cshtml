@@ -116,7 +116,7 @@
             </form>
         </div>
         <div class="col-md-3 text-lg-end">
-            @if (User.IsInRole("Instructor") || User.IsInRole("Member"))
+            @if (User.IsInRole("Instructor"))
             {
                 <a asp-controller="Course" asp-action="Course" class="btn btn-success">Manage Your Courses</a>
             }
