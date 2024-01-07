@@ -9,7 +9,10 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Microsoft.AspNetCore.Identity;
 using System.Globalization;
+using Amazon.SimpleNotificationService.Model;
+using Amazon.SimpleNotificationService;
 using Microsoft.AspNetCore.Authorization;
+
 
 namespace Healthy_Haven.Controllers
 {
@@ -17,13 +20,16 @@ namespace Healthy_Haven.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private readonly ApplicationDbContext _db;
-        UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAmazonSimpleNotificationService _snsClient;
 
-        public CourseController(ILogger<CourseController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
+
+        public CourseController(ILogger<CourseController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager, IAmazonSimpleNotificationService snsClient)
         {
             _db = db;
             _logger = logger;
             _userManager = userManager;
+            _snsClient = snsClient;
         }
 
         public IActionResult UserCourse(string searchTerm, string sortBy)
@@ -166,6 +172,22 @@ namespace Healthy_Haven.Controllers
                         fileCount++;
                     }
                 }
+
+                var baseUrl = "http://healthy-haven.us-east-1.elasticbeanstalk.com";
+                var forumUrl = $"{baseUrl}/Course/CourseDetails/{coursedetails.id}";
+
+                string message = $"A new course {coursedetails.name} has been created, check it out at {forumUrl}";
+                string subject = "Course Creation";
+                string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+
+                await _snsClient.PublishAsync(new PublishRequest
+                {
+                    Message = message,
+                    Subject = subject,
+                    TopicArn = snsTopicArn
+                });
+
+
 
                 return RedirectToAction("CreateModule", new { courseId = coursedetails.id });
             }

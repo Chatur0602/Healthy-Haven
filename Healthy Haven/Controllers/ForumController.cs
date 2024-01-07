@@ -14,6 +14,7 @@ using Amazon.SimpleNotificationService.Model;
 using Amazon.SimpleNotificationService.Util;
 using System.Net.NetworkInformation;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Healthy_Haven.Controllers
 {
@@ -85,12 +86,10 @@ namespace Healthy_Haven.Controllers
 
             if (user != null)
             {
-
                 forumDetails.User_Id = user.Id;
                 forumDetails.Created_At = DateTime.Now;
                 _db.Forums.Add(forumDetails);
                 _db.SaveChanges();
-
                 int forumId = forumDetails.Id;
 
                 if (files != null && files.Count > 0)
@@ -174,7 +173,7 @@ namespace Healthy_Haven.Controllers
                             totalSize += totalSize;
                         }
                     }
-
+                    
                     if (!string.IsNullOrEmpty(ViewBag.Error))
                     {
 
@@ -182,6 +181,20 @@ namespace Healthy_Haven.Controllers
                     }
                 }
             }
+
+            var baseUrl = "http://healthy-haven.us-east-1.elasticbeanstalk.com";
+            var forumUrl = $"{baseUrl}/Forum/ViewForum/{forumDetails.Id}";
+
+            string message = $"A new Forum titled as ({forumDetails.Title}) has been created. Check it out at: {forumUrl}";
+            string subject = "Forum Creation";
+            string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+
+            await _snsClient.PublishAsync(new PublishRequest
+            {
+                Message = message,
+                Subject = subject,
+                TopicArn = snsTopicArn
+            });
 
             return RedirectToAction("ForumManagement");
         }
@@ -311,11 +324,14 @@ namespace Healthy_Haven.Controllers
             _db.Forums.Remove(forumDetails);
             _db.SaveChanges();
 
-            string message = $"Your Forum was deleted either due to the copyright or censorship issues";
+            var forumUser = await _userManager.FindByIdAsync(forumDetails.User_Id);
+            var forumUserEmail = forumUser.Email;
+
+            string message = $"{{ \"message\": \"User {forumUserEmail}, please be informed that your Forum with  {Id} was deleted either due to copyright or censorship issues.\" }}";
 
             string subject = "Forum Deletion Notification";
 
-            string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:SNSExampleSample";
+            string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
 
             if (isModerator)
             {
@@ -327,20 +343,20 @@ namespace Healthy_Haven.Controllers
                 });
             }
 
-                return RedirectToAction("ForumManagement");
-            }
+            return RedirectToAction("ForumManagement");
+        }
 
 
-            public IActionResult ViewForum(int? Id)
+        public IActionResult ViewForum(int? Id)
+        {
+            var forumDetails = _db.Forums.Find(Id);
+
+            if (forumDetails == null)
             {
-                var forumDetails = _db.Forums.Find(Id);
-
-                if (forumDetails == null)
-                {
-                    return NotFound();
-                }
-
-                return View(forumDetails);
+                return NotFound();
             }
+
+            return View(forumDetails);
         }
     }
+}

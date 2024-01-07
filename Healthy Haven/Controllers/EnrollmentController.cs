@@ -1,6 +1,9 @@
-﻿using Healthy_Haven.Data;
+﻿using Amazon.SimpleNotificationService;
+using Amazon.SimpleNotificationService.Model;
+using Healthy_Haven.Data;
 using Healthy_Haven.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -9,12 +12,16 @@ namespace Healthy_Haven.Controllers
     public class EnrollmentController : Controller
     {
 
-
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAmazonSimpleNotificationService _snsClient;
 
-        public EnrollmentController(ApplicationDbContext db)
+
+        public EnrollmentController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, IAmazonSimpleNotificationService snsClient)
         {
             _db = db;
+            _userManager = userManager;
+            _snsClient = snsClient;
         }
 
 
@@ -24,7 +31,6 @@ namespace Healthy_Haven.Controllers
         public IActionResult EnrollCourse(int courseId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             var courseEnrolled = _db.CoursesEnrolled.FirstOrDefault(l => l.course_id == courseId && l.user_id == userId);
 
             if (courseEnrolled == null)
@@ -37,6 +43,22 @@ namespace Healthy_Haven.Controllers
 
                 _db.CoursesEnrolled.Add(newCourseEnrolled);
                 _db.SaveChanges();
+
+                var courseName = _db.Courses
+                    .Where(c => c.id == courseId)
+                    .Select(c => c.name)
+                    .FirstOrDefault();
+
+
+                var user = _userManager.GetUserAsync(User).Result;
+                string message = $"{{ \"message\": \"{user.Email}, you have successfully Enrolled into the following Course: {courseName}\" }}";
+                string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
+
+                _snsClient.PublishAsync(new PublishRequest
+                {
+                    Message = message,
+                    TopicArn = snsTopicArn
+                });
             }
             else
             {
@@ -57,6 +79,26 @@ namespace Healthy_Haven.Controllers
             {
                 _db.CoursesEnrolled.Remove(courseEnrolled);
                 _db.SaveChanges();
+
+                var courseName = _db.Courses
+                    .Where(c => c.id == courseId)
+                    .Select(c => c.name)
+                    .FirstOrDefault();
+
+                if (courseName != null)
+                {
+                    var user = _userManager.GetUserAsync(User).Result;
+
+                    string message = $"{{ \"message\": \"{user.Email}, you have successfully unenrolled from the following Course: {courseName}\" }}";
+                    string snsTopicArn = "arn:aws:sns:us-east-1:712338159638:Lambda";
+
+                    _snsClient.PublishAsync(new PublishRequest
+                    {
+                        Message = message,
+                        TopicArn = snsTopicArn
+                    });
+                }
+
             }
             else
             {
@@ -65,8 +107,5 @@ namespace Healthy_Haven.Controllers
 
             return RedirectToAction("CourseDetails", "Course", new { Id = courseId });
         }
-
-
-
     }
 }
