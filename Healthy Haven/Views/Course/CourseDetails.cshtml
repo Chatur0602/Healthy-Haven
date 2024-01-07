@@ -1,6 +1,6 @@
 ﻿@using Healthy_Haven.Data;
 @{
-    ViewData["Title"] = "Course Details";
+    ViewData["Title"] = "View Course";
 }
 
 @inject ApplicationDbContext _db;
@@ -95,8 +95,7 @@
         color: goldenrod;
     }
 
-    #description,
-    h2 {
+    #description {
         word-wrap: break-word;
     }
 
@@ -258,7 +257,6 @@
     /* Style for the modal content */
     .modal-content {
         background: white;
-        color: black;
         padding: 20px;
         border-radius: 8px;
         width: 80%;
@@ -268,6 +266,17 @@
         transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
+    .modal-content h1,h2,h3,h4,h5{
+        color:goldenrod;
+    }
+
+    .modal-content p {
+        font-size: 18px !important;
+    }
+
+    .modal-content li{
+            font-size: 16px !important;
+    }
 </style>
 
 <div class="container">

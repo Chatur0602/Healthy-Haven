@@ -159,7 +159,7 @@
             <p><b>No Records Found</b></p>
         }
         </div>
-    }else if(User.IsInRole("Instructor") || User.IsInRole("Member")){
+    }else if(User.IsInRole("Instructor")){
         <div>
             <div class="row pt-4">
                 <div class="col-9">
@@ -168,6 +168,7 @@
                 <div class="col-12 text-lg-end">
                     <a asp-controller="Course" asp-action="CreateCourse" class="btn btn-success">Add New Course</a>
                 </div>
+               
             </div>
             <br />
             @if (Model != null && Model.Count() > 0)

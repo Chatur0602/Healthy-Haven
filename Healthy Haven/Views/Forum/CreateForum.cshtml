@@ -4,6 +4,28 @@
     ViewData["Title"] = "Create Forum";
 }
 
+<head>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+
+<style>
+    .ql-snow .ql-editor ul,
+    .ql-snow .ql-editor ol {
+        color: black;
+    }
+
+        .ql-snow .ql-editor ul li::before,
+        .ql-snow .ql-editor ol li::before {
+            color: black;
+        }
+
+    .ql-snow {
+        background-color: white;
+    }
+</style>
+
+
 <div class="container">
     <form method="post" asp-action="CreateForum" enctype="multipart/form-data" id="createForumForm" class="mt-5">
         <div class="border p-5">
@@ -21,8 +43,9 @@
             <br />
             <div class="row mt-3">
                 <div class="col-md-6 offset-md-3">
-                    <label asp-for="Description"></label>
-                    <textarea asp-for="Description" class="form-control" style="height: 150px;"></textarea>
+                    <label asp-for="Description">Description</label>
+                    <div id="editor" style="height: 300px;"></div>
+                    <input asp-for="Description" name="Description" class="form-control" id="description" hidden/>
                     <span id="descriptionError" class="text-danger">@ViewBag.DescriptionError</span>
                 </div>
             </div>
@@ -48,9 +71,30 @@
 </div>
 
 <script>
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+    });
+
+    document.querySelector('.ql-editor').style.backgroundColor = 'white';
+    document.querySelector('.ql-toolbar').style.backgroundColor = 'white';
+
+    quill.getModule('toolbar').addHandler('link', function (value) {
+        if (value) {
+            var href = prompt('Enter the URL');
+            if (href) {
+                // Ensure the href starts with a protocol (http:// or https://)
+                if (!href.startsWith('http://') && !href.startsWith('https://')) {
+                    href = 'http://' + href; // Add http:// if missing
+                }
+                quill.format('link', href);
+            }
+        } else {
+            quill.format('link', false);
+        }
+    });
+
     function validateForumForm() {
         var title = document.getElementById("Title").value;
-        var description = document.getElementById("Description").value;
 
         fileError.innerHTML = "";
 
@@ -63,14 +107,8 @@
             document.getElementById("titleError").innerHTML = "";
         }
 
-        if (description.trim() === "") {
-            document.getElementById("descriptionError").innerHTML = "Description cannot be empty.";
-            isValid = false;
-        } else {
-            document.getElementById("descriptionError").innerHTML = "";
-        }
-
         if (isValid) {
+            document.getElementById('description').value = quill.root.innerHTML;
             document.getElementById("createForumForm").submit();
         }
     }

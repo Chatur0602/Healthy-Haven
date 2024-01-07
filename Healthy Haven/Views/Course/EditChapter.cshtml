@@ -1,38 +1,127 @@
-﻿@model ChapterModel
+﻿@using Healthy_Haven.Data
+@model ChapterModel
+@inject ApplicationDbContext _db;
 
-<form method="post" asp-action="EditMod">
+@{
+    ViewData["Title"] = "Edit Chapter";
+}
+
+<head>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+</head>
+
+<style>
+    .ql-snow .ql-editor ul,
+    .ql-snow .ql-editor ol {
+        color: black;
+    }
+
+        .ql-snow .ql-editor ul li::before,
+        .ql-snow .ql-editor ol li::before {
+            color: black;
+        }
+</style>
+
+<form method="post" asp-action="EditChap" id="editChapterForm">
     <input asp-for="id" hidden />
     <div class="border p-5">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
-            <h2>Edit Module Details</h2>
+            <h2 class="col-12 text-center mb-4">Edit Chapter Details</h2>
         </div>
         <br />
         <div class="row">
-            <div class="col-4">
+            <div class="col-md-6 offset-md-3">
                 <label asp-for="name"></label>
-                <input asp-for="name" class="form-control" />
-                <span asp-validation-for="name" class="text-danger"></span>
+                <input asp-for="name" class="form-control" id="Title" />
+                <span id="titleError" class="text-danger">@ViewBag.TitleError</span>
             </div>
         </div>
-        <div class="row">
-            <div class="col-4">
+        <div class="row mt-3">
+            <div class="col-md-6 offset-md-3">
                 <label asp-for="content"></label>
-                <input asp-for="content" class="form-control" />
-                <span asp-validation-for="content" class="text-danger"></span>
+                <div id="editor" style="height: 300px;">@Html.Raw(Model.content)</div>
+                <input asp-for="content" name="content" class="form-control" id="Content" hidden />
             </div>
         </div>
         <div class="row" hidden>
             <div class="col-4">
                 <label asp-for="module_id"></label>
-                <input asp-for="module_id" class="form-control" id="module_id" value="@Model.module_id" />
+                <input asp-for="module_id" class="form-control"/>
                 <span asp-validation-for="module_id" class="text-danger"></span>
             </div>
         </div>
         <br />
-        <div class="w-12 btn-group" role="group">
-            <input type="submit" class="btn btn-success" value="Edit Module" />
-            <a asp-action="ViewChapters" class="btn btn-primary mx-1">Back to Chapters</a>
+        <div class="row mt-3" role="group">
+            <div class="col-md-6 offset-md-3">
+            <input type="button" class="btn btn-success" value="Update Chapter" onclick="validateChapterForm()"/>
+            @{
+                var moduleCount = _db.Chapters.Where(q => q.module_id == Model.module_id).Count();
+
+                if (moduleCount == 0)
+                {
+
+                }
+                else
+                {
+                    <button class="btn btn-primary mx-1" type="button" onclick="backToList()">Back To Chapters</button>
+                }
+            }
+            </div>
         </div>
     </div>
 </form>
+
+<script>
+    var quill = new Quill('#editor', {
+        theme: 'snow' // Specify the theme, you can change it to 'bubble' for a different appearance
+    });
+
+    document.querySelector('.ql-editor').style.backgroundColor = 'white';
+    document.querySelector('.ql-toolbar').style.backgroundColor = 'white';
+
+    quill.getModule('toolbar').addHandler('link', function (value) {
+        if (value) {
+            var href = prompt('Enter the URL');
+            if (href) {
+                // Ensure the href starts with a protocol (http:// or https://)
+                if (!href.startsWith('http://') && !href.startsWith('https://')) {
+                    href = 'http://' + href; // Add http:// if missing
+                }
+                quill.format('link', href);
+            }
+        } else {
+            quill.format('link', false);
+        }
+    });
+
+    function validateChapterForm() {
+        var title = document.getElementById("Title").value;
+
+        var isValid = true;
+
+        if (title.trim() === "") {
+            document.getElementById("titleError").innerHTML = "Name cannot be empty.";
+            isValid = false;
+        } else {
+            document.getElementById("titleError").innerHTML = "";
+        }
+
+        if (isValid) {
+            document.getElementById('Content').value = quill.root.innerHTML;
+            document.getElementById("editChapterForm").submit();
+
+        }
+    }
+
+    function backToList() {
+        // Get the value of the hidden course_id field
+        var moduleId = document.getElementById('module_id').value;
+
+        // Redirect to the "ViewModules" action with the course_id
+        location.href = '@Url.Action("ViewChapters", "Course")' + '?moduleId=' + moduleId;
+
+        return false;
+    }
+</script>

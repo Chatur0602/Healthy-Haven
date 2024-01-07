@@ -1,4 +1,6 @@
-﻿@model IEnumerable<ChapterModel>
+﻿@using Healthy_Haven.Data
+@model IEnumerable<ChapterModel>
+@inject ApplicationDbContext _db;
 
 @{
     ViewData["Title"] = "Chapter Management";
@@ -68,6 +70,11 @@
             max-height: 3em;
             max-width: 200px; /* Set your desired maximum width */
         }
+
+        .tile-icon {
+            width: 50px; /* Adjust the width as needed */
+            height: 50px; /* Adjust the height as needed */
+        }
     </style>
 </head>
 <body>
@@ -75,14 +82,31 @@
 
 
     <div>
-        <div class="row pt=4">
+        <div class="row pt-4">
             <div class="col-9">
                 <h2>Chapter Management Dashboard</h2>
             </div>
-            <div class="col-12 text-lg-end">
+        </div>
+            @{
+             
+                var module = _db.Modules.FirstOrDefault(q => q.id == Model.First().module_id);
+               
+                var courseId = module.course_id;
+                
+           }
+           <div class="row">
+            <div class="col-2">
+                <a asp-controller="Course" asp-action="ViewModules" asp-route-courseId="@courseId">
+                    <img src="/icons8-back-100.png" alt="Back" class="tile-icon" />
+                </a>
+            </div>
+
+            <div class="col-10 text-lg-end">
                 <a asp-controller="Course" asp-action="CreateChapter" asp-route-moduleId="@Model.First().module_id" class="btn btn-success">Add New Chapter</a>
             </div>
-        </div>
+           </div>
+            
+        
         <br />
         @if (Model != null && Model.Count() > 0)
         {
@@ -90,7 +114,6 @@
                 <thead>
                     <tr>
                         <th>Chapter Title</th>
-                        <th>Chapter Content</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -98,9 +121,8 @@
                     @foreach (var item in Model)
                     {
                         <tr >
-                            <td width="30%">@item.name</td>
-                            <td width="50%">@item.content</td>
-                            <td width="20%">
+                            <td width="70%">@item.name</td>
+                            <td width="30%">
                                 <div class="w-100 btn-group" role="group">
                                     <a asp-controller="Course" asp-action="EditChapter" asp-route-id="@item.id" class="btn btn-primary mx-1">Edit</a>
                                     <a asp-controller="Course" asp-action="DeleteChapter" asp-route-id="@item.id" class="btn btn-danger">Delete</a>
