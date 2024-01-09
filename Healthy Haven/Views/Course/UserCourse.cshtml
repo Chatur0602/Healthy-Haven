@@ -184,8 +184,18 @@
                                 @using Amazon.S3;
                                 @using Amazon.S3.Model;
                                 @using Amazon.S3.Util;
+                                @using Microsoft.Extensions.Configuration;
 
-                                var s3Client = new AmazonS3Client("ASIA2LWVJXALCKZ4I2XT", "e4q/4ucGnNcXCo5RVvcI70jgoYEgAyQ7AluGBX8P", "FwoGZXIvYXdzEMD//////////wEaDLVuDTeygiOrqtFk7yK8ASwzqS3Xt+aZ8eoFjxKy+H3j9gRiClE8E6F2GLtEc0a8vdZtF5y/vl5dhfq5yLOSOzdOvlYBDmWOE9HF3L0zp8nW8Wu9AHhTKFfigUmyA5f+F0UGFA8qBILOQJmRpIC9euiAyT038ojcxT/eGmDThzKJ6OYAO774CoWRilZDfC3hWLh6e5iBGY9u794eHLAG0uOZCF2Hc9ii53FLXX0AP8Yta2+UTt0ofIeW0wfYVD2VXxhsCgoxTL4AfUkTKKfqp6sGMi2gpKb6EJrvklVavc3n3J/Gzz/ufGjq1kDziVOl7S6nz1SXXocolXnv4SzRxII=", Amazon.RegionEndpoint.USEast1);
+                                IConfiguration configuration = new ConfigurationBuilder()
+                                .SetBasePath(Directory.GetCurrentDirectory())
+                                .AddJsonFile("appsettings.json")
+                                .Build();
+
+                                var accessKeyId = configuration["AWSCredentials:AccessKeyId"];
+                                var secretAccessKey = configuration["AWSCredentials:SecretAccessKey"];
+                                var sessionToken = configuration["AWSCredentials:SessionToken"];
+
+                                var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1);
 
                                 string bucketName = "healthyheaven";
                                 string folderName = "CourseImages";
