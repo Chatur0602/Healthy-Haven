@@ -272,7 +272,7 @@ namespace Healthy_Haven.Controllers
 
             using (var s3Client = new AmazonS3Client(accessKeyId, secretAccessKey, sessionToken, Amazon.RegionEndpoint.USEast1))
             {
-                foreach(var fileName in selectedFileNames)
+                foreach (var fileName in selectedFileNames)
                 {
                     System.Diagnostics.Debug.WriteLine("filename" + fileName);
 
@@ -325,10 +325,10 @@ namespace Healthy_Haven.Controllers
         public IActionResult CreateMod(ModulesModel moduledetails)
         {
 
-                _db.Modules.Add(moduledetails);
-                _db.SaveChanges();
+            _db.Modules.Add(moduledetails);
+            _db.SaveChanges();
 
-                return RedirectToAction("CreateChapter", new { moduleId = moduledetails.id });
+            return RedirectToAction("CreateChapter", new { moduleId = moduledetails.id });
 
         }
 
@@ -481,4 +481,3 @@ namespace Healthy_Haven.Controllers
         }
     }
 }
-

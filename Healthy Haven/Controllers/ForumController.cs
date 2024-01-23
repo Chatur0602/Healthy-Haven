@@ -182,7 +182,7 @@ namespace Healthy_Haven.Controllers
                 }
             }
 
-            var baseUrl = "http://healthy-haven.us-east-1.elasticbeanstalk.com";
+            var baseUrl = "http://www.healthy-haven.life";
             var forumUrl = $"{baseUrl}/Forum/ViewForum/{forumDetails.Id}";
 
             string message = $"A new Forum titled as ({forumDetails.Title}) has been created. Check it out at: {forumUrl}";
