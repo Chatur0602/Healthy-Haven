@@ -13,7 +13,7 @@ CREATE TABLE Courses (
 
 drop table Courses;
 
-DELETE FROM Courses where id = 1;
+DELETE FROM Courses where id = 77;
 select * from Courses;
 
 CREATE TABLE Modules (
@@ -55,4 +55,6 @@ CREATE TABLE CoursesEnrolled (
   PRIMARY KEY (id)
 );
 
+select * from CoursesEnrolled;
 
+delete from CoursesEnrolled where course_id = 77;

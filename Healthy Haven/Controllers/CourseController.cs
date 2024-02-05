@@ -251,6 +251,9 @@ namespace Healthy_Haven.Controllers
         public async Task<IActionResult> DeleteCourse(int? id, List<string> selectedFileNames)
         {
             var coursedetails = _db.Courses.Find(id);
+            var courseModules = _db.Modules.Where(x => x.course_id == id).ToList();
+            var courseEnrolled = _db.CoursesEnrolled.Where(x => x.course_id == id).ToList();
+            var courseQuizzes = _db.Quizzes.Where(x => x.CourseId == id).ToList();
 
             if (id == null)
             {
@@ -291,11 +294,34 @@ namespace Healthy_Haven.Controllers
                 }
             }
 
+            _db.Modules.RemoveRange(courseModules);
+            _db.CoursesEnrolled.RemoveRange(courseEnrolled);
+            _db.Quizzes.RemoveRange(courseQuizzes);
+
+            foreach (var module in courseModules)
+            {
+                var moduleChapters = _db.Chapters.Where(x => x.module_id == module.id).ToList();
+                _db.Chapters.RemoveRange(moduleChapters);
+            }
+
+            foreach (var quiz in courseQuizzes)
+            {
+                var quizQuestions = _db.Questions.Where(x => x.QuizId == quiz.Id).ToList();
+                _db.Questions.RemoveRange(quizQuestions);
+
+                foreach (var question in quizQuestions)
+                {
+                    var questionOptions = _db.Options.Where(x => x.QuestionId == question.Id).ToList();
+                    _db.Options.RemoveRange(questionOptions);
+                }
+            }
+
             _db.Courses.Remove(coursedetails);
             _db.SaveChanges();
 
             return RedirectToAction("Course");
         }
+
         [Authorize(Roles = "Admin,Moderator,Instructor")]
         public IActionResult ViewModules(int courseId)
         {
